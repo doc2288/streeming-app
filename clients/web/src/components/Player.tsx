@@ -7,23 +7,20 @@ interface Props {
 
 export function Player ({ src }: Props): JSX.Element {
   const videoRef = useRef<HTMLVideoElement | null>(null)
-  const [error, setError] = useState<string | null>(null)
+  const [error, setError] = useState(false)
 
   useEffect(() => {
     const video = videoRef.current
     if (video == null) return
-    setError(null)
+    setError(false)
 
     if (Hls.isSupported()) {
-      const hls = new Hls({
-        enableWorker: true,
-        lowLatencyMode: true
-      })
+      const hls = new Hls({ enableWorker: true, lowLatencyMode: true })
       hls.loadSource(src)
       hls.attachMedia(video)
-      hls.on(Hls.Events.ERROR, (_event, data) => {
+      hls.on(Hls.Events.ERROR, (_e, data) => {
         if (data.fatal) {
-          setError('Помилка програвання відео')
+          setError(true)
           hls.destroy()
         }
       })
@@ -31,16 +28,20 @@ export function Player ({ src }: Props): JSX.Element {
     } else if (video.canPlayType('application/vnd.apple.mpegurl') !== '') {
       video.src = src
     } else {
-      setError('HLS не підтримується у цьому браузері')
+      setError(true)
     }
   }, [src])
 
-  return (
-    <div className="player-wrapper">
-      {error != null
-        ? <div className="player-error">{error}</div>
-        : <video ref={videoRef} controls playsInline />
-      }
-    </div>
-  )
+  if (error) {
+    return (
+      <div className="player-error">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" opacity="0.4">
+          <polygon points="5 3 19 12 5 21 5 3" />
+        </svg>
+        <p>Стрім офлайн або відео недоступне</p>
+      </div>
+    )
+  }
+
+  return <video ref={videoRef} controls playsInline className="player-video" />
 }
