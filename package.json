@@ -1,0 +1,17 @@
+{
+  "name": "streeming-app",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Cross-platform streaming app monorepo (backend + web + desktop + mobile).",
+  "license": "MIT",
+  "packageManager": "pnpm@9.0.0",
+  "scripts": {
+    "lint": "pnpm -r --if-present lint",
+    "test": "pnpm -r --if-present test",
+    "dev": "pnpm --filter backend dev",
+    "build": "pnpm -r build"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  }
+}
