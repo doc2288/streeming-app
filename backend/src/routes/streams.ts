@@ -15,7 +15,13 @@ const INGEST_BASE = 'rtmp://localhost/live'
 
 export async function registerStreamRoutes (app: FastifyInstance): Promise<void> {
   app.get('/streams', async (request: FastifyRequest) => {
-    const userId = (request as any).user?.sub ?? null
+    let userId: string | null = null
+    try {
+      await request.jwtVerify()
+      userId = request.user?.sub ?? null
+    } catch {
+      // anonymous — no token or invalid token
+    }
     const res = await pool.query(
       'SELECT id, title, status, ingest_url, stream_key, user_id, created_at FROM streams ORDER BY created_at DESC'
     )
