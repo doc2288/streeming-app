@@ -76,6 +76,7 @@ body {
 .topbar-logo {
   display: flex; align-items: center; gap: 8px;
   text-decoration: none; color: var(--text);
+  background: none; border: none; cursor: pointer;
 }
 .logo-text {
   font-size: 1.15rem; font-weight: 700;
@@ -88,6 +89,9 @@ body {
 .topbar-search {
   display: flex; flex: 1; max-width: 420px;
 }
+.topbar-search {
+  position: relative;
+}
 .topbar-search input {
   flex: 1; height: 36px;
   padding: 0 12px; font-size: 0.85rem;
@@ -98,6 +102,14 @@ body {
 }
 .topbar-search input::placeholder { color: var(--muted); }
 .topbar-search input:focus { border-color: var(--brand); }
+.search-clear {
+  position: absolute; right: 42px; top: 50%; transform: translateY(-50%);
+  width: 24px; height: 24px;
+  display: flex; align-items: center; justify-content: center;
+  background: none; border: none; color: var(--muted); cursor: pointer;
+  border-radius: 50%;
+}
+.search-clear:hover { color: var(--text); background: var(--surface2); }
 .search-btn {
   width: 40px; height: 36px;
   display: flex; align-items: center; justify-content: center;
@@ -137,9 +149,9 @@ body {
   display: none; position: absolute; top: 42px; right: 0;
   background: var(--surface); border: 1px solid var(--border);
   border-radius: var(--radius-lg); padding: 8px; min-width: 180px;
-  z-index: 200;
+  z-index: 200; box-shadow: 0 8px 24px rgba(0,0,0,0.5);
 }
-.topbar-user:hover .user-dropdown { display: block; }
+.user-dropdown.show { display: block; }
 .user-email {
   display: block; padding: 6px 8px;
   font-size: 0.8rem; color: var(--text-sec);
@@ -149,8 +161,10 @@ body {
   width: 100%; text-align: left; padding: 6px 8px;
   font-size: 0.85rem; background: none; border: none;
   color: var(--text); border-radius: 4px; cursor: pointer;
+  display: flex; align-items: center; gap: 8px;
 }
 .user-dropdown button:hover { background: var(--surface2); }
+.user-dropdown button svg { flex-shrink: 0; color: var(--text-sec); }
 
 /* ============================================
    SIDEBAR
@@ -199,9 +213,9 @@ body {
 
 .channel-info { display: flex; flex-direction: column; min-width: 0; }
 .channel-name { font-size: 0.82rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.channel-live, .channel-status { font-size: 0.72rem; display: flex; align-items: center; gap: 4px; }
-.channel-status.live { color: var(--danger); }
-.channel-status.offline { color: var(--muted); }
+.channel-live-label { font-size: 0.72rem; display: flex; align-items: center; gap: 4px; color: var(--danger); }
+.channel-offline-label { font-size: 0.72rem; color: var(--muted); }
+.live-ring { box-shadow: 0 0 0 2px var(--danger); }
 
 .live-dot {
   width: 8px; height: 8px; border-radius: 50%; background: var(--danger);
@@ -300,7 +314,15 @@ body {
   display: flex; align-items: center; justify-content: center;
   background: var(--surface);
 }
-.thumbnail-icon { opacity: 0.5; }
+.thumbnail-icon { opacity: 0.5; transition: opacity 0.2s; }
+.card-hover-overlay {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(0,0,0,0.5); opacity: 0;
+  transition: opacity 0.2s;
+}
+.stream-card:hover .card-hover-overlay { opacity: 1; }
+.stream-card:hover .thumbnail-icon { opacity: 0; }
 
 .card-live-badge {
   position: absolute; top: 8px; left: 8px;
@@ -620,6 +642,45 @@ body {
   .stream-grid-page { padding: 12px 12px 40px; }
   .create-bar { padding: 8px 12px 0; }
 }
+
+/* ---- Follow button ---- */
+.btn-follow {
+  display: flex; align-items: center; gap: 6px;
+  padding: 8px 16px; font-size: 0.85rem; font-weight: 600;
+  background: var(--brand); color: #fff; border: none;
+  border-radius: var(--radius); cursor: pointer;
+}
+.btn-follow:hover { background: var(--brand-h); }
+.btn-follow.following {
+  background: var(--surface); color: var(--text); border: 1px solid var(--border);
+}
+.btn-follow.following:hover { background: var(--surface2); border-color: var(--danger); color: var(--danger); }
+
+/* ---- Delete icon ---- */
+.btn-danger-icon { color: var(--muted); }
+.btn-danger-icon:hover { color: var(--danger) !important; background: var(--danger-bg) !important; }
+
+/* ---- Copy button ---- */
+.btn-copy {
+  width: 28px; height: 28px;
+  display: flex; align-items: center; justify-content: center;
+  background: none; border: 1px solid var(--border); color: var(--muted);
+  border-radius: 4px; cursor: pointer; flex-shrink: 0;
+}
+.btn-copy:hover { color: var(--text); border-color: var(--border-l); background: var(--surface); }
+
+/* ---- Modal small ---- */
+.modal-sm { width: 380px; }
+
+/* ---- Toast close ---- */
+.toast {
+  display: flex; align-items: center; gap: 12px;
+}
+.toast-x {
+  background: none; border: none; color: inherit; font-size: 1.2rem;
+  cursor: pointer; opacity: 0.7; padding: 0; line-height: 1;
+}
+.toast-x:hover { opacity: 1; }
 
 @media (max-width: 480px) {
   .topbar-search { display: none; }

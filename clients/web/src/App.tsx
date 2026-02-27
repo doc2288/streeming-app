@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import { api, setAuthToken, setRefreshToken, clearAuth, getStoredToken } from './api'
 import { TopBar } from './components/TopBar'
 import { Sidebar } from './components/Sidebar'
@@ -25,18 +25,22 @@ interface UserInfo {
 export default function App (): JSX.Element {
   const [user, setUser] = useState<UserInfo | null>(null)
   const [streams, setStreams] = useState<Stream[]>([])
-  const [selected, setSelected] = useState<Stream | null>(null)
+  const [selectedId, setSelectedId] = useState<string | null>(null)
   const [showAuth, setShowAuth] = useState(false)
+  const [showCreate, setShowCreate] = useState(false)
   const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth > 1200)
   const [searchQuery, setSearchQuery] = useState('')
   const [view, setView] = useState('home')
-  const [showCreate, setShowCreate] = useState(false)
   const [newTitle, setNewTitle] = useState('')
   const [toast, setToast] = useState<{ text: string; type: 'ok' | 'err' } | null>(null)
+  const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const selected = streams.find(s => s.id === selectedId) ?? null
 
   const flash = useCallback((text: string, type: 'ok' | 'err' = 'ok') => {
     setToast({ text, type })
-    setTimeout(() => { setToast(null) }, 4000)
+    if (toastTimer.current != null) clearTimeout(toastTimer.current)
+    toastTimer.current = setTimeout(() => { setToast(null) }, 5000)
   }, [])
 
   const fetchStreams = useCallback(async () => {
@@ -51,9 +55,7 @@ export default function App (): JSX.Element {
     try {
       const res = await api.get('/auth/me')
       setUser(res.data.user)
-    } catch {
-      clearAuth()
-    }
+    } catch { clearAuth() }
   }, [])
 
   useEffect(() => {
@@ -63,23 +65,36 @@ export default function App (): JSX.Element {
     return () => { clearInterval(t) }
   }, [fetchStreams, restoreSession])
 
+  const navigateHome = (): void => {
+    setView('home')
+    setSelectedId(null)
+    setSearchQuery('')
+  }
+
   const handleLogout = (): void => {
     const rt = localStorage.getItem('streeming_refresh_token')
     if (rt != null) void api.post('/auth/logout', { refreshToken: rt }).catch(() => {})
     clearAuth()
     setUser(null)
-    setSelected(null)
-    flash('Ви вийшли з акаунту', 'ok')
+    setSelectedId(null)
+    flash('Ви вийшли з акаунту')
   }
 
   const handleWatch = (stream: Stream): void => {
-    setSelected(stream)
+    setSelectedId(stream.id)
     setView('watch')
   }
 
   const handleSelectStream = (id: string): void => {
-    const s = streams.find(st => st.id === id)
-    if (s != null) handleWatch(s)
+    setSelectedId(id)
+    setView('watch')
+  }
+
+  const handleDelete = (id: string): void => {
+    setStreams(prev => prev.filter(s => s.id !== id))
+    setSelectedId(null)
+    setView('home')
+    flash('Стрім видалено')
   }
 
   const handleCreate = async (): Promise<void> => {
@@ -105,8 +120,10 @@ export default function App (): JSX.Element {
         onLogin={() => { setShowAuth(true) }}
         onLogout={handleLogout}
         onSearch={setSearchQuery}
+        onNavigateHome={navigateHome}
         sidebarOpen={sidebarOpen}
         onToggleSidebar={() => { setSidebarOpen(!sidebarOpen) }}
+        searchValue={searchQuery}
       />
 
       <div className="app-body">
@@ -114,7 +131,7 @@ export default function App (): JSX.Element {
           streams={streams}
           open={sidebarOpen}
           currentView={view}
-          onNavigate={(v) => { setView(v); setSelected(null); setSearchQuery('') }}
+          onNavigate={(v) => { setView(v); setSelectedId(null); setSearchQuery('') }}
           onSelectStream={handleSelectStream}
         />
 
@@ -123,40 +140,23 @@ export default function App (): JSX.Element {
             <WatchPage
               stream={selected}
               user={user}
-              onBack={() => { setView('home'); setSelected(null) }}
+              onBack={navigateHome}
               onRefresh={() => { void fetchStreams() }}
+              onDelete={handleDelete}
             />
           ) : (
             <>
               {user != null && (
                 <div className="create-bar">
-                  {showCreate ? (
-                    <form className="create-form" onSubmit={(e) => { e.preventDefault(); void handleCreate() }}>
-                      <input
-                        placeholder="Назва стріму"
-                        value={newTitle}
-                        onChange={(e) => { setNewTitle(e.target.value) }}
-                        maxLength={120}
-                        autoFocus
-                      />
-                      <button type="submit" className="btn-primary">Створити</button>
-                      <button type="button" className="btn-ghost" onClick={() => { setShowCreate(false); setNewTitle('') }}>Скасувати</button>
-                    </form>
-                  ) : (
-                    <button className="btn-create" onClick={() => { setShowCreate(true) }}>
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
-                      </svg>
-                      Створити стрім
-                    </button>
-                  )}
+                  <button className="btn-create" onClick={() => { setShowCreate(true) }}>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+                    </svg>
+                    Створити стрім
+                  </button>
                 </div>
               )}
-              <StreamGrid
-                streams={streams}
-                onWatch={handleWatch}
-                searchQuery={searchQuery}
-              />
+              <StreamGrid streams={streams} onWatch={handleWatch} searchQuery={searchQuery} />
             </>
           )}
         </main>
@@ -174,9 +174,37 @@ export default function App (): JSX.Element {
         />
       )}
 
+      {showCreate && (
+        <div className="modal-overlay" onClick={() => { setShowCreate(false) }}>
+          <div className="modal modal-sm" onClick={(e) => { e.stopPropagation() }}>
+            <button className="modal-close" onClick={() => { setShowCreate(false) }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6L6 18M6 6l12 12" /></svg>
+            </button>
+            <div className="modal-header">
+              <h2>Створити стрім</h2>
+            </div>
+            <form className="modal-form" onSubmit={(e) => { e.preventDefault(); void handleCreate() }}>
+              <div className="form-group">
+                <label htmlFor="stream-title">Назва стріму</label>
+                <input
+                  id="stream-title"
+                  placeholder="Наприклад: Fortnite Ranked"
+                  value={newTitle}
+                  onChange={(e) => { setNewTitle(e.target.value) }}
+                  maxLength={120}
+                  autoFocus
+                />
+              </div>
+              <button type="submit" className="btn-primary btn-full">Створити</button>
+            </form>
+          </div>
+        </div>
+      )}
+
       {toast != null && (
         <div className={`toast ${toast.type}`}>
-          {toast.text}
+          <span>{toast.text}</span>
+          <button className="toast-x" onClick={() => { setToast(null) }}>×</button>
         </div>
       )}
     </div>

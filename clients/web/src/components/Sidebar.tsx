@@ -15,6 +15,7 @@ interface Props {
 
 export function Sidebar ({ streams, open, currentView, onNavigate, onSelectStream }: Props): JSX.Element {
   const liveStreams = streams.filter(s => s.status === 'live')
+  const offlineStreams = streams.filter(s => s.status !== 'live')
 
   return (
     <aside className={`sidebar ${open ? 'open' : 'collapsed'}`}>
@@ -41,46 +42,33 @@ export function Sidebar ({ streams, open, currentView, onNavigate, onSelectStrea
         </button>
       </div>
 
-      {open && liveStreams.length > 0 && (
+      {liveStreams.length > 0 && (
         <div className="sidebar-section">
-          <h3 className="sidebar-heading">LIVE КАНАЛИ</h3>
+          <h3 className="sidebar-heading">{open ? 'LIVE КАНАЛИ' : ''}</h3>
           {liveStreams.map((s) => (
-            <button
-              key={s.id}
-              className="sidebar-channel"
-              onClick={() => { onSelectStream(s.id) }}
-            >
-              <div className="channel-avatar">{s.title[0]}</div>
-              <div className="channel-info">
-                <span className="channel-name">{s.title}</span>
-                <span className="channel-live">
-                  <span className="live-dot" />
-                  Live
-                </span>
-              </div>
+            <button key={s.id} className="sidebar-channel" onClick={() => { onSelectStream(s.id) }} title={s.title}>
+              <div className="channel-avatar live-ring">{s.title[0]}</div>
+              {open && (
+                <div className="channel-info">
+                  <span className="channel-name">{s.title}</span>
+                  <span className="channel-live-label"><span className="live-dot" /> Live</span>
+                </div>
+              )}
             </button>
           ))}
         </div>
       )}
 
-      {open && (
+      {open && offlineStreams.length > 0 && (
         <div className="sidebar-section">
           <h3 className="sidebar-heading">РЕКОМЕНДОВАНІ</h3>
-          {streams.slice(0, 5).map((s) => (
-            <button
-              key={s.id}
-              className="sidebar-channel"
-              onClick={() => { onSelectStream(s.id) }}
-            >
+          {offlineStreams.slice(0, 5).map((s) => (
+            <button key={s.id} className="sidebar-channel" onClick={() => { onSelectStream(s.id) }} title={s.title}>
               <div className="channel-avatar">{s.title[0]}</div>
-              {open && (
-                <div className="channel-info">
-                  <span className="channel-name">{s.title}</span>
-                  <span className={`channel-status ${s.status}`}>
-                    {s.status === 'live' ? <><span className="live-dot" /> Live</> : 'Offline'}
-                  </span>
-                </div>
-              )}
+              <div className="channel-info">
+                <span className="channel-name">{s.title}</span>
+                <span className="channel-offline-label">Офлайн</span>
+              </div>
             </button>
           ))}
         </div>
