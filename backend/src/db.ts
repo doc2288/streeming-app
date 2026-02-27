@@ -6,44 +6,56 @@ export const pool = new Pool({
   max: 10
 })
 
-export async function migrate(): Promise<void> {
+export async function migrate (): Promise<void> {
   const client = await pool.connect()
   try {
     await client.query(`
-      create extension if not exists "pgcrypto";
-      create table if not exists users (
-        id uuid primary key default gen_random_uuid(),
-        email text not null unique,
-        password_hash text not null,
-        role text not null default 'user',
-        created_at timestamptz not null default now()
+      CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+
+      CREATE TABLE IF NOT EXISTS users (
+        id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+        email text NOT NULL UNIQUE,
+        password_hash text NOT NULL,
+        role text NOT NULL DEFAULT 'user',
+        created_at timestamptz NOT NULL DEFAULT now()
       );
-      create table if not exists refresh_tokens (
-        id uuid primary key default gen_random_uuid(),
-        user_id uuid not null references users(id) on delete cascade,
-        token text not null,
+
+      CREATE TABLE IF NOT EXISTS refresh_tokens (
+        id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+        user_id uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        token text NOT NULL,
         user_agent text,
         ip text,
-        created_at timestamptz not null default now(),
-        expires_at timestamptz not null
+        created_at timestamptz NOT NULL DEFAULT now(),
+        expires_at timestamptz NOT NULL
       );
-      create table if not exists streams (
-        id uuid primary key default gen_random_uuid(),
-        user_id uuid not null references users(id) on delete cascade,
-        title text not null,
-        status text not null default 'offline',
+
+      CREATE TABLE IF NOT EXISTS streams (
+        id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+        user_id uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        title text NOT NULL,
+        description text DEFAULT '',
+        status text NOT NULL DEFAULT 'offline',
         ingest_url text,
         stream_key text,
-        created_at timestamptz not null default now(),
-        updated_at timestamptz not null default now()
+        viewer_count integer NOT NULL DEFAULT 0,
+        created_at timestamptz NOT NULL DEFAULT now(),
+        updated_at timestamptz NOT NULL DEFAULT now()
       );
-      create table if not exists chat_bans (
-        id uuid primary key default gen_random_uuid(),
-        stream_id uuid not null references streams(id) on delete cascade,
-        user_id uuid not null references users(id) on delete cascade,
+
+      CREATE TABLE IF NOT EXISTS chat_bans (
+        id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+        stream_id uuid NOT NULL REFERENCES streams(id) ON DELETE CASCADE,
+        user_id uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
         reason text,
-        created_at timestamptz not null default now()
+        created_at timestamptz NOT NULL DEFAULT now()
       );
+
+      CREATE INDEX IF NOT EXISTS idx_refresh_tokens_token ON refresh_tokens(token);
+      CREATE INDEX IF NOT EXISTS idx_refresh_tokens_user_id ON refresh_tokens(user_id);
+      CREATE INDEX IF NOT EXISTS idx_streams_user_id ON streams(user_id);
+      CREATE INDEX IF NOT EXISTS idx_streams_status ON streams(status);
+      CREATE INDEX IF NOT EXISTS idx_chat_bans_stream_user ON chat_bans(stream_id, user_id);
     `)
   } finally {
     client.release()

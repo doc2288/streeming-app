@@ -1,10 +1,10 @@
-import { FastifyInstance } from 'fastify'
+import type { FastifyInstance, FastifyRequest } from 'fastify'
 import { z } from 'zod'
 import { pool } from '../db'
 import { generateStreamKey } from '../utils/streams'
 
 const createStreamSchema = z.object({
-  title: z.string().min(3)
+  title: z.string().min(3).max(120)
 })
 
 const idParamSchema = z.object({
@@ -13,22 +13,34 @@ const idParamSchema = z.object({
 
 const INGEST_BASE = 'rtmp://localhost/live'
 
-export async function registerStreamRoutes(app: FastifyInstance): Promise<void> {
-  app.get('/streams', async () => {
-    const res = await pool.query('select id, title, status, ingest_url, stream_key, user_id from streams order by created_at desc')
-    return { streams: res.rows }
+export async function registerStreamRoutes (app: FastifyInstance): Promise<void> {
+  app.get('/streams', async (request: FastifyRequest) => {
+    const userId = (request as any).user?.sub ?? null
+    const res = await pool.query(
+      'SELECT id, title, status, ingest_url, stream_key, user_id, created_at FROM streams ORDER BY created_at DESC'
+    )
+    const streams = res.rows.map((s: Record<string, unknown>) => ({
+      id: s.id,
+      title: s.title,
+      status: s.status,
+      ingest_url: s.user_id === userId ? s.ingest_url : null,
+      stream_key: s.user_id === userId ? s.stream_key : null,
+      user_id: s.user_id,
+      created_at: s.created_at
+    }))
+    return { streams }
   })
 
   app.post('/streams', { preHandler: [app.authenticate] }, async (request, reply) => {
     const parsed = createStreamSchema.safeParse(request.body)
     if (!parsed.success) {
-      return reply.code(400).send({ error: parsed.error.flatten() })
+      return await reply.code(400).send({ error: parsed.error.flatten() })
     }
     const { title } = parsed.data
     const key = generateStreamKey()
     const ingestUrl = `${INGEST_BASE}/${request.user.sub}`
     const res = await pool.query(
-      'insert into streams (user_id, title, status, ingest_url, stream_key) values ($1, $2, $3, $4, $5) returning *',
+      'INSERT INTO streams (user_id, title, status, ingest_url, stream_key) VALUES ($1, $2, $3, $4, $5) RETURNING *',
       [request.user.sub, title, 'offline', ingestUrl, key]
     )
     return { stream: res.rows[0] }
@@ -36,16 +48,18 @@ export async function registerStreamRoutes(app: FastifyInstance): Promise<void> 
 
   app.post('/streams/:id/start', { preHandler: [app.authenticate] }, async (request, reply) => {
     const params = idParamSchema.safeParse(request.params)
-    if (!params.success) return reply.code(400).send({ error: params.error.flatten() })
-    const stream = await pool.query('select * from streams where id=$1', [params.data.id])
-    if (stream.rowCount === 0) return reply.code(404).send({ error: 'Stream not found' })
+    if (!params.success) return await reply.code(400).send({ error: params.error.flatten() })
+
+    const stream = await pool.query('SELECT * FROM streams WHERE id=$1', [params.data.id])
+    if (stream.rowCount === 0) return await reply.code(404).send({ error: 'Stream not found' })
+
     const record = stream.rows[0]
     if (record.user_id !== request.user.sub && request.user.role !== 'admin') {
-      return reply.code(403).send({ error: 'Forbidden' })
+      return await reply.code(403).send({ error: 'Forbidden' })
     }
     const newKey = generateStreamKey()
     const updated = await pool.query(
-      'update streams set status=$1, stream_key=$2, updated_at=now() where id=$3 returning *',
+      'UPDATE streams SET status=$1, stream_key=$2, updated_at=now() WHERE id=$3 RETURNING *',
       ['live', newKey, params.data.id]
     )
     return { stream: updated.rows[0] }
@@ -53,17 +67,34 @@ export async function registerStreamRoutes(app: FastifyInstance): Promise<void> 
 
   app.post('/streams/:id/stop', { preHandler: [app.authenticate] }, async (request, reply) => {
     const params = idParamSchema.safeParse(request.params)
-    if (!params.success) return reply.code(400).send({ error: params.error.flatten() })
-    const stream = await pool.query('select * from streams where id=$1', [params.data.id])
-    if (stream.rowCount === 0) return reply.code(404).send({ error: 'Stream not found' })
+    if (!params.success) return await reply.code(400).send({ error: params.error.flatten() })
+
+    const stream = await pool.query('SELECT * FROM streams WHERE id=$1', [params.data.id])
+    if (stream.rowCount === 0) return await reply.code(404).send({ error: 'Stream not found' })
+
     const record = stream.rows[0]
     if (record.user_id !== request.user.sub && request.user.role !== 'admin') {
-      return reply.code(403).send({ error: 'Forbidden' })
+      return await reply.code(403).send({ error: 'Forbidden' })
     }
     const updated = await pool.query(
-      'update streams set status=$1, updated_at=now() where id=$2 returning *',
+      'UPDATE streams SET status=$1, updated_at=now() WHERE id=$2 RETURNING *',
       ['offline', params.data.id]
     )
     return { stream: updated.rows[0] }
+  })
+
+  app.delete('/streams/:id', { preHandler: [app.authenticate] }, async (request, reply) => {
+    const params = idParamSchema.safeParse(request.params)
+    if (!params.success) return await reply.code(400).send({ error: params.error.flatten() })
+
+    const stream = await pool.query('SELECT user_id FROM streams WHERE id=$1', [params.data.id])
+    if (stream.rowCount === 0) return await reply.code(404).send({ error: 'Stream not found' })
+
+    const record = stream.rows[0]
+    if (record.user_id !== request.user.sub && request.user.role !== 'admin') {
+      return await reply.code(403).send({ error: 'Forbidden' })
+    }
+    await pool.query('DELETE FROM streams WHERE id=$1', [params.data.id])
+    return await reply.send({ ok: true })
   })
 }
