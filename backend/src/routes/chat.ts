@@ -5,8 +5,8 @@ type Client = { socket: websocket.SocketStream, userId: string | null }
 const rooms = new Map<string, Set<Client>>()
 
 export async function registerChatRoutes(app: FastifyInstance): Promise<void> {
-  if (!app.hasDecorator('ws')) {
-    app.register(websocket)
+  if (!app.hasRequestDecorator('ws')) {
+    await app.register(websocket)
   }
 
   app.get('/chat/:streamId', { websocket: true }, (connection, req) => {
