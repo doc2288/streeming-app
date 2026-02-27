@@ -41,9 +41,16 @@ Copy `backend/.env.example` to `backend/.env` and set `DATABASE_URL=postgresql:/
 
 ### Testing and linting
 
-- **Tests**: `pnpm test` runs vitest across backend and web. Note: the web vitest config defaults to watch mode; use `pnpm --filter web test -- --run` for non-interactive CI-style execution.
-- **Lint**: `pnpm lint` runs ESLint across backend and web. Both have pre-existing lint errors in the committed code.
+- **Tests**: `pnpm test` runs vitest across backend and web. Both are configured for `vitest run` (non-watch) mode.
+- **Lint**: `pnpm lint` runs ESLint across backend and web. Both have pre-existing lint warnings from the strict `standard-with-typescript` config.
 - See `package.json` scripts at root and in each workspace for all available commands.
+
+### API endpoints
+
+See `backend/README.md` for the full route list. Key additions from the audit:
+- `POST /auth/logout` — invalidates refresh token
+- `DELETE /streams/:id` — delete stream (owner/admin only)
+- `GET /health` — now returns `{ status, db, uptime }`
 
 ### Known gotchas
 
