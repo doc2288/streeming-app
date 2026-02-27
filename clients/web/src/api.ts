@@ -60,11 +60,13 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const original = error.config
+    const skipRefreshUrls = ['/auth/login', '/auth/register', '/auth/refresh']
+    const shouldSkipRefresh = skipRefreshUrls.some(url => original.url?.includes(url))
     if (
       error.response?.status === 401 &&
       original != null &&
       !original._retry &&
-      !original.url?.includes('/auth/')
+      !shouldSkipRefresh
     ) {
       original._retry = true
       const refresh = getRefreshToken()

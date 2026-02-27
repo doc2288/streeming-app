@@ -325,9 +325,9 @@ class _AuthPageState extends State<AuthPage> {
           : await apiService.login(_emailC.text.trim(), _passC.text);
       widget.onSuccess(user);
     } catch (e) {
-      setState(() => _error = '$e');
+      if (mounted) setState(() => _error = '$e');
     } finally {
-      setState(() => _loading = false);
+      if (mounted) setState(() => _loading = false);
     }
   }
 

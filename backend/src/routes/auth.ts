@@ -148,6 +148,7 @@ export async function registerAuthRoutes (app: FastifyInstance): Promise<void> {
   })
 
   app.get('/auth/me', { preHandler: [app.authenticate] }, async (request) => {
-    return { user: request.user }
+    const payload = request.user as { sub: string, email: string, role: string }
+    return { user: { id: payload.sub, email: payload.email, role: payload.role } }
   })
 }

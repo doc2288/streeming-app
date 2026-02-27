@@ -66,7 +66,7 @@ export function StreamGrid ({ streams, onWatch, searchQuery }: Props): JSX.Eleme
           </div>
         ) : (
           <div className="stream-grid">
-            {(searchQuery.length > 0 ? filtered : offline).map((s) => (
+            {offline.map((s) => (
               <StreamCard key={s.id} stream={s} onWatch={onWatch} />
             ))}
           </div>

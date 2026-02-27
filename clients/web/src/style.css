@@ -603,7 +603,7 @@ body {
   padding: 10px 24px; border-radius: var(--radius-lg);
   font-size: 0.88rem; font-weight: 500; z-index: 2000;
   animation: toastIn 0.3s ease;
-  pointer-events: none;
+  pointer-events: auto;
 }
 .toast.ok { background: #14532d; color: #bbf7d0; border: 1px solid #22c55e; }
 .toast.err { background: #450a0a; color: #fecaca; border: 1px solid var(--danger); }

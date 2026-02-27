@@ -27,6 +27,7 @@ export function Chat ({ streamId }: Props): JSX.Element {
   const endRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
+    setMessages([])
     const ws = new WebSocket(`${getWsBaseUrl()}/chat/${streamId}`)
     socketRef.current = ws
     ws.onopen = () => { setConnected(true) }
