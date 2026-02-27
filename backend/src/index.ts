@@ -12,7 +12,7 @@ import { registerChatRoutes } from './routes/chat'
 
 declare module 'fastify' {
   interface FastifyInstance {
-    authenticate: any
+    authenticate: (request: FastifyRequest, reply: FastifyReply) => Promise<void>
   }
   interface FastifyRequest {
     user: {
@@ -25,7 +25,7 @@ declare module 'fastify' {
   }
 }
 
-async function bootstrap(): Promise<void> {
+async function bootstrap (): Promise<void> {
   const app = Fastify({ logger: true })
 
   await app.register(cors, { origin: env.CORS_ORIGIN ?? true })
@@ -37,8 +37,16 @@ async function bootstrap(): Promise<void> {
     try {
       await request.jwtVerify()
     } catch (err) {
-      reply.send(err)
+      return await reply.code(401).send({ error: 'Unauthorized' })
     }
+  })
+
+  app.setErrorHandler(async (error, request, reply) => {
+    request.log.error(error)
+    const statusCode = error.statusCode ?? 500
+    return await reply.code(statusCode).send({
+      error: statusCode >= 500 ? 'Internal Server Error' : error.message
+    })
   })
 
   await migrate()
@@ -50,7 +58,7 @@ async function bootstrap(): Promise<void> {
 
   const port = env.PORT
   app.listen({ port, host: '0.0.0.0' }, (err, address) => {
-    if (err) {
+    if (err != null) {
       app.log.error(err)
       process.exit(1)
     }
@@ -58,13 +66,13 @@ async function bootstrap(): Promise<void> {
   })
 
   const signals: NodeJS.Signals[] = ['SIGINT', 'SIGTERM']
-  signals.forEach((sig) => {
+  for (const sig of signals) {
     process.on(sig, async () => {
       await app.close()
       await pool.end()
       process.exit(0)
     })
-  })
+  }
 }
 
 void bootstrap()
