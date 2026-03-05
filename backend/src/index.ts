@@ -12,6 +12,7 @@ import { registerHealthRoutes } from './routes/health'
 import { registerAuthRoutes } from './routes/auth'
 import { registerStreamRoutes } from './routes/streams'
 import { registerChatRoutes } from './routes/chat'
+import { registerWebhookRoutes } from './routes/webhooks'
 
 declare module 'fastify' {
   interface FastifyInstance {
@@ -37,6 +38,23 @@ async function bootstrap (): Promise<void> {
   await app.register(websocket)
   await app.register(multipart, { limits: { fileSize: 5 * 1024 * 1024 } })
   await app.register(fstatic, { root: resolve(process.cwd(), 'uploads'), prefix: '/uploads/', decorateReply: false })
+  app.addContentTypeParser(
+    'application/x-www-form-urlencoded',
+    { parseAs: 'string' },
+    (request, body, done) => {
+      try {
+        const parsedBody: Record<string, string> = {}
+        const params = new URLSearchParams(body as string)
+        for (const [key, value] of params.entries()) {
+          parsedBody[key] = value
+        }
+        done(null, parsedBody)
+      } catch (error) {
+        request.log.error(error)
+        done(error as Error, undefined)
+      }
+    }
+  )
 
   app.decorate('authenticate', async (request: any, reply: any) => {
     try {
@@ -60,6 +78,7 @@ async function bootstrap (): Promise<void> {
   await registerAuthRoutes(app)
   await registerStreamRoutes(app)
   await registerChatRoutes(app)
+  await registerWebhookRoutes(app)
 
   const port = env.PORT
   app.listen({ port, host: '0.0.0.0' }, (err, address) => {
