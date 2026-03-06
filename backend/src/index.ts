@@ -1,8 +1,11 @@
+import { resolve } from 'path'
 import Fastify from 'fastify'
 import cors from '@fastify/cors'
 import jwt from '@fastify/jwt'
 import rateLimit from '@fastify/rate-limit'
 import websocket from '@fastify/websocket'
+import multipart from '@fastify/multipart'
+import fstatic from '@fastify/static'
 import { env } from './config/env'
 import { migrate, pool } from './db'
 import { registerHealthRoutes } from './routes/health'
@@ -33,6 +36,7 @@ async function bootstrap (): Promise<void> {
   await app.register(rateLimit, { max: 100, timeWindow: '1 minute' })
   await app.register(jwt, { secret: env.JWT_SECRET })
   await app.register(websocket)
+<<<<<<< HEAD
   app.addContentTypeParser(
     'application/x-www-form-urlencoded',
     { parseAs: 'string' },
@@ -50,6 +54,10 @@ async function bootstrap (): Promise<void> {
       }
     }
   )
+=======
+  await app.register(multipart, { limits: { fileSize: 5 * 1024 * 1024 } })
+  await app.register(fstatic, { root: resolve(process.cwd(), 'uploads'), prefix: '/uploads/', decorateReply: false })
+>>>>>>> 294a6af (feat: thumbnail upload, rich chat (emoji/timestamps/system msgs), design polish)
 
   app.decorate('authenticate', async (request: any, reply: any) => {
     try {

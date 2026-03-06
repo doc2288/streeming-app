@@ -57,10 +57,10 @@ export async function migrate (): Promise<void> {
       CREATE INDEX IF NOT EXISTS idx_streams_status ON streams(status);
       CREATE INDEX IF NOT EXISTS idx_chat_bans_stream_user ON chat_bans(stream_id, user_id);
 
-      -- migration: add category and language columns
       DO $$ BEGIN
         ALTER TABLE streams ADD COLUMN IF NOT EXISTS category text DEFAULT 'other';
         ALTER TABLE streams ADD COLUMN IF NOT EXISTS language text DEFAULT 'ua';
+        ALTER TABLE streams ADD COLUMN IF NOT EXISTS thumbnail_url text;
       EXCEPTION WHEN OTHERS THEN NULL;
       END $$;
     `)

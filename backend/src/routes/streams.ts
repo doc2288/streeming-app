@@ -1,3 +1,8 @@
+import { resolve } from 'path'
+import { createWriteStream } from 'fs'
+import { mkdir } from 'fs/promises'
+import { pipeline } from 'stream/promises'
+import { randomBytes } from 'crypto'
 import type { FastifyInstance, FastifyRequest } from 'fastify'
 import { z } from 'zod'
 import { pool } from '../db'
@@ -24,7 +29,7 @@ export async function registerStreamRoutes (app: FastifyInstance): Promise<void>
       // anonymous — no token or invalid token
     }
     const res = await pool.query(
-      'SELECT id, title, description, category, language, status, ingest_url, stream_key, user_id, created_at FROM streams ORDER BY created_at DESC'
+      'SELECT id, title, description, category, language, status, ingest_url, stream_key, thumbnail_url, user_id, created_at FROM streams ORDER BY created_at DESC'
     )
     const streams = res.rows.map((s: Record<string, unknown>) => ({
       id: s.id,
@@ -33,6 +38,7 @@ export async function registerStreamRoutes (app: FastifyInstance): Promise<void>
       category: s.category ?? 'other',
       language: s.language ?? 'ua',
       status: s.status,
+      thumbnail_url: s.thumbnail_url ?? null,
       ingest_url: s.user_id === userId ? s.ingest_url : null,
       stream_key: s.user_id === userId ? s.id : null,
       user_id: s.user_id,
@@ -118,5 +124,35 @@ export async function registerStreamRoutes (app: FastifyInstance): Promise<void>
     }
     await pool.query('DELETE FROM streams WHERE id=$1', [params.data.id])
     return await reply.send({ ok: true })
+  })
+
+  app.post('/streams/:id/thumbnail', { preHandler: [app.authenticate] }, async (request, reply) => {
+    const params = idParamSchema.safeParse(request.params)
+    if (!params.success) return await reply.code(400).send({ error: params.error.flatten() })
+
+    const stream = await pool.query('SELECT user_id FROM streams WHERE id=$1', [params.data.id])
+    if (stream.rowCount === 0) return await reply.code(404).send({ error: 'Stream not found' })
+    if (stream.rows[0].user_id !== request.user.sub && request.user.role !== 'admin') {
+      return await reply.code(403).send({ error: 'Forbidden' })
+    }
+
+    const file = await request.file()
+    if (file == null) return await reply.code(400).send({ error: 'No file uploaded' })
+
+    const ext = file.filename.split('.').pop() ?? 'jpg'
+    if (!['jpg', 'jpeg', 'png', 'webp', 'gif'].includes(ext.toLowerCase())) {
+      return await reply.code(400).send({ error: 'Invalid file type. Use jpg, png, webp, or gif' })
+    }
+
+    const dir = resolve(process.cwd(), 'uploads')
+    await mkdir(dir, { recursive: true })
+    const fname = `${params.data.id}-${randomBytes(4).toString('hex')}.${ext}`
+    const fpath = resolve(dir, fname)
+
+    await pipeline(file.file, createWriteStream(fpath))
+
+    const thumbUrl = `/uploads/${fname}`
+    await pool.query('UPDATE streams SET thumbnail_url=$1, updated_at=now() WHERE id=$2', [thumbUrl, params.data.id])
+    return { thumbnail_url: thumbUrl }
   })
 }

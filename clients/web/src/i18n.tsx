@@ -105,6 +105,19 @@ const translations = {
   cat_talkshow: { ua: 'Ток-шоу', en: 'Talk Show', ru: 'Ток-шоу' },
   cat_other: { ua: 'Інше', en: 'Other', ru: 'Другое' },
 
+  // ---- Thumbnail ----
+  thumbnail: { ua: 'Превʼю стріму', en: 'Stream Thumbnail', ru: 'Превью стрима' },
+  thumbnailHint: { ua: 'JPG, PNG або WebP, до 5 МБ', en: 'JPG, PNG or WebP, up to 5 MB', ru: 'JPG, PNG или WebP, до 5 МБ' },
+  uploadThumbnail: { ua: 'Завантажити превʼю', en: 'Upload Thumbnail', ru: 'Загрузить превью' },
+  changeThumbnail: { ua: 'Змінити', en: 'Change', ru: 'Изменить' },
+  thumbnailUploaded: { ua: 'Превʼю завантажено!', en: 'Thumbnail uploaded!', ru: 'Превью загружено!' },
+
+  // ---- Chat features ----
+  chatViewers: { ua: 'глядачів', en: 'viewers', ru: 'зрителей' },
+  chatRules: { ua: 'Правила чату', en: 'Chat Rules', ru: 'Правила чата' },
+  chatRulesText: { ua: 'Будьте ввічливі. Без спаму та реклами.', en: 'Be respectful. No spam or ads.', ru: 'Будьте вежливы. Без спама и рекламы.' },
+  chatJoined: { ua: 'приєднався до чату', en: 'joined the chat', ru: 'присоединился к чату' },
+
   // ---- Language names ----
   lang_ua: { ua: 'Українська', en: 'Ukrainian', ru: 'Украинский' },
   lang_en: { ua: 'English', en: 'English', ru: 'English' },
