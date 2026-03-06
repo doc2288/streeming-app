@@ -4,7 +4,10 @@ import { pool } from '../db'
 import { env } from '../config/env'
 
 const createStreamSchema = z.object({
-  title: z.string().min(3).max(120)
+  title: z.string().min(3).max(120),
+  description: z.string().max(500).optional().default(''),
+  category: z.string().max(50).optional().default('other'),
+  language: z.string().max(10).optional().default('ua')
 })
 
 const idParamSchema = z.object({
@@ -21,11 +24,14 @@ export async function registerStreamRoutes (app: FastifyInstance): Promise<void>
       // anonymous — no token or invalid token
     }
     const res = await pool.query(
-      'SELECT id, title, status, ingest_url, stream_key, user_id, created_at FROM streams ORDER BY created_at DESC'
+      'SELECT id, title, description, category, language, status, ingest_url, stream_key, user_id, created_at FROM streams ORDER BY created_at DESC'
     )
     const streams = res.rows.map((s: Record<string, unknown>) => ({
       id: s.id,
       title: s.title,
+      description: s.description ?? '',
+      category: s.category ?? 'other',
+      language: s.language ?? 'ua',
       status: s.status,
       ingest_url: s.user_id === userId ? s.ingest_url : null,
       stream_key: s.user_id === userId ? s.id : null,
@@ -40,10 +46,19 @@ export async function registerStreamRoutes (app: FastifyInstance): Promise<void>
     if (!parsed.success) {
       return await reply.code(400).send({ error: parsed.error.flatten() })
     }
+<<<<<<< HEAD
     const { title } = parsed.data
     const created = await pool.query(
       'INSERT INTO streams (user_id, title, status) VALUES ($1, $2, $3) RETURNING *',
       [request.user.sub, title, 'offline']
+=======
+    const { title, description, category, language } = parsed.data
+    const key = generateStreamKey()
+    const ingestUrl = `${INGEST_BASE}/${request.user.sub}`
+    const res = await pool.query(
+      'INSERT INTO streams (user_id, title, description, category, language, status, ingest_url, stream_key) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
+      [request.user.sub, title, description, category, language, 'offline', ingestUrl, key]
+>>>>>>> 161fe02 (feat: i18n (UA/EN/RU), improved stream creation, Dashboard for stream keys)
     )
     const streamId = created.rows[0].id as string
     const ingestUrl = `${env.RTMP_INGEST_BASE_URL}/${streamId}`
