@@ -10,7 +10,8 @@ import { Dashboard } from './components/Dashboard'
 
 interface Stream {
   id: string; title: string; description: string; category: string; language: string
-  status: string; ingest_url: string | null; stream_key: string | null; user_id: string; created_at?: string
+  status: string; ingest_url: string | null; stream_key: string | null; thumbnail_url: string | null
+  user_id: string; created_at?: string
 }
 interface UserInfo { id: string; email: string; role: string }
 
@@ -28,11 +29,12 @@ export default function App (): JSX.Element {
   const [toast, setToast] = useState<{ text: string; type: 'ok' | 'err' } | null>(null)
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  // Create form state
   const [newTitle, setNewTitle] = useState('')
   const [newDesc, setNewDesc] = useState('')
   const [newCat, setNewCat] = useState<Category>('gaming')
   const [newLang, setNewLang] = useState(lang)
+  const [newThumb, setNewThumb] = useState<File | null>(null)
+  const [thumbPreview, setThumbPreview] = useState<string | null>(null)
 
   const selected = streams.find(s => s.id === selectedId) ?? null
 
@@ -65,12 +67,25 @@ export default function App (): JSX.Element {
   const handleSelectStream = (id: string): void => { setSelectedId(id); setView('watch') }
   const handleDelete = (id: string): void => { setStreams(p => p.filter(s => s.id !== id)); setSelectedId(null); setView('home'); flash(t('streamDeleted')) }
 
-  const resetCreateForm = (): void => { setNewTitle(''); setNewDesc(''); setNewCat('gaming'); setNewLang(lang) }
+  const resetCreateForm = (): void => { setNewTitle(''); setNewDesc(''); setNewCat('gaming'); setNewLang(lang); setNewThumb(null); setThumbPreview(null) }
+
+  const handleThumbChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    const f = e.target.files?.[0]
+    if (f == null) return
+    setNewThumb(f)
+    setThumbPreview(URL.createObjectURL(f))
+  }
 
   const handleCreate = async (): Promise<void> => {
     if (newTitle.trim().length < 3) { flash(t('titleMin'), 'err'); return }
     try {
-      await api.post('/streams', { title: newTitle.trim(), description: newDesc.trim(), category: newCat, language: newLang })
+      const res = await api.post('/streams', { title: newTitle.trim(), description: newDesc.trim(), category: newCat, language: newLang })
+      const streamId = res.data.stream.id
+      if (newThumb != null) {
+        const fd = new FormData()
+        fd.append('file', newThumb)
+        await api.post(`/streams/${streamId}/thumbnail`, fd, { headers: { 'Content-Type': 'multipart/form-data' } })
+      }
       resetCreateForm(); setShowCreate(false); await fetchStreams()
       setShowCreatedSuccess(true)
     } catch { flash(t('createError'), 'err') }
@@ -132,6 +147,24 @@ export default function App (): JSX.Element {
                   <select value={newLang} onChange={(e) => { setNewLang(e.target.value as any) }}>
                     {STREAM_LANGUAGES.map(l => <option key={l} value={l}>{l === 'ua' ? '🇺🇦 Українська' : l === 'en' ? '🇬🇧 English' : '🇷🇺 Русский'}</option>)}
                   </select>
+                </div>
+              </div>
+              <div className="form-group">
+                <label>{t('thumbnail')}</label>
+                <div className="thumb-upload-area">
+                  {thumbPreview != null ? (
+                    <div className="thumb-preview">
+                      <img src={thumbPreview} alt="preview" />
+                      <button type="button" className="thumb-remove" onClick={() => { setNewThumb(null); setThumbPreview(null) }}>×</button>
+                    </div>
+                  ) : (
+                    <label className="thumb-dropzone">
+                      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><path d="M21 15l-5-5L5 21" /></svg>
+                      <span>{t('uploadThumbnail')}</span>
+                      <span className="thumb-hint">{t('thumbnailHint')}</span>
+                      <input type="file" accept="image/jpeg,image/png,image/webp,image/gif" onChange={handleThumbChange} hidden />
+                    </label>
+                  )}
                 </div>
               </div>
               <button type="submit" className="btn-primary btn-full">{t('create')}</button>
