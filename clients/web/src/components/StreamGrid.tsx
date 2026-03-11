@@ -2,6 +2,7 @@ import { StreamCard } from './StreamCard'
 import { useI18n } from '../i18n'
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 interface Stream {
   id: string
   title: string
@@ -20,10 +21,15 @@ interface Props {
 interface Stream { id: string; title: string; status: string; ingest_url: string | null; stream_key: string | null; user_id: string; category?: string }
 interface Props { streams: Stream[]; onWatch: (stream: Stream) => void; searchQuery: string }
 >>>>>>> 161fe02 (feat: i18n (UA/EN/RU), improved stream creation, Dashboard for stream keys)
+=======
+interface Stream { id: string; title: string; status: string; ingest_url: string | null; stream_key: string | null; user_id: string; category?: string; tags?: string[] }
+interface Props { streams: Stream[]; onWatch: (stream: Stream) => void; searchQuery: string; categoryFilter?: string | null }
+>>>>>>> 8852efb (fix: sidebar categories, tags/hashtags, chat auth + Twitch-style design)
 
-export function StreamGrid ({ streams, onWatch, searchQuery }: Props): JSX.Element {
+export function StreamGrid ({ streams, onWatch, searchQuery, categoryFilter }: Props): JSX.Element {
   const { t } = useI18n()
-  const filtered = searchQuery.length > 0 ? streams.filter(s => s.title.toLowerCase().includes(searchQuery.toLowerCase())) : streams
+  let filtered = searchQuery.length > 0 ? streams.filter(s => s.title.toLowerCase().includes(searchQuery.toLowerCase())) : streams
+  if (categoryFilter != null) filtered = filtered.filter(s => (s.category ?? 'other') === categoryFilter)
   const live = filtered.filter(s => s.status === 'live')
   const offline = filtered.filter(s => s.status !== 'live')
 

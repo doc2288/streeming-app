@@ -12,6 +12,7 @@ import { BrowsePage } from './components/BrowsePage'
 
 interface Stream {
 <<<<<<< HEAD
+<<<<<<< HEAD
   id: string
   title: string
   status: string
@@ -30,6 +31,9 @@ interface UserInfo {
   status: string; ingest_url: string | null; stream_key: string | null; user_id: string; created_at?: string
 >>>>>>> 161fe02 (feat: i18n (UA/EN/RU), improved stream creation, Dashboard for stream keys)
 =======
+=======
+  id: string; title: string; description: string; category: string; language: string; tags: string[]
+>>>>>>> 8852efb (fix: sidebar categories, tags/hashtags, chat auth + Twitch-style design)
   status: string; ingest_url: string | null; stream_key: string | null; thumbnail_url: string | null
   user_id: string; created_at?: string
 >>>>>>> 294a6af (feat: thumbnail upload, rich chat (emoji/timestamps/system msgs), design polish)
@@ -56,6 +60,8 @@ export default function App (): JSX.Element {
   const [newLang, setNewLang] = useState(lang)
   const [newThumb, setNewThumb] = useState<File | null>(null)
   const [thumbPreview, setThumbPreview] = useState<string | null>(null)
+  const [newTags, setNewTags] = useState('')
+  const [activeCategory, setActiveCategory] = useState<string | null>(null)
 
   const selected = streams.find(s => s.id === selectedId) ?? null
 
@@ -98,7 +104,7 @@ export default function App (): JSX.Element {
   const handleSelectStream = (id: string): void => { setSelectedId(id); setView('watch') }
   const handleDelete = (id: string): void => { setStreams(p => p.filter(s => s.id !== id)); setSelectedId(null); setView('home'); flash(t('streamDeleted')) }
 
-  const resetCreateForm = (): void => { setNewTitle(''); setNewDesc(''); setNewCat('gaming'); setNewLang(lang); setNewThumb(null); setThumbPreview(null) }
+  const resetCreateForm = (): void => { setNewTitle(''); setNewDesc(''); setNewCat('gaming'); setNewLang(lang); setNewThumb(null); setThumbPreview(null); setNewTags('') }
 
   const handleThumbChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const f = e.target.files?.[0]
@@ -110,7 +116,8 @@ export default function App (): JSX.Element {
   const handleCreate = async (): Promise<void> => {
     if (newTitle.trim().length < 3) { flash(t('titleMin'), 'err'); return }
     try {
-      const res = await api.post('/streams', { title: newTitle.trim(), description: newDesc.trim(), category: newCat, language: newLang })
+      const parsedTags = newTags.split(/[,\s]+/).map(t => t.replace(/^#/, '').trim()).filter(t => t.length > 0).slice(0, 5)
+      const res = await api.post('/streams', { title: newTitle.trim(), description: newDesc.trim(), category: newCat, language: newLang, tags: parsedTags })
       const streamId = res.data.stream.id
       if (newThumb != null) {
         const fd = new FormData()
@@ -127,7 +134,7 @@ export default function App (): JSX.Element {
       <TopBar user={user} onLogin={() => { setShowAuth(true) }} onLogout={handleLogout} onSearch={setSearchQuery} onNavigateHome={navigateHome} onNavigateDashboard={() => { setView('dashboard'); setSelectedId(null) }} sidebarOpen={sidebarOpen} onToggleSidebar={() => { setSidebarOpen(!sidebarOpen) }} searchValue={searchQuery} />
 
       <div className="app-body">
-        <Sidebar streams={streams} open={sidebarOpen} currentView={view} onNavigate={(v) => { setView(v); setSelectedId(null); setSearchQuery('') }} onSelectStream={handleSelectStream} isLoggedIn={user != null} />
+        <Sidebar streams={streams} open={sidebarOpen} currentView={view} onNavigate={(v) => { setView(v); setSelectedId(null); setSearchQuery('') }} onSelectStream={handleSelectStream} onFilterCategory={setActiveCategory} activeCategory={activeCategory} />
 
         <main className={`main-content ${sidebarOpen ? '' : 'expanded'}`}>
           {view === 'watch' && selected != null ? (
@@ -137,7 +144,7 @@ export default function App (): JSX.Element {
           ) : view === 'browse' ? (
             <BrowsePage streams={streams} onWatch={handleWatch} />
           ) : (
-            <StreamGrid streams={streams} onWatch={handleWatch} searchQuery={searchQuery} />
+            <StreamGrid streams={streams} onWatch={handleWatch} searchQuery={searchQuery} categoryFilter={activeCategory} />
           )}
         </main>
       </div>
@@ -171,6 +178,11 @@ export default function App (): JSX.Element {
                     {STREAM_LANGUAGES.map(l => <option key={l} value={l}>{l === 'ua' ? '🇺🇦 Українська' : l === 'en' ? '🇬🇧 English' : '🇷🇺 Русский'}</option>)}
                   </select>
                 </div>
+              </div>
+              <div className="form-group">
+                <label>Теги / Hashtags</label>
+                <input placeholder="#fps #ranked #competitive" value={newTags} onChange={(e) => { setNewTags(e.target.value) }} maxLength={100} />
+                <span className="form-hint">До 5 тегів через кому або пробіл</span>
               </div>
               <div className="form-group">
                 <label>{t('thumbnail')}</label>
