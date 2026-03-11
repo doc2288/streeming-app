@@ -12,7 +12,8 @@ const createStreamSchema = z.object({
   title: z.string().min(3).max(120),
   description: z.string().max(500).optional().default(''),
   category: z.string().max(50).optional().default('other'),
-  language: z.string().max(10).optional().default('ua')
+  language: z.string().max(10).optional().default('ua'),
+  tags: z.array(z.string().max(30)).max(5).optional().default([])
 })
 
 const idParamSchema = z.object({
@@ -31,7 +32,7 @@ export async function registerStreamRoutes (app: FastifyInstance): Promise<void>
       // anonymous — no token or invalid token
     }
     const res = await pool.query(
-      'SELECT id, title, description, category, language, status, ingest_url, stream_key, thumbnail_url, user_id, created_at FROM streams ORDER BY created_at DESC'
+      'SELECT id, title, description, category, language, tags, status, ingest_url, stream_key, thumbnail_url, user_id, created_at FROM streams ORDER BY created_at DESC'
     )
     const streams = res.rows.map((s: Record<string, unknown>) => ({
       id: s.id,
@@ -39,6 +40,7 @@ export async function registerStreamRoutes (app: FastifyInstance): Promise<void>
       description: s.description ?? '',
       category: s.category ?? 'other',
       language: s.language ?? 'ua',
+      tags: typeof s.tags === 'string' && s.tags !== '' ? (s.tags as string).split(',') : [],
       status: s.status,
       thumbnail_url: s.thumbnail_url ?? null,
       ingest_url: s.user_id === userId ? s.ingest_url : null,
@@ -54,12 +56,13 @@ export async function registerStreamRoutes (app: FastifyInstance): Promise<void>
     if (!parsed.success) {
       return await reply.code(400).send({ error: parsed.error.flatten() })
     }
-    const { title, description, category, language } = parsed.data
+    const { title, description, category, language, tags } = parsed.data
     const key = generateStreamKey()
     const ingestUrl = `${INGEST_BASE}/${request.user.sub}`
+    const tagsStr = tags.join(',')
     const res = await pool.query(
-      'INSERT INTO streams (user_id, title, description, category, language, status, ingest_url, stream_key) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
-      [request.user.sub, title, description, category, language, 'offline', ingestUrl, key]
+      'INSERT INTO streams (user_id, title, description, category, language, tags, status, ingest_url, stream_key) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *',
+      [request.user.sub, title, description, category, language, tagsStr, 'offline', ingestUrl, key]
     )
     return { stream: res.rows[0] }
   })

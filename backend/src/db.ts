@@ -61,6 +61,7 @@ export async function migrate (): Promise<void> {
         ALTER TABLE streams ADD COLUMN IF NOT EXISTS category text DEFAULT 'other';
         ALTER TABLE streams ADD COLUMN IF NOT EXISTS language text DEFAULT 'ua';
         ALTER TABLE streams ADD COLUMN IF NOT EXISTS thumbnail_url text;
+        ALTER TABLE streams ADD COLUMN IF NOT EXISTS tags text DEFAULT '';
       EXCEPTION WHEN OTHERS THEN NULL;
       END $$;
     `)

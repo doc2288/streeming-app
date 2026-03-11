@@ -1,12 +1,13 @@
 import { StreamCard } from './StreamCard'
 import { useI18n } from '../i18n'
 
-interface Stream { id: string; title: string; status: string; ingest_url: string | null; stream_key: string | null; user_id: string; category?: string }
-interface Props { streams: Stream[]; onWatch: (stream: Stream) => void; searchQuery: string }
+interface Stream { id: string; title: string; status: string; ingest_url: string | null; stream_key: string | null; user_id: string; category?: string; tags?: string[] }
+interface Props { streams: Stream[]; onWatch: (stream: Stream) => void; searchQuery: string; categoryFilter?: string | null }
 
-export function StreamGrid ({ streams, onWatch, searchQuery }: Props): JSX.Element {
+export function StreamGrid ({ streams, onWatch, searchQuery, categoryFilter }: Props): JSX.Element {
   const { t } = useI18n()
-  const filtered = searchQuery.length > 0 ? streams.filter(s => s.title.toLowerCase().includes(searchQuery.toLowerCase())) : streams
+  let filtered = searchQuery.length > 0 ? streams.filter(s => s.title.toLowerCase().includes(searchQuery.toLowerCase())) : streams
+  if (categoryFilter != null) filtered = filtered.filter(s => (s.category ?? 'other') === categoryFilter)
   const live = filtered.filter(s => s.status === 'live')
   const offline = filtered.filter(s => s.status !== 'live')
 

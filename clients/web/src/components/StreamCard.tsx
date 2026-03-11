@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { useI18n, getCategoryKey, type Category } from '../i18n'
 import { getApiBaseUrl } from '../api'
 
-interface Stream { id: string; title: string; status: string; user_id: string; category?: string; thumbnail_url?: string | null }
+interface Stream { id: string; title: string; status: string; user_id: string; category?: string; thumbnail_url?: string | null; tags?: string[] }
 interface Props { stream: Stream; onWatch: (stream: Stream) => void }
 
 const COLORS = ['#9147ff', '#2563eb', '#e91916', '#00b894', '#e17055', '#6c5ce7', '#00cec9', '#fd79a8']
@@ -39,6 +39,7 @@ export function StreamCard ({ stream, onWatch }: Props): JSX.Element {
           <div className="card-tags">
             <span className={`tag ${isLive ? 'tag-live' : 'tag-offline'}`}>{isLive ? t('live') : t('offline')}</span>
             {cat != null && cat !== 'other' && <span className="tag tag-cat">{t(getCategoryKey(cat))}</span>}
+            {stream.tags != null && stream.tags.slice(0, 2).map((tag, i) => <span key={i} className="tag tag-hash">#{tag}</span>)}
           </div>
         </div>
       </div>
