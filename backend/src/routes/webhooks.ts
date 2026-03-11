@@ -33,3 +33,7 @@ export async function registerWebhookRoutes (app: FastifyInstance): Promise<void
     return await reply.send({ ok: true, updated })
   })
 }
+<<<<<<< HEAD
+=======
+
+>>>>>>> bcebf11 (refactor: unify stream ingest URL and key handling; add webhook routes for stream status updates)

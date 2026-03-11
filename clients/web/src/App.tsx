@@ -47,18 +47,37 @@ interface UserInfo {
 >>>>>>> 294a6af (feat: thumbnail upload, rich chat (emoji/timestamps/system msgs), design polish)
 }
 interface UserInfo { id: string; email: string; role: string }
+const WATCH_QUERY_KEY = 'watch'
+
+function getWatchIdFromUrl (): string | null {
+  try {
+    const params = new URLSearchParams(window.location.search)
+    const value = params.get(WATCH_QUERY_KEY)
+    return value != null && value.length > 0 ? value : null
+  } catch {
+    return null
+  }
+}
+
+function setWatchIdInUrl (streamId: string | null): void {
+  const url = new URL(window.location.href)
+  if (streamId == null) url.searchParams.delete(WATCH_QUERY_KEY)
+  else url.searchParams.set(WATCH_QUERY_KEY, streamId)
+  window.history.replaceState({}, '', `${url.pathname}${url.search}${url.hash}`)
+}
 
 export default function App (): JSX.Element {
   const { t, lang } = useI18n()
+  const initialWatchId = getWatchIdFromUrl()
   const [user, setUser] = useState<UserInfo | null>(null)
   const [streams, setStreams] = useState<Stream[]>([])
-  const [selectedId, setSelectedId] = useState<string | null>(null)
+  const [selectedId, setSelectedId] = useState<string | null>(initialWatchId)
   const [showAuth, setShowAuth] = useState(false)
   const [showCreate, setShowCreate] = useState(false)
   const [showCreatedSuccess, setShowCreatedSuccess] = useState(false)
   const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth > 1200)
   const [searchQuery, setSearchQuery] = useState('')
-  const [view, setView] = useState('home')
+  const [view, setView] = useState(initialWatchId != null ? 'watch' : 'home')
   const [toast, setToast] = useState<{ text: string; type: 'ok' | 'err' } | null>(null)
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -106,7 +125,12 @@ export default function App (): JSX.Element {
 
   useEffect(() => { void restoreSession(); void fetchStreams(); const t = setInterval(() => { void fetchStreams() }, 12000); return () => { clearInterval(t) } }, [fetchStreams, restoreSession])
 
-  const navigateHome = (): void => { setView('home'); setSelectedId(null); setSearchQuery('') }
+  useEffect(() => {
+    if (view === 'watch' && selectedId != null) setWatchIdInUrl(selectedId)
+    else setWatchIdInUrl(null)
+  }, [selectedId, view])
+
+  const navigateHome = (): void => { setView('home'); setSelectedId(null); setSearchQuery(''); setWatchIdInUrl(null) }
 
   const handleLogout = (): void => {
     const rt = localStorage.getItem('streeming_refresh_token')
@@ -114,9 +138,9 @@ export default function App (): JSX.Element {
     clearAuth(); setUser(null); setSelectedId(null); flash(t('loggedOut'))
   }
 
-  const handleWatch = (s: Stream): void => { setSelectedId(s.id); setView('watch') }
-  const handleSelectStream = (id: string): void => { setSelectedId(id); setView('watch') }
-  const handleDelete = (id: string): void => { setStreams(p => p.filter(s => s.id !== id)); setSelectedId(null); setView('home'); flash(t('streamDeleted')) }
+  const handleWatch = (s: Stream): void => { setSelectedId(s.id); setView('watch'); setWatchIdInUrl(s.id) }
+  const handleSelectStream = (id: string): void => { setSelectedId(id); setView('watch'); setWatchIdInUrl(id) }
+  const handleDelete = (id: string): void => { setStreams(p => p.filter(s => s.id !== id)); setSelectedId(null); setView('home'); setWatchIdInUrl(null); flash(t('streamDeleted')) }
 
   const resetCreateForm = (): void => { setNewTitle(''); setNewDesc(''); setNewCat('gaming'); setNewLang(lang); setNewThumb(null); setThumbPreview(null); setNewTags(''); setNewMaxQuality('1080p'); setNewDelay(0); setNewMature(false); setNewChatFollowers(false); setNewChatSlow(0); setShowAdvanced(false) }
 
@@ -149,14 +173,23 @@ export default function App (): JSX.Element {
 
   return (
     <div className="app">
-      <TopBar user={user} onLogin={() => { setShowAuth(true) }} onLogout={handleLogout} onSearch={setSearchQuery} onNavigateHome={navigateHome} onNavigateDashboard={() => { setView('dashboard'); setSelectedId(null) }} sidebarOpen={sidebarOpen} onToggleSidebar={() => { setSidebarOpen(!sidebarOpen) }} searchValue={searchQuery} />
+      <TopBar user={user} onLogin={() => { setShowAuth(true) }} onLogout={handleLogout} onSearch={setSearchQuery} onNavigateHome={navigateHome} onNavigateDashboard={() => { setView('dashboard'); setSelectedId(null); setWatchIdInUrl(null) }} sidebarOpen={sidebarOpen} onToggleSidebar={() => { setSidebarOpen(!sidebarOpen) }} searchValue={searchQuery} />
 
       <div className="app-body">
-        <Sidebar streams={streams} open={sidebarOpen} currentView={view} onNavigate={(v) => { setView(v); setSelectedId(null); setSearchQuery('') }} onSelectStream={handleSelectStream} onFilterCategory={setActiveCategory} activeCategory={activeCategory} />
+        <Sidebar streams={streams} open={sidebarOpen} currentView={view} onNavigate={(v) => { setView(v); setSelectedId(null); setSearchQuery(''); setWatchIdInUrl(null) }} onSelectStream={handleSelectStream} onFilterCategory={setActiveCategory} activeCategory={activeCategory} />
 
         <main className={`main-content ${sidebarOpen ? '' : 'expanded'}`}>
-          {view === 'watch' && selected != null ? (
-            <WatchPage stream={selected} user={user} onBack={navigateHome} onRefresh={() => { void fetchStreams() }} onDelete={handleDelete} />
+          {view === 'watch' ? (
+            selected != null
+              ? <WatchPage stream={selected} user={user} onBack={navigateHome} onRefresh={() => { void fetchStreams() }} onDelete={handleDelete} />
+              : (
+                <div className="stream-grid-page">
+                  <div className="empty-state">
+                    <h3>Завантаження стріму…</h3>
+                    <p>Перевіряємо дані трансляції</p>
+                  </div>
+                </div>
+              )
           ) : view === 'dashboard' && user != null ? (
             <Dashboard streams={streams} userId={user.id} onRefresh={() => { void fetchStreams() }} onDelete={handleDelete} flash={flash} onShowCreate={() => { setShowCreate(true) }} />
           ) : view === 'browse' ? (

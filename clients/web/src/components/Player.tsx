@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import Hls from 'hls.js'
+import type { ErrorData } from 'hls.js'
 
 interface Props {
   src: string
@@ -18,13 +19,17 @@ export function Player ({ src }: Props): JSX.Element {
       const hls = new Hls({
         enableWorker: true,
         lowLatencyMode: true,
+<<<<<<< HEAD
         xhrSetup: (xhr) => {
+=======
+        xhrSetup: (xhr: XMLHttpRequest) => {
+>>>>>>> bcebf11 (refactor: unify stream ingest URL and key handling; add webhook routes for stream status updates)
           xhr.setRequestHeader('ngrok-skip-browser-warning', 'true')
         }
       })
       hls.loadSource(src)
       hls.attachMedia(video)
-      hls.on(Hls.Events.ERROR, (_e, data) => {
+      hls.on(Hls.Events.ERROR, (_e: unknown, data: ErrorData) => {
         if (data.fatal) {
           setError(true)
           hls.destroy()

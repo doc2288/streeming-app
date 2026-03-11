@@ -57,7 +57,27 @@ async function bootstrap (): Promise<void> {
 =======
   await app.register(multipart, { limits: { fileSize: 5 * 1024 * 1024 } })
   await app.register(fstatic, { root: resolve(process.cwd(), 'uploads'), prefix: '/uploads/', decorateReply: false })
+<<<<<<< HEAD
 >>>>>>> 294a6af (feat: thumbnail upload, rich chat (emoji/timestamps/system msgs), design polish)
+=======
+  app.addContentTypeParser(
+    'application/x-www-form-urlencoded',
+    { parseAs: 'string' },
+    (request, body, done) => {
+      try {
+        const parsedBody: Record<string, string> = {}
+        const params = new URLSearchParams(body as string)
+        for (const [key, value] of params.entries()) {
+          parsedBody[key] = value
+        }
+        done(null, parsedBody)
+      } catch (error) {
+        request.log.error(error)
+        done(error as Error, undefined)
+      }
+    }
+  )
+>>>>>>> bcebf11 (refactor: unify stream ingest URL and key handling; add webhook routes for stream status updates)
 
   app.decorate('authenticate', async (request: any, reply: any) => {
     try {

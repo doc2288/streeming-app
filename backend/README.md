@@ -21,5 +21,9 @@
 
 ## Нотатки
 - Refresh-токени зберігаються в таблиці `refresh_tokens` (рандомний ключ + expires_at).
+<<<<<<< HEAD
 - Ingest базовий: `RTMP_INGEST_BASE_URL` (default `rtmp://127.0.0.1:1935/live`) + `/{streamId}`.
+=======
+- Ingest базовий: `RTMP_INGEST_BASE_URL` (default `rtmp://127.0.0.1:1935/live`) + `/{streamId}`. OBS stream key = `{streamId}`.
+>>>>>>> bcebf11 (refactor: unify stream ingest URL and key handling; add webhook routes for stream status updates)
 - Вебклієнт програє HLS за форматом `${VITE_MEDIA_SERVER_URL}/hls/{streamId}/index.m3u8`.

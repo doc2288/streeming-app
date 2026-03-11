@@ -8,7 +8,12 @@ interface Message {
   type?: 'msg' | 'system' | 'action' | 'highlight'
   reactions?: Reaction[]
 }
-interface Props { streamId: string; ownerUserId?: string }
+interface Props {
+  streamId: string
+  ownerUserId?: string
+  canPost?: boolean
+  postingDisabledReason?: string | null
+}
 
 const NAME_COLORS = ['#ff4500', '#b22222', '#ff69b4', '#1e90ff', '#9acd32', '#ff7f50', '#2e8b57', '#daa520', '#d2691e', '#5f9ea0', '#00ff7f', '#8a2be2', '#ff0000', '#0000ff', '#008000']
 function nameColor (id: string | null): string {
@@ -41,8 +46,9 @@ const EMOJI_SETS = [
 
 const RAIN_TRIGGERS = ['🎉', '🔥🔥🔥', 'POG', '🏆', '/hype']
 const RAIN_EMOJIS = ['🎉', '🎊', '⭐', '✨', '🔥', '💜', '🎮']
+const CHAT_HISTORY_PREFIX = 'streeming_chat_history:'
 
-export function Chat ({ streamId, ownerUserId }: Props): JSX.Element {
+export function Chat ({ streamId, ownerUserId, canPost = true, postingDisabledReason = null }: Props): JSX.Element {
   const { t } = useI18n()
   const [messages, setMessages] = useState<Message[]>([])
   const [text, setText] = useState('')
@@ -56,9 +62,14 @@ export function Chat ({ streamId, ownerUserId }: Props): JSX.Element {
   const endRef = useRef<HTMLDivElement | null>(null)
   const inputRef = useRef<HTMLInputElement | null>(null)
   const rainIdRef = useRef(0)
+  const rainingRef = useRef(false)
+  const rainTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const historyHydratedRef = useRef(false)
+  const storageKey = `${CHAT_HISTORY_PREFIX}${streamId}`
 
   const triggerRain = useCallback(() => {
-    if (raining) return
+    if (rainingRef.current) return
+    rainingRef.current = true
     setRaining(true)
     const particles = Array.from({ length: 30 }, (_, i) => ({
       id: ++rainIdRef.current,
@@ -67,11 +78,33 @@ export function Chat ({ streamId, ownerUserId }: Props): JSX.Element {
       delay: Math.random() * 1.5
     }))
     setRainParticles(particles)
-    setTimeout(() => { setRaining(false); setRainParticles([]) }, 3500)
-  }, [raining])
+    if (rainTimeoutRef.current != null) clearTimeout(rainTimeoutRef.current)
+    rainTimeoutRef.current = setTimeout(() => {
+      rainingRef.current = false
+      setRaining(false)
+      setRainParticles([])
+    }, 3500)
+  }, [])
 
   useEffect(() => {
-    setMessages([{ userId: null, userName: null, message: t('chatJoined'), ts: Date.now(), type: 'system' }])
+    historyHydratedRef.current = false
+    try {
+      const saved = localStorage.getItem(storageKey)
+      if (saved != null) {
+        const parsed = JSON.parse(saved) as Message[]
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setMessages(parsed)
+        } else {
+          setMessages([{ userId: null, userName: null, message: t('chatJoined'), ts: Date.now(), type: 'system' }])
+        }
+      } else {
+        setMessages([{ userId: null, userName: null, message: t('chatJoined'), ts: Date.now(), type: 'system' }])
+      }
+    } catch {
+      setMessages([{ userId: null, userName: null, message: t('chatJoined'), ts: Date.now(), type: 'system' }])
+    }
+    historyHydratedRef.current = true
+
     let wsUrl = `${getWsBaseUrl()}/chat/${streamId}`
     const token = getStoredToken()
     if (token != null) wsUrl += `?token=${encodeURIComponent(token)}`
@@ -96,12 +129,25 @@ export function Chat ({ streamId, ownerUserId }: Props): JSX.Element {
         setMessages(p => { const n = [...p, d]; return n.length > 300 ? n.slice(-300) : n })
       } catch {}
     }
-    return () => { ws.close() }
-  }, [streamId, t, triggerRain])
+    return () => {
+      ws.close()
+      if (rainTimeoutRef.current != null) clearTimeout(rainTimeoutRef.current)
+    }
+  }, [streamId, storageKey, t, triggerRain])
+
+  useEffect(() => {
+    if (!historyHydratedRef.current) return
+    try {
+      localStorage.setItem(storageKey, JSON.stringify(messages.slice(-300)))
+    } catch {
+      // ignore localStorage quota/private mode errors
+    }
+  }, [messages, storageKey])
 
   useEffect(() => { endRef.current?.scrollIntoView({ behavior: 'smooth' }) }, [messages])
 
   const send = (): void => {
+    if (!canPost) return
     let s = text.trim()
     if (s.length === 0 || s.length > 500) return
     const cmdKey = Object.keys(COMMANDS).find(k => s.toLowerCase() === k)
@@ -216,8 +262,16 @@ export function Chat ({ streamId, ownerUserId }: Props): JSX.Element {
         <button className="chat-emoji-toggle" onClick={() => { setShowEmoji(!showEmoji) }} title="Emoji">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><path d="M8 14s1.5 2 4 2 4-2 4-2" /><line x1="9" y1="9" x2="9.01" y2="9" /><line x1="15" y1="9" x2="15.01" y2="9" /></svg>
         </button>
-        <input ref={inputRef} value={text} onChange={(e) => { setText(e.target.value) }} onKeyDown={(e) => { if (e.key === 'Enter') send() }} placeholder={connected ? t('chatPlaceholder') : t('connecting')} maxLength={500} disabled={!connected} />
-        <button onClick={send} disabled={!connected || text.trim().length === 0} className="chat-send">
+        <input
+          ref={inputRef}
+          value={text}
+          onChange={(e) => { setText(e.target.value) }}
+          onKeyDown={(e) => { if (e.key === 'Enter') send() }}
+          placeholder={!canPost ? (postingDisabledReason ?? t('chatPlaceholder')) : (connected ? t('chatPlaceholder') : t('connecting'))}
+          maxLength={500}
+          disabled={!connected || !canPost}
+        />
+        <button onClick={send} disabled={!connected || !canPost || text.trim().length === 0} className="chat-send">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M2 21l21-9L2 3v7l15 2-15 2v7z" /></svg>
         </button>
       </div>

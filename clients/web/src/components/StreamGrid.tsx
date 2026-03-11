@@ -47,7 +47,7 @@ export function StreamGrid ({ streams, onWatch, searchQuery, categoryFilter }: P
         {[...live, ...offline].length === 0 ? (
           <div className="empty-state"><svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" opacity="0.3"><rect x="2" y="3" width="20" height="14" rx="2" /><path d="M8 21h8M12 17v4" /></svg><h3>{t('noStreams')}</h3><p>{t('createFirst')}</p></div>
         ) : (
-          <div className="stream-grid">{(searchQuery.length > 0 ? filtered : offline).map(s => <StreamCard key={s.id} stream={s} onWatch={onWatch} />)}</div>
+          <div className="stream-grid">{offline.map(s => <StreamCard key={s.id} stream={s} onWatch={onWatch} />)}</div>
         )}
       </section>
     </div>

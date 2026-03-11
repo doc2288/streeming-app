@@ -13,3 +13,7 @@ export function getMediaServerUrl (): string {
   const configured = import.meta.env.VITE_MEDIA_SERVER_URL
   return normalizeBaseUrl(configured ?? defaultMediaServerUrl)
 }
+<<<<<<< HEAD
+=======
+
+>>>>>>> bcebf11 (refactor: unify stream ingest URL and key handling; add webhook routes for stream status updates)

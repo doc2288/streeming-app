@@ -77,7 +77,7 @@ export async function registerStreamRoutes (app: FastifyInstance): Promise<void>
         status: s.status,
         thumbnail_url: s.thumbnail_url ?? null,
         ingest_url: s.user_id === userId ? s.ingest_url : null,
-        stream_key: s.user_id === userId ? s.stream_key : null,
+        stream_key: s.user_id === userId ? s.id : null,
         user_id: s.user_id,
         created_at: s.created_at
       }
@@ -105,6 +105,7 @@ export async function registerStreamRoutes (app: FastifyInstance): Promise<void>
 >>>>>>> 8852efb (fix: sidebar categories, tags/hashtags, chat auth + Twitch-style design)
 =======
     const { title, description, category, language, tags, max_quality, delay_seconds, mature_content, chat_followers_only, chat_slow_mode } = parsed.data
+<<<<<<< HEAD
 >>>>>>> 4d5eb70 (feat: stream quality/delay/settings for creators + quality picker for viewers)
     const key = generateStreamKey()
     const ingestUrl = `${INGEST_BASE}/${request.user.sub}`
@@ -124,6 +125,13 @@ export async function registerStreamRoutes (app: FastifyInstance): Promise<void>
       'INSERT INTO streams (user_id, title, description, category, language, tags, settings, status, ingest_url, stream_key) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *',
       [request.user.sub, title, description, category, language, tagsStr, settings, 'offline', ingestUrl, key]
 >>>>>>> 4d5eb70 (feat: stream quality/delay/settings for creators + quality picker for viewers)
+=======
+    const tagsStr = tags.join(',')
+    const settings = JSON.stringify({ max_quality, delay_seconds, mature_content, chat_followers_only, chat_slow_mode })
+    const created = await pool.query(
+      'INSERT INTO streams (user_id, title, description, category, language, tags, settings, status) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
+      [request.user.sub, title, description, category, language, tagsStr, settings, 'offline']
+>>>>>>> bcebf11 (refactor: unify stream ingest URL and key handling; add webhook routes for stream status updates)
     )
     const streamId = created.rows[0].id as string
     const ingestUrl = `${env.RTMP_INGEST_BASE_URL}/${streamId}`
