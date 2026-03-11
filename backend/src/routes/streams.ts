@@ -7,6 +7,7 @@ import type { FastifyInstance, FastifyRequest } from 'fastify'
 import { z } from 'zod'
 import { pool } from '../db'
 import { env } from '../config/env'
+import { generateStreamKey } from '../utils/streams'
 
 const QUALITIES = ['1080p', '720p', '480p', '360p', 'source'] as const
 const createStreamSchema = z.object({
@@ -77,7 +78,7 @@ export async function registerStreamRoutes (app: FastifyInstance): Promise<void>
         status: s.status,
         thumbnail_url: s.thumbnail_url ?? null,
         ingest_url: s.user_id === userId ? s.ingest_url : null,
-        stream_key: s.user_id === userId ? s.id : null,
+        stream_key: s.user_id === userId ? s.stream_key : null,
         user_id: s.user_id,
         created_at: s.created_at
       }
@@ -134,10 +135,11 @@ export async function registerStreamRoutes (app: FastifyInstance): Promise<void>
 >>>>>>> bcebf11 (refactor: unify stream ingest URL and key handling; add webhook routes for stream status updates)
     )
     const streamId = created.rows[0].id as string
+    const streamKey = generateStreamKey()
     const ingestUrl = `${env.RTMP_INGEST_BASE_URL}/${streamId}`
     const updated = await pool.query(
       'UPDATE streams SET ingest_url=$1, stream_key=$2, updated_at=now() WHERE id=$3 RETURNING *',
-      [ingestUrl, streamId, streamId]
+      [ingestUrl, streamKey, streamId]
     )
     return { stream: updated.rows[0] }
   })

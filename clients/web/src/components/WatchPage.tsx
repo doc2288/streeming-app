@@ -46,6 +46,7 @@ interface Stream {
   title: string
   status: string
   ingest_url: string | null
+  stream_key?: string | null
   user_id: string
   settings?: {
     chat_followers_only?: boolean
@@ -238,8 +239,8 @@ export function WatchPage ({ stream, user, onBack, onRefresh, onDelete }: Props)
             </div>
             <div className="ingest-row">
               <span className="ingest-label">Stream Key</span>
-              <code>{stream.id}</code>
-              <button className="btn-copy" onClick={() => { copyToClipboard(stream.id) }} title="Копіювати">
+              <code>{stream.stream_key ?? '—'}</code>
+              <button className="btn-copy" onClick={() => { copyToClipboard(stream.stream_key ?? null) }} title="Копіювати">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <rect x="9" y="9" width="13" height="13" rx="2" /><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
                 </svg>

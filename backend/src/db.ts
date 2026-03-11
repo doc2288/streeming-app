@@ -67,17 +67,18 @@ export async function migrate (): Promise<void> {
       END $$;
     `)
 
-    // Keep ingest/key semantics consistent for OBS and Nginx:
-    // ingest is always {RTMP_INGEST_BASE_URL}/{streamId}, key is streamId.
+    // Ensure publish keys are secrets and not equal to publicly visible stream IDs.
     await client.query(
       `UPDATE streams
-       SET ingest_url=$1 || '/' || id::text,
-           stream_key=id::text,
+       SET ingest_url=COALESCE(ingest_url, $1 || '/' || id::text),
+           stream_key=CASE
+             WHEN stream_key IS NULL OR stream_key = id::text THEN encode(gen_random_bytes(16), 'hex')
+             ELSE stream_key
+           END,
            updated_at=now()
        WHERE ingest_url IS NULL
-          OR ingest_url <> $1 || '/' || id::text
           OR stream_key IS NULL
-          OR stream_key <> id::text`,
+          OR stream_key = id::text`,
       [env.RTMP_INGEST_BASE_URL]
     )
   } finally {
