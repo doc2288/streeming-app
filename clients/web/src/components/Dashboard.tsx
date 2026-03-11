@@ -2,6 +2,10 @@ import { useState, useRef } from 'react'
 import { useI18n } from '../i18n'
 import { api, getApiBaseUrl } from '../api'
 
+interface StreamSettings {
+  max_quality: string; delay_seconds: number; mature_content: boolean
+  chat_followers_only: boolean; chat_slow_mode: number
+}
 interface Stream {
   id: string
   title: string
@@ -9,6 +13,7 @@ interface Stream {
   category: string
   language: string
   thumbnail_url: string | null
+  settings: StreamSettings
   status: string
   ingest_url: string | null
   stream_key: string | null
@@ -161,6 +166,17 @@ export function Dashboard ({ streams, userId, onRefresh, onDelete, flash, onShow
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="9" y="9" width="13" height="13" rx="2" /><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" /></svg>
                     </button>
                   )}
+                </div>
+              </div>
+
+              <div className="dash-settings">
+                <p className="dash-settings-title">⚙️ {t('settingsLabel')}</p>
+                <div className="dash-settings-grid">
+                  <div className="dash-setting"><span className="dash-setting-label">{t('maxQuality')}</span><span className="dash-setting-value">{s.settings.max_quality === 'source' ? t('source') : s.settings.max_quality}</span></div>
+                  <div className="dash-setting"><span className="dash-setting-label">{t('delay')}</span><span className="dash-setting-value">{s.settings.delay_seconds}s</span></div>
+                  <div className="dash-setting"><span className="dash-setting-label">{t('matureContent')}</span><span className="dash-setting-value">{s.settings.mature_content ? '✅' : '—'}</span></div>
+                  <div className="dash-setting"><span className="dash-setting-label">{t('chatFollowersOnly')}</span><span className="dash-setting-value">{s.settings.chat_followers_only ? '✅' : '—'}</span></div>
+                  <div className="dash-setting"><span className="dash-setting-label">{t('chatSlowMode')}</span><span className="dash-setting-value">{s.settings.chat_slow_mode > 0 ? `${s.settings.chat_slow_mode}s` : '—'}</span></div>
                 </div>
               </div>
             </div>

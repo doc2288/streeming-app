@@ -8,12 +8,26 @@ import { z } from 'zod'
 import { pool } from '../db'
 import { generateStreamKey } from '../utils/streams'
 
+const QUALITIES = ['1080p', '720p', '480p', '360p', 'source'] as const
 const createStreamSchema = z.object({
   title: z.string().min(3).max(120),
   description: z.string().max(500).optional().default(''),
   category: z.string().max(50).optional().default('other'),
   language: z.string().max(10).optional().default('ua'),
-  tags: z.array(z.string().max(30)).max(5).optional().default([])
+  tags: z.array(z.string().max(30)).max(5).optional().default([]),
+  max_quality: z.enum(QUALITIES).optional().default('1080p'),
+  delay_seconds: z.coerce.number().int().min(0).max(900).optional().default(0),
+  mature_content: z.boolean().optional().default(false),
+  chat_followers_only: z.boolean().optional().default(false),
+  chat_slow_mode: z.coerce.number().int().min(0).max(300).optional().default(0)
+})
+
+const updateSettingsSchema = z.object({
+  max_quality: z.enum(QUALITIES).optional(),
+  delay_seconds: z.coerce.number().int().min(0).max(900).optional(),
+  mature_content: z.boolean().optional(),
+  chat_followers_only: z.boolean().optional(),
+  chat_slow_mode: z.coerce.number().int().min(0).max(300).optional()
 })
 
 const idParamSchema = z.object({
@@ -32,22 +46,28 @@ export async function registerStreamRoutes (app: FastifyInstance): Promise<void>
       // anonymous — no token or invalid token
     }
     const res = await pool.query(
-      'SELECT id, title, description, category, language, tags, status, ingest_url, stream_key, thumbnail_url, user_id, created_at FROM streams ORDER BY created_at DESC'
+      'SELECT id, title, description, category, language, tags, settings, status, ingest_url, stream_key, thumbnail_url, user_id, created_at FROM streams ORDER BY created_at DESC'
     )
-    const streams = res.rows.map((s: Record<string, unknown>) => ({
-      id: s.id,
-      title: s.title,
-      description: s.description ?? '',
-      category: s.category ?? 'other',
-      language: s.language ?? 'ua',
-      tags: typeof s.tags === 'string' && s.tags !== '' ? (s.tags as string).split(',') : [],
-      status: s.status,
-      thumbnail_url: s.thumbnail_url ?? null,
-      ingest_url: s.user_id === userId ? s.ingest_url : null,
-      stream_key: s.user_id === userId ? s.stream_key : null,
-      user_id: s.user_id,
-      created_at: s.created_at
-    }))
+    const defaultSettings = { max_quality: '1080p', delay_seconds: 0, mature_content: false, chat_followers_only: false, chat_slow_mode: 0 }
+    const streams = res.rows.map((s: Record<string, unknown>) => {
+      let settings = defaultSettings
+      try { if (typeof s.settings === 'string') settings = { ...defaultSettings, ...JSON.parse(s.settings as string) } } catch {}
+      return {
+        id: s.id,
+        title: s.title,
+        description: s.description ?? '',
+        category: s.category ?? 'other',
+        language: s.language ?? 'ua',
+        tags: typeof s.tags === 'string' && s.tags !== '' ? (s.tags as string).split(',') : [],
+        settings,
+        status: s.status,
+        thumbnail_url: s.thumbnail_url ?? null,
+        ingest_url: s.user_id === userId ? s.ingest_url : null,
+        stream_key: s.user_id === userId ? s.stream_key : null,
+        user_id: s.user_id,
+        created_at: s.created_at
+      }
+    })
     return { streams }
   })
 
@@ -56,13 +76,14 @@ export async function registerStreamRoutes (app: FastifyInstance): Promise<void>
     if (!parsed.success) {
       return await reply.code(400).send({ error: parsed.error.flatten() })
     }
-    const { title, description, category, language, tags } = parsed.data
+    const { title, description, category, language, tags, max_quality, delay_seconds, mature_content, chat_followers_only, chat_slow_mode } = parsed.data
     const key = generateStreamKey()
     const ingestUrl = `${INGEST_BASE}/${request.user.sub}`
     const tagsStr = tags.join(',')
+    const settings = JSON.stringify({ max_quality, delay_seconds, mature_content, chat_followers_only, chat_slow_mode })
     const res = await pool.query(
-      'INSERT INTO streams (user_id, title, description, category, language, tags, status, ingest_url, stream_key) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *',
-      [request.user.sub, title, description, category, language, tagsStr, 'offline', ingestUrl, key]
+      'INSERT INTO streams (user_id, title, description, category, language, tags, settings, status, ingest_url, stream_key) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *',
+      [request.user.sub, title, description, category, language, tagsStr, settings, 'offline', ingestUrl, key]
     )
     return { stream: res.rows[0] }
   })
@@ -102,6 +123,23 @@ export async function registerStreamRoutes (app: FastifyInstance): Promise<void>
       ['offline', params.data.id]
     )
     return { stream: updated.rows[0] }
+  })
+
+  app.patch('/streams/:id/settings', { preHandler: [app.authenticate] }, async (request, reply) => {
+    const params = idParamSchema.safeParse(request.params)
+    if (!params.success) return await reply.code(400).send({ error: params.error.flatten() })
+    const body = updateSettingsSchema.safeParse(request.body)
+    if (!body.success) return await reply.code(400).send({ error: body.error.flatten() })
+
+    const stream = await pool.query('SELECT user_id, settings FROM streams WHERE id=$1', [params.data.id])
+    if (stream.rowCount === 0) return await reply.code(404).send({ error: 'Stream not found' })
+    if (stream.rows[0].user_id !== request.user.sub) return await reply.code(403).send({ error: 'Forbidden' })
+
+    let current = { max_quality: '1080p', delay_seconds: 0, mature_content: false, chat_followers_only: false, chat_slow_mode: 0 }
+    try { if (stream.rows[0].settings) current = { ...current, ...JSON.parse(stream.rows[0].settings) } } catch {}
+    const merged = { ...current, ...body.data }
+    await pool.query('UPDATE streams SET settings=$1, updated_at=now() WHERE id=$2', [JSON.stringify(merged), params.data.id])
+    return { settings: merged }
   })
 
   app.delete('/streams/:id', { preHandler: [app.authenticate] }, async (request, reply) => {

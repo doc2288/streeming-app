@@ -9,8 +9,13 @@ import { AuthModal } from './components/AuthModal'
 import { Dashboard } from './components/Dashboard'
 import { BrowsePage } from './components/BrowsePage'
 
+interface StreamSettings {
+  max_quality: string; delay_seconds: number; mature_content: boolean
+  chat_followers_only: boolean; chat_slow_mode: number
+}
 interface Stream {
   id: string; title: string; description: string; category: string; language: string; tags: string[]
+  settings: StreamSettings
   status: string; ingest_url: string | null; stream_key: string | null; thumbnail_url: string | null
   user_id: string; created_at?: string
 }
@@ -37,7 +42,13 @@ export default function App (): JSX.Element {
   const [newThumb, setNewThumb] = useState<File | null>(null)
   const [thumbPreview, setThumbPreview] = useState<string | null>(null)
   const [newTags, setNewTags] = useState('')
+  const [newMaxQuality, setNewMaxQuality] = useState('1080p')
+  const [newDelay, setNewDelay] = useState(0)
+  const [newMature, setNewMature] = useState(false)
+  const [newChatFollowers, setNewChatFollowers] = useState(false)
+  const [newChatSlow, setNewChatSlow] = useState(0)
   const [activeCategory, setActiveCategory] = useState<string | null>(null)
+  const [showAdvanced, setShowAdvanced] = useState(false)
 
   const selected = streams.find(s => s.id === selectedId) ?? null
 
@@ -70,7 +81,7 @@ export default function App (): JSX.Element {
   const handleSelectStream = (id: string): void => { setSelectedId(id); setView('watch') }
   const handleDelete = (id: string): void => { setStreams(p => p.filter(s => s.id !== id)); setSelectedId(null); setView('home'); flash(t('streamDeleted')) }
 
-  const resetCreateForm = (): void => { setNewTitle(''); setNewDesc(''); setNewCat('gaming'); setNewLang(lang); setNewThumb(null); setThumbPreview(null); setNewTags('') }
+  const resetCreateForm = (): void => { setNewTitle(''); setNewDesc(''); setNewCat('gaming'); setNewLang(lang); setNewThumb(null); setThumbPreview(null); setNewTags(''); setNewMaxQuality('1080p'); setNewDelay(0); setNewMature(false); setNewChatFollowers(false); setNewChatSlow(0); setShowAdvanced(false) }
 
   const handleThumbChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const f = e.target.files?.[0]
@@ -83,7 +94,11 @@ export default function App (): JSX.Element {
     if (newTitle.trim().length < 3) { flash(t('titleMin'), 'err'); return }
     try {
       const parsedTags = newTags.split(/[,\s]+/).map(t => t.replace(/^#/, '').trim()).filter(t => t.length > 0).slice(0, 5)
-      const res = await api.post('/streams', { title: newTitle.trim(), description: newDesc.trim(), category: newCat, language: newLang, tags: parsedTags })
+      const res = await api.post('/streams', {
+        title: newTitle.trim(), description: newDesc.trim(), category: newCat, language: newLang, tags: parsedTags,
+        max_quality: newMaxQuality, delay_seconds: newDelay, mature_content: newMature,
+        chat_followers_only: newChatFollowers, chat_slow_mode: newChatSlow
+      })
       const streamId = res.data.stream.id
       if (newThumb != null) {
         const fd = new FormData()
@@ -145,6 +160,41 @@ export default function App (): JSX.Element {
                   </select>
                 </div>
               </div>
+              <button type="button" className="btn-toggle-advanced" onClick={() => { setShowAdvanced(!showAdvanced) }}>
+                {showAdvanced ? '▾' : '▸'} {t('advancedSettings')}
+              </button>
+              {showAdvanced && (
+                <div className="advanced-settings">
+                  <div className="form-row">
+                    <div className="form-group form-half">
+                      <label>{t('maxQuality')}</label>
+                      <select value={newMaxQuality} onChange={(e) => { setNewMaxQuality(e.target.value) }}>
+                        <option value="source">{t('source')}</option>
+                        <option value="1080p">1080p</option>
+                        <option value="720p">720p</option>
+                        <option value="480p">480p</option>
+                        <option value="360p">360p</option>
+                      </select>
+                    </div>
+                    <div className="form-group form-half">
+                      <label>{t('delay')}</label>
+                      <input type="number" min="0" max="900" value={newDelay} onChange={(e) => { setNewDelay(Number(e.target.value)) }} />
+                      <span className="form-hint">{t('delayHint')}</span>
+                    </div>
+                  </div>
+                  <div className="form-row">
+                    <div className="form-group form-half">
+                      <label>{t('chatSlowMode')}</label>
+                      <input type="number" min="0" max="300" value={newChatSlow} onChange={(e) => { setNewChatSlow(Number(e.target.value)) }} />
+                      <span className="form-hint">{t('chatSlowHint')}</span>
+                    </div>
+                    <div className="form-group form-half" style={{ justifyContent: 'center', gap: '10px', paddingTop: '20px' }}>
+                      <label className="toggle-label"><input type="checkbox" checked={newMature} onChange={(e) => { setNewMature(e.target.checked) }} /> {t('matureContent')}</label>
+                      <label className="toggle-label"><input type="checkbox" checked={newChatFollowers} onChange={(e) => { setNewChatFollowers(e.target.checked) }} /> {t('chatFollowersOnly')}</label>
+                    </div>
+                  </div>
+                </div>
+              )}
               <div className="form-group">
                 <label>Теги / Hashtags</label>
                 <input placeholder="#fps #ranked #competitive" value={newTags} onChange={(e) => { setNewTags(e.target.value) }} maxLength={100} />

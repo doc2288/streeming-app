@@ -120,6 +120,22 @@ const translations = {
   chatRulesText: { ua: 'Будьте ввічливі. Без спаму та реклами.', en: 'Be respectful. No spam or ads.', no: 'Vær respektfull. Ingen spam eller reklame.' },
   chatJoined: { ua: 'приєднався до чату', en: 'joined the chat', no: 'ble med i chatten' },
 
+  // ---- Stream settings ----
+  maxQuality: { ua: 'Макс. якість', en: 'Max Quality', no: 'Maks kvalitet' },
+  delay: { ua: 'Затримка (сек)', en: 'Delay (sec)', no: 'Forsinkelse (sek)' },
+  delayHint: { ua: '0 = без затримки, до 900 сек', en: '0 = no delay, up to 900 sec', no: '0 = ingen forsinkelse, opptil 900 sek' },
+  matureContent: { ua: '18+ контент', en: 'Mature Content (18+)', no: 'Voksent innhold (18+)' },
+  chatFollowersOnly: { ua: 'Чат лише для підписників', en: 'Followers-only Chat', no: 'Kun følgere i chat' },
+  chatSlowMode: { ua: 'Повільний режим (сек)', en: 'Slow Mode (sec)', no: 'Sakte modus (sek)' },
+  chatSlowHint: { ua: '0 = вимкнено', en: '0 = off', no: '0 = av' },
+  source: { ua: 'Оригінал', en: 'Source', no: 'Kilde' },
+  quality: { ua: 'Якість', en: 'Quality', no: 'Kvalitet' },
+  streamSettingsSaved: { ua: 'Налаштування збережено!', en: 'Settings saved!', no: 'Innstillinger lagret!' },
+  advancedSettings: { ua: 'Додаткові налаштування', en: 'Advanced Settings', no: 'Avanserte innstillinger' },
+  settingsLabel: { ua: 'Налаштування', en: 'Settings', no: 'Innstillinger' },
+  viewers_quality: { ua: 'Якість відео', en: 'Video Quality', no: 'Videokvalitet' },
+  auto: { ua: 'Авто', en: 'Auto', no: 'Auto' },
+
   // ---- Language names ----
   lang_ua: { ua: 'Українська', en: 'Ukrainian', no: 'Ukrainsk' },
   lang_en: { ua: 'English', en: 'English', no: 'English' },
