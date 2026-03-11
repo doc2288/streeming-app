@@ -56,6 +56,15 @@ export async function migrate (): Promise<void> {
       CREATE INDEX IF NOT EXISTS idx_streams_user_id ON streams(user_id);
       CREATE INDEX IF NOT EXISTS idx_streams_status ON streams(status);
       CREATE INDEX IF NOT EXISTS idx_chat_bans_stream_user ON chat_bans(stream_id, user_id);
+
+      DO $$ BEGIN
+        ALTER TABLE streams ADD COLUMN IF NOT EXISTS category text DEFAULT 'other';
+        ALTER TABLE streams ADD COLUMN IF NOT EXISTS language text DEFAULT 'ua';
+        ALTER TABLE streams ADD COLUMN IF NOT EXISTS thumbnail_url text;
+        ALTER TABLE streams ADD COLUMN IF NOT EXISTS tags text DEFAULT '';
+        ALTER TABLE streams ADD COLUMN IF NOT EXISTS settings text DEFAULT '{}';
+      EXCEPTION WHEN OTHERS THEN NULL;
+      END $$;
     `)
   } finally {
     client.release()
