@@ -94,7 +94,7 @@ export default function App (): JSX.Element {
 
   return (
     <div className="app">
-      <TopBar user={user} onLogin={() => { setShowAuth(true) }} onLogout={handleLogout} onSearch={setSearchQuery} onNavigateHome={navigateHome} sidebarOpen={sidebarOpen} onToggleSidebar={() => { setSidebarOpen(!sidebarOpen) }} searchValue={searchQuery} />
+      <TopBar user={user} onLogin={() => { setShowAuth(true) }} onLogout={handleLogout} onSearch={setSearchQuery} onNavigateHome={navigateHome} onNavigateDashboard={() => { setView('dashboard'); setSelectedId(null) }} sidebarOpen={sidebarOpen} onToggleSidebar={() => { setSidebarOpen(!sidebarOpen) }} searchValue={searchQuery} />
 
       <div className="app-body">
         <Sidebar streams={streams} open={sidebarOpen} currentView={view} onNavigate={(v) => { setView(v); setSelectedId(null); setSearchQuery('') }} onSelectStream={handleSelectStream} isLoggedIn={user != null} />
