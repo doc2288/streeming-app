@@ -135,7 +135,7 @@ export function WatchPage ({ stream, user, onBack, onRefresh, onDelete }: Props)
 =======
 >>>>>>> 161fe02 (feat: i18n (UA/EN/RU), improved stream creation, Dashboard for stream keys)
       </div>
-      <Chat streamId={stream.id} />
+      <Chat streamId={stream.id} ownerUserId={stream.user_id} />
     </div>
   )
 }
