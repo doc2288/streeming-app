@@ -57,7 +57,7 @@ export function WatchPage ({ stream, user, onBack, onRefresh, onDelete }: Props)
           </div>
         </div>
       </div>
-      <Chat streamId={stream.id} />
+      <Chat streamId={stream.id} ownerUserId={stream.user_id} />
     </div>
   )
 }
