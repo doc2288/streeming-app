@@ -1,23 +1,37 @@
 import axios from 'axios'
 import type { AxiosError, InternalAxiosRequestConfig } from 'axios'
 
-const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:4000'
+const defaultApiUrl = import.meta.env.DEV
+  ? 'http://localhost:4000'
+  : typeof window !== 'undefined'
+    ? `${window.location.origin}/api`
+    : 'http://localhost:4000'
+const API_URL = import.meta.env.VITE_API_URL ?? defaultApiUrl
+
+function normalizeApiUrl (value: string): URL {
+  if (typeof window !== 'undefined') {
+    return new URL(value, window.location.origin)
+  }
+  return new URL(value)
+}
+
+const resolvedApiUrl = normalizeApiUrl(API_URL)
+const apiBasePath = resolvedApiUrl.pathname.replace(/\/$/, '')
 
 export const api = axios.create({
-  baseURL: API_URL
+  baseURL: `${resolvedApiUrl.origin}${apiBasePath}`
 })
 
 const TOKEN_KEY = 'streeming_access_token'
 const REFRESH_KEY = 'streeming_refresh_token'
 
 export function getApiBaseUrl (): string {
-  return API_URL
+  return `${resolvedApiUrl.origin}${apiBasePath}`
 }
 
 export function getWsBaseUrl (): string {
-  const url = new URL(API_URL)
-  url.protocol = url.protocol === 'https:' ? 'wss:' : 'ws:'
-  return url.origin
+  const protocol = resolvedApiUrl.protocol === 'https:' ? 'wss:' : 'ws:'
+  return `${protocol}//${resolvedApiUrl.host}${apiBasePath}`
 }
 
 export function setAuthToken (token: string | null): void {
@@ -67,7 +81,7 @@ async function refreshAccessToken (): Promise<string | null> {
     if (refresh == null) return null
     try {
       const res = await axios.post<{ accessToken: string, refreshToken: string }>(
-        `${API_URL}/auth/refresh`,
+        `${getApiBaseUrl()}/auth/refresh`,
         { refreshToken: refresh }
       )
       const { accessToken, refreshToken: newRefresh } = res.data
