@@ -1,59 +1,9 @@
-import { resolve } from 'path'
-import { mkdir } from 'fs/promises'
-import Fastify, { type FastifyRequest, type FastifyReply } from 'fastify'
-import cors from '@fastify/cors'
-import jwt from '@fastify/jwt'
-import rateLimit from '@fastify/rate-limit'
-import websocket from '@fastify/websocket'
-import multipart from '@fastify/multipart'
-import fstatic from '@fastify/static'
 import { env } from './config/env'
-import { migrate, pool } from './db'
-import { registerHealthRoutes } from './routes/health'
-import { registerAuthRoutes } from './routes/auth'
-import { registerStreamRoutes } from './routes/streams'
-import { registerChatRoutes } from './routes/chat'
-
-declare module 'fastify' {
-  interface FastifyInstance {
-    authenticate: (request: FastifyRequest, reply: FastifyReply) => Promise<void>
-  }
-}
+import { pool } from './db'
+import { createApp } from './app'
 
 async function bootstrap (): Promise<void> {
-  const app = Fastify({ logger: true })
-
-  await app.register(cors, { origin: env.CORS_ORIGIN ?? true })
-  await app.register(rateLimit, { max: 100, timeWindow: '1 minute' })
-  await app.register(jwt, { secret: env.JWT_SECRET })
-  await app.register(websocket)
-  await app.register(multipart, { limits: { fileSize: 5 * 1024 * 1024 } })
-  const uploadsDir = resolve(process.cwd(), 'uploads')
-  await mkdir(uploadsDir, { recursive: true })
-  await app.register(fstatic, { root: uploadsDir, prefix: '/uploads/', decorateReply: false })
-
-  app.decorate('authenticate', async (request: FastifyRequest, reply: FastifyReply) => {
-    try {
-      await request.jwtVerify()
-    } catch {
-      return await reply.code(401).send({ error: 'Unauthorized' })
-    }
-  })
-
-  app.setErrorHandler(async (error, request, reply) => {
-    request.log.error(error)
-    const statusCode = error.statusCode ?? 500
-    return await reply.code(statusCode).send({
-      error: statusCode >= 500 ? 'Internal Server Error' : error.message
-    })
-  })
-
-  await migrate()
-
-  await registerHealthRoutes(app)
-  await registerAuthRoutes(app)
-  await registerStreamRoutes(app)
-  await registerChatRoutes(app)
+  const app = await createApp()
 
   const port = env.PORT
   app.listen({ port, host: '0.0.0.0' }, (err, address) => {

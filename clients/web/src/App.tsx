@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback, useRef } from 'react'
+import type { AxiosError } from 'axios'
 import { api, setAuthToken, setRefreshToken, clearAuth, getStoredToken } from './api'
 import { useI18n, CATEGORIES, getCategoryKey, STREAM_LANGUAGES, type Category } from './i18n'
 import { TopBar } from './components/TopBar'
@@ -64,7 +65,13 @@ export default function App (): JSX.Element {
 
   const restoreSession = useCallback(async () => {
     if (getStoredToken() == null) return
-    try { const r = await api.get('/auth/me'); setUser(r.data.user) } catch { clearAuth() }
+    try {
+      const res = await api.get('/auth/me')
+      setUser(res.data.user)
+    } catch (error) {
+      const status = (error as AxiosError).response?.status
+      if (status === 401) clearAuth()
+    }
   }, [])
 
   useEffect(() => { void restoreSession(); void fetchStreams(); const t = setInterval(() => { void fetchStreams() }, 12000); return () => { clearInterval(t) } }, [fetchStreams, restoreSession])

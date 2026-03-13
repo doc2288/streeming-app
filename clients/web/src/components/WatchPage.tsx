@@ -1,14 +1,16 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Player } from './Player'
 import { Chat } from './Chat'
 import { api } from '../api'
 import { useI18n, getCategoryKey, type Category } from '../i18n'
+import { getMediaServerUrl } from '../config/env'
 
 interface StreamSettings { max_quality: string; delay_seconds: number; mature_content: boolean; chat_followers_only: boolean; chat_slow_mode: number }
 interface Stream { id: string; title: string; description?: string; category?: string; settings?: StreamSettings; status: string; ingest_url: string | null; stream_key: string | null; user_id: string }
 interface Props { stream: Stream; user: { id: string; email: string; role: string } | null; onBack: () => void; onRefresh: () => void; onDelete: (id: string) => void }
 
-const sampleHls = 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8'
+const mediaServerUrl = getMediaServerUrl()
+const FOLLOWED_CHANNELS_KEY = 'streeming_followed_channels'
 
 export function WatchPage ({ stream, user, onBack, onRefresh, onDelete }: Props): JSX.Element {
   const { t } = useI18n()
@@ -16,16 +18,51 @@ export function WatchPage ({ stream, user, onBack, onRefresh, onDelete }: Props)
   const [followed, setFollowed] = useState(false)
   const [selectedQuality, setSelectedQuality] = useState('auto')
   const [showQuality, setShowQuality] = useState(false)
-  const playbackUrl = stream.ingest_url != null ? stream.ingest_url.replace('rtmp://', 'http://').replace('/live', '/hls') + '/index.m3u8' : sampleHls
+  const playbackUrl = `${mediaServerUrl}/hls/${stream.id}/index.m3u8`
   const maxQ = stream.settings?.max_quality ?? '1080p'
   const allQualities = ['source', '1080p', '720p', '480p', '360p']
   const maxIdx = allQualities.indexOf(maxQ)
   const availableQualities = ['auto', ...allQualities.slice(maxIdx === -1 ? 0 : maxIdx)]
   const delaySeconds = stream.settings?.delay_seconds ?? 0
   const cat = stream.category as Category | undefined
+  const defaultObsServer = 'rtmp://localhost/live'
+  const obsServer = (
+    stream.ingest_url != null && stream.ingest_url.endsWith(`/${stream.id}`)
+      ? stream.ingest_url.slice(0, -(`/${stream.id}`).length)
+      : defaultObsServer
+  )
 
   const handleStart = async (): Promise<void> => { try { await api.post(`/streams/${stream.id}/start`); onRefresh() } catch {} }
   const handleStop = async (): Promise<void> => { try { await api.post(`/streams/${stream.id}/stop`); onRefresh() } catch {} }
+  const handleDelete = async (): Promise<void> => {
+    if (!confirm('Видалити цей стрім?')) return
+    try { await api.delete(`/streams/${stream.id}`); onDelete(stream.id) } catch {}
+  }
+  const copyToClipboard = (text: string | null): void => {
+    if (text != null) void navigator.clipboard.writeText(text)
+  }
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(FOLLOWED_CHANNELS_KEY)
+      const ids = raw != null ? JSON.parse(raw) as string[] : []
+      setFollowed(ids.includes(stream.user_id))
+    } catch {
+      setFollowed(false)
+    }
+  }, [stream.user_id])
+
+  const toggleFollow = (): void => {
+    const next = !followed
+    setFollowed(next)
+    try {
+      const raw = localStorage.getItem(FOLLOWED_CHANNELS_KEY)
+      const ids = new Set<string>(raw != null ? JSON.parse(raw) as string[] : [])
+      if (next) ids.add(stream.user_id)
+      else ids.delete(stream.user_id)
+      localStorage.setItem(FOLLOWED_CHANNELS_KEY, JSON.stringify(Array.from(ids)))
+    } catch {}
+  }
 
   return (
     <div className="watch-layout">
@@ -64,7 +101,7 @@ export function WatchPage ({ stream, user, onBack, onRefresh, onDelete }: Props)
               )}
             </div>
             {!isOwner && user != null && (
-              <button className={`btn-follow ${followed ? 'following' : ''}`} onClick={() => { setFollowed(!followed) }}>
+              <button className={`btn-follow ${followed ? 'following' : ''}`} onClick={toggleFollow}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill={followed ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2"><path d="M20.8 4.6a5.5 5.5 0 00-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 00-7.8 7.8l1 1.1L12 21.3l7.8-7.8 1-1.1a5.5 5.5 0 000-7.8z" /></svg>
                 {followed ? t('following') : t('follow')}
               </button>
@@ -75,6 +112,9 @@ export function WatchPage ({ stream, user, onBack, onRefresh, onDelete }: Props)
                   ? <button className="btn-go-live" onClick={() => { void handleStart() }}><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z" /></svg>{t('goLive')}</button>
                   : <button className="btn-stop" onClick={() => { void handleStop() }}><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="1" /></svg>{t('stopStream')}</button>
                 }
+                <button className="btn-icon btn-danger-icon" onClick={() => { void handleDelete() }} title="Видалити стрім">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" /></svg>
+                </button>
               </>
             )}
             <button className="btn-icon" onClick={onBack} title={t('back')}>
@@ -82,6 +122,29 @@ export function WatchPage ({ stream, user, onBack, onRefresh, onDelete }: Props)
             </button>
           </div>
         </div>
+
+        {isOwner && stream.ingest_url != null && (
+          <div className="watch-ingest">
+            <div className="ingest-row">
+              <span className="ingest-label">Server</span>
+              <code>{obsServer}</code>
+              <button className="btn-copy" onClick={() => { copyToClipboard(obsServer) }} title="Копіювати">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <rect x="9" y="9" width="13" height="13" rx="2" /><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
+                </svg>
+              </button>
+            </div>
+            <div className="ingest-row">
+              <span className="ingest-label">Stream Key</span>
+              <code>{stream.stream_key ?? '—'}</code>
+              <button className="btn-copy" onClick={() => { copyToClipboard(stream.stream_key ?? null) }} title="Копіювати">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <rect x="9" y="9" width="13" height="13" rx="2" /><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        )}
       </div>
       <Chat streamId={stream.id} ownerUserId={stream.user_id} />
     </div>

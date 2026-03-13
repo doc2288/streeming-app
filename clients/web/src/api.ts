@@ -1,22 +1,37 @@
 import axios from 'axios'
+import type { AxiosError, InternalAxiosRequestConfig } from 'axios'
 
-const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:4000'
+const defaultApiUrl = import.meta.env.DEV
+  ? 'http://localhost:4000'
+  : typeof window !== 'undefined'
+    ? `${window.location.origin}/api`
+    : 'http://localhost:4000'
+const API_URL = import.meta.env.VITE_API_URL ?? defaultApiUrl
+
+function normalizeApiUrl (value: string): URL {
+  if (typeof window !== 'undefined') {
+    return new URL(value, window.location.origin)
+  }
+  return new URL(value)
+}
+
+const resolvedApiUrl = normalizeApiUrl(API_URL)
+const apiBasePath = resolvedApiUrl.pathname.replace(/\/$/, '')
 
 export const api = axios.create({
-  baseURL: API_URL
+  baseURL: `${resolvedApiUrl.origin}${apiBasePath}`
 })
 
 const TOKEN_KEY = 'streeming_access_token'
 const REFRESH_KEY = 'streeming_refresh_token'
 
 export function getApiBaseUrl (): string {
-  return API_URL
+  return `${resolvedApiUrl.origin}${apiBasePath}`
 }
 
 export function getWsBaseUrl (): string {
-  const url = new URL(API_URL)
-  url.protocol = url.protocol === 'https:' ? 'wss:' : 'ws:'
-  return url.origin
+  const protocol = resolvedApiUrl.protocol === 'https:' ? 'wss:' : 'ws:'
+  return `${protocol}//${resolvedApiUrl.host}${apiBasePath}`
 }
 
 export function setAuthToken (token: string | null): void {
@@ -56,31 +71,54 @@ if (storedToken != null) {
   api.defaults.headers.common.Authorization = `Bearer ${storedToken}`
 }
 
+let refreshInFlight: Promise<string | null> | null = null
+
+async function refreshAccessToken (): Promise<string | null> {
+  if (refreshInFlight != null) return await refreshInFlight
+
+  refreshInFlight = (async () => {
+    const refresh = getRefreshToken()
+    if (refresh == null) return null
+    try {
+      const res = await axios.post<{ accessToken: string, refreshToken: string }>(
+        `${getApiBaseUrl()}/auth/refresh`,
+        { refreshToken: refresh }
+      )
+      const { accessToken, refreshToken: newRefresh } = res.data
+      setAuthToken(accessToken)
+      setRefreshToken(newRefresh)
+      return accessToken
+    } catch {
+      clearAuth()
+      return null
+    } finally {
+      refreshInFlight = null
+    }
+  })()
+
+  return await refreshInFlight
+}
+
+type RetryRequestConfig = InternalAxiosRequestConfig & { _retry?: boolean }
+
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
-    const original = error.config
+    const axiosError = error as AxiosError
+    const original = axiosError.config as RetryRequestConfig | undefined
     const skipRefreshUrls = ['/auth/login', '/auth/register', '/auth/refresh']
-    const shouldSkipRefresh = skipRefreshUrls.some(url => original.url?.includes(url))
+    const shouldSkipRefresh = skipRefreshUrls.some(url => original?.url?.includes(url))
     if (
-      error.response?.status === 401 &&
+      axiosError.response?.status === 401 &&
       original != null &&
       !original._retry &&
       !shouldSkipRefresh
     ) {
       original._retry = true
-      const refresh = getRefreshToken()
-      if (refresh != null) {
-        try {
-          const res = await axios.post(`${API_URL}/auth/refresh`, { refreshToken: refresh })
-          const { accessToken, refreshToken: newRefresh } = res.data
-          setAuthToken(accessToken)
-          setRefreshToken(newRefresh)
+      const accessToken = await refreshAccessToken()
+      if (accessToken != null) {
           original.headers.Authorization = `Bearer ${accessToken}`
           return await api(original)
-        } catch {
-          clearAuth()
-        }
       }
     }
     return await Promise.reject(error)
