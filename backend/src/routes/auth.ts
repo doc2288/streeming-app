@@ -87,7 +87,7 @@ export async function registerAuthRoutes (app: FastifyInstance): Promise<void> {
       'SELECT id, email, password_hash, role FROM users WHERE email=$1',
       [normalizedEmail]
     )
-    if (result.rowCount === 0) {
+    if (result.rowCount === null || result.rowCount === 0) {
       return await reply.code(401).send({ error: 'Invalid credentials' })
     }
     const row = result.rows[0]
@@ -111,11 +111,13 @@ export async function registerAuthRoutes (app: FastifyInstance): Promise<void> {
     }
     const { refreshToken } = parsed.data
 
+    await pool.query('DELETE FROM refresh_tokens WHERE expires_at < now()')
+
     const res = await pool.query(
       'DELETE FROM refresh_tokens WHERE token=$1 RETURNING user_id, expires_at',
       [refreshToken]
     )
-    if (res.rowCount === 0) {
+    if (res.rowCount === null || res.rowCount === 0) {
       return await reply.code(401).send({ error: 'Invalid refresh token' })
     }
     const row = res.rows[0]
@@ -124,7 +126,7 @@ export async function registerAuthRoutes (app: FastifyInstance): Promise<void> {
     }
 
     const userRes = await pool.query('SELECT id, email, role FROM users WHERE id=$1', [row.user_id])
-    if (userRes.rowCount === 0) {
+    if (userRes.rowCount === null || userRes.rowCount === 0) {
       return await reply.code(401).send({ error: 'User not found' })
     }
     const user = sanitizeUser(userRes.rows[0])

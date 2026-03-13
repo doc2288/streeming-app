@@ -42,6 +42,7 @@ export async function registerChatRoutes (app: FastifyInstance): Promise<void> {
     room.add(client)
 
     connection.socket.on('message', (raw: Buffer) => {
+      if (userId == null) return
       const payload = raw.toString().trim()
       if (payload.length === 0 || payload.length > MAX_MESSAGE_LENGTH) return
 
