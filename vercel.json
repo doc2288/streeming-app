@@ -1,7 +1,8 @@
 {
   "installCommand": "pnpm install --frozen-lockfile",
-  "buildCommand": "pnpm --filter web build",
+  "buildCommand": "pnpm --filter @streeming/web build",
   "outputDirectory": "clients/web/dist",
+  "framework": null,
   "rewrites": [
     {
       "source": "/:path((?!api/|assets/|.*\\..*).*)",
