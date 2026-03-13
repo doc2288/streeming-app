@@ -11,6 +11,8 @@ declare module '@fastify/jwt' {
       sub: string
       email: string
       role: string
+      iat: number
+      exp: number
     }
   }
 }
