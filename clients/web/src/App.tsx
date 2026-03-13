@@ -60,7 +60,7 @@ export default function App (): JSX.Element {
   }, [])
 
   const fetchStreams = useCallback(async () => {
-    try { const r = await api.get('/streams'); setStreams(r.data.streams) } catch {}
+    try { const r = await api.get('/streams'); setStreams(Array.isArray(r.data.streams) ? r.data.streams : []) } catch {}
   }, [])
 
   const restoreSession = useCallback(async () => {
