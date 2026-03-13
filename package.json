@@ -5,6 +5,9 @@
   "description": "Cross-platform streaming app monorepo (backend + web + desktop + mobile).",
   "license": "MIT",
   "packageManager": "pnpm@9.0.0",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "lint": "pnpm -r --if-present lint",
     "test": "pnpm -r --if-present test",
