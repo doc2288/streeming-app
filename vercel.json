@@ -3,9 +3,10 @@
   "buildCommand": "pnpm --filter @streeming/web build",
   "outputDirectory": "clients/web/dist",
   "framework": null,
+  "cleanUrls": false,
   "rewrites": [
     {
-      "source": "/:path((?!api/|assets/|.*\\..*).*)",
+      "source": "/(.*)",
       "destination": "/index.html"
     }
   ]
