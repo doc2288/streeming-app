@@ -38,6 +38,9 @@ coverage
 **/.packages
 **/generated_plugin_registrant.dart
 
+# Uploads
+uploads
+
 # Misc
 tmp
 logs

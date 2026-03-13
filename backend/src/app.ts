@@ -1,4 +1,5 @@
 import { resolve } from 'path'
+import { mkdir } from 'fs/promises'
 import Fastify from 'fastify'
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify'
 import cors from '@fastify/cors'
@@ -41,7 +42,9 @@ export async function createApp (): Promise<FastifyInstance> {
   await app.register(jwt, { secret: env.JWT_SECRET })
   await app.register(websocket)
   await app.register(multipart, { limits: { fileSize: 5 * 1024 * 1024 } })
-  await app.register(fstatic, { root: resolve(process.cwd(), 'uploads'), prefix: '/uploads/', decorateReply: false })
+  const uploadsDir = resolve(process.cwd(), 'uploads')
+  await mkdir(uploadsDir, { recursive: true })
+  await app.register(fstatic, { root: uploadsDir, prefix: '/uploads/', decorateReply: false })
   app.addContentTypeParser(
     'application/x-www-form-urlencoded',
     { parseAs: 'string' },
@@ -60,10 +63,10 @@ export async function createApp (): Promise<FastifyInstance> {
     }
   )
 
-  app.decorate('authenticate', async (request: any, reply: any) => {
+  app.decorate('authenticate', async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       await request.jwtVerify()
-    } catch (err) {
+    } catch {
       return await reply.code(401).send({ error: 'Unauthorized' })
     }
   })

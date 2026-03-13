@@ -35,6 +35,24 @@ const idParamSchema = z.object({
   id: z.string().uuid()
 })
 
+const DEFAULT_SETTINGS = { max_quality: '1080p', delay_seconds: 0, mature_content: false, chat_followers_only: false, chat_slow_mode: 0 }
+
+function parseSettings (raw: unknown): typeof DEFAULT_SETTINGS {
+  if (typeof raw !== 'string' || raw === '') return { ...DEFAULT_SETTINGS }
+  try { return { ...DEFAULT_SETTINGS, ...JSON.parse(raw) } } catch { return { ...DEFAULT_SETTINGS } }
+}
+
+function sanitizeStream (row: Record<string, unknown>, requestUserId: string | null): Record<string, unknown> {
+  const isOwner = row.user_id === requestUserId
+  const { stream_key, ingest_url, ...safe } = row
+  return {
+    ...safe,
+    stream_key: isOwner ? stream_key : null,
+    ingest_url: isOwner ? ingest_url : null
+  }
+}
+
+
 export async function registerStreamRoutes (app: FastifyInstance): Promise<void> {
   app.get('/streams', async (request: FastifyRequest) => {
     let userId: string | null = null
@@ -44,13 +62,15 @@ export async function registerStreamRoutes (app: FastifyInstance): Promise<void>
     } catch {
       // anonymous — no token or invalid token
     }
+    const query = request.query as Record<string, string | undefined>
+    const limit = Math.min(Math.max(parseInt(query.limit ?? '50', 10) || 50, 1), 100)
+    const offset = Math.max(parseInt(query.offset ?? '0', 10) || 0, 0)
     const res = await pool.query(
-      'SELECT id, title, description, category, language, tags, settings, status, ingest_url, stream_key, thumbnail_url, user_id, created_at FROM streams ORDER BY created_at DESC'
+      'SELECT id, title, description, category, language, tags, settings, status, ingest_url, stream_key, thumbnail_url, user_id, created_at FROM streams ORDER BY created_at DESC LIMIT $1 OFFSET $2',
+      [limit, offset]
     )
-    const defaultSettings = { max_quality: '1080p', delay_seconds: 0, mature_content: false, chat_followers_only: false, chat_slow_mode: 0 }
     const streams = res.rows.map((s: Record<string, unknown>) => {
-      let settings = defaultSettings
-      try { if (typeof s.settings === 'string') settings = { ...defaultSettings, ...JSON.parse(s.settings as string) } } catch {}
+      const settings = parseSettings(s.settings)
       return {
         id: s.id,
         title: s.title,
@@ -89,7 +109,7 @@ export async function registerStreamRoutes (app: FastifyInstance): Promise<void>
       'UPDATE streams SET ingest_url=$1, stream_key=$2, updated_at=now() WHERE id=$3 RETURNING *',
       [ingestUrl, streamKey, streamId]
     )
-    return { stream: updated.rows[0] }
+    return { stream: sanitizeStream(updated.rows[0], request.user.sub) }
   })
 
   app.post('/streams/:id/start', { preHandler: [app.authenticate] }, async (request, reply) => {
@@ -107,7 +127,7 @@ export async function registerStreamRoutes (app: FastifyInstance): Promise<void>
       'UPDATE streams SET status=$1, updated_at=now() WHERE id=$2 RETURNING *',
       ['live', params.data.id]
     )
-    return { stream: updated.rows[0] }
+    return { stream: sanitizeStream(updated.rows[0], request.user.sub) }
   })
 
   app.post('/streams/:id/stop', { preHandler: [app.authenticate] }, async (request, reply) => {
@@ -125,7 +145,7 @@ export async function registerStreamRoutes (app: FastifyInstance): Promise<void>
       'UPDATE streams SET status=$1, updated_at=now() WHERE id=$2 RETURNING *',
       ['offline', params.data.id]
     )
-    return { stream: updated.rows[0] }
+    return { stream: sanitizeStream(updated.rows[0], request.user.sub) }
   })
 
   app.patch('/streams/:id/settings', { preHandler: [app.authenticate] }, async (request, reply) => {
@@ -138,8 +158,7 @@ export async function registerStreamRoutes (app: FastifyInstance): Promise<void>
     if (stream.rowCount === 0) return await reply.code(404).send({ error: 'Stream not found' })
     if (stream.rows[0].user_id !== request.user.sub) return await reply.code(403).send({ error: 'Forbidden' })
 
-    let current = { max_quality: '1080p', delay_seconds: 0, mature_content: false, chat_followers_only: false, chat_slow_mode: 0 }
-    try { if (stream.rows[0].settings) current = { ...current, ...JSON.parse(stream.rows[0].settings) } } catch {}
+    const current = parseSettings(stream.rows[0].settings)
     const merged = { ...current, ...body.data }
     await pool.query('UPDATE streams SET settings=$1, updated_at=now() WHERE id=$2', [JSON.stringify(merged), params.data.id])
     return { settings: merged }
