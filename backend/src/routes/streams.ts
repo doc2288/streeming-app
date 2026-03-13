@@ -43,6 +43,16 @@ function parseSettings (raw: unknown): typeof DEFAULT_SETTINGS {
   try { return { ...DEFAULT_SETTINGS, ...JSON.parse(raw) } } catch { return { ...DEFAULT_SETTINGS } }
 }
 
+function sanitizeStream (row: Record<string, unknown>, requestUserId: string | null): Record<string, unknown> {
+  const isOwner = row.user_id === requestUserId
+  const { stream_key, ingest_url, ...safe } = row
+  return {
+    ...safe,
+    stream_key: isOwner ? stream_key : null,
+    ingest_url: isOwner ? ingest_url : null
+  }
+}
+
 export async function registerStreamRoutes (app: FastifyInstance): Promise<void> {
   app.get('/streams', async (request: FastifyRequest) => {
     let userId: string | null = null
@@ -94,7 +104,7 @@ export async function registerStreamRoutes (app: FastifyInstance): Promise<void>
       'INSERT INTO streams (user_id, title, description, category, language, tags, settings, status, ingest_url, stream_key) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *',
       [request.user.sub, title, description, category, language, tagsStr, settings, 'offline', ingestUrl, key]
     )
-    return { stream: res.rows[0] }
+    return { stream: sanitizeStream(res.rows[0], request.user.sub) }
   })
 
   app.post('/streams/:id/start', { preHandler: [app.authenticate] }, async (request, reply) => {
@@ -113,7 +123,7 @@ export async function registerStreamRoutes (app: FastifyInstance): Promise<void>
       'UPDATE streams SET status=$1, stream_key=$2, updated_at=now() WHERE id=$3 RETURNING *',
       ['live', newKey, params.data.id]
     )
-    return { stream: updated.rows[0] }
+    return { stream: sanitizeStream(updated.rows[0], request.user.sub) }
   })
 
   app.post('/streams/:id/stop', { preHandler: [app.authenticate] }, async (request, reply) => {
@@ -131,7 +141,7 @@ export async function registerStreamRoutes (app: FastifyInstance): Promise<void>
       'UPDATE streams SET status=$1, updated_at=now() WHERE id=$2 RETURNING *',
       ['offline', params.data.id]
     )
-    return { stream: updated.rows[0] }
+    return { stream: sanitizeStream(updated.rows[0], request.user.sub) }
   })
 
   app.patch('/streams/:id/settings', { preHandler: [app.authenticate] }, async (request, reply) => {
