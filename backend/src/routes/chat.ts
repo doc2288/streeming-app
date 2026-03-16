@@ -29,13 +29,14 @@ async function isBanned (streamId: string, userId: string): Promise<boolean> {
   return res.rowCount !== null && res.rowCount > 0
 }
 
-async function getStreamSlowMode (streamId: string): Promise<number> {
+async function getStreamSlowMode (streamId: string, log: FastifyInstance['log']): Promise<number> {
   const res = await pool.query('SELECT settings FROM streams WHERE id=$1', [streamId])
   if (res.rowCount === null || res.rowCount === 0) return 0
   try {
-    const parsed = typeof res.rows[0].settings === 'string' ? JSON.parse(res.rows[0].settings) : {}
+    const parsed = typeof res.rows[0].settings === 'string' ? JSON.parse(res.rows[0].settings as string) : {}
     return typeof parsed.chat_slow_mode === 'number' ? parsed.chat_slow_mode : 0
-  } catch {
+  } catch (err) {
+    log.error({ err, streamId }, 'Failed to parse stream settings for slow mode')
     return 0
   }
 }
@@ -46,7 +47,7 @@ export async function registerChatRoutes (app: FastifyInstance): Promise<void> {
   }
 
   app.get('/chat/:streamId', { websocket: true }, (connection, req) => {
-    const streamId = (req.params as any).streamId as string
+    const streamId = (req.params as { streamId: string }).streamId
 
     let userId: string | null = null
     let userName: string | null = null
@@ -54,12 +55,13 @@ export async function registerChatRoutes (app: FastifyInstance): Promise<void> {
       const url = new URL(req.url, 'http://localhost')
       const token = url.searchParams.get('token')
       if (token != null) {
-        const decoded = app.jwt.verify<{ sub: string; email: string }>(token)
+        const decoded = app.jwt.verify<{ sub: string, email: string }>(token)
         userId = decoded.sub
         userName = decoded.email.split('@')[0]
       }
-    } catch {
+    } catch (err) {
       // anonymous connection — read-only
+      req.log.debug({ err }, 'Failed to verify JWT token for chat connection, falling back to anonymous')
     }
 
     let room = rooms.get(streamId)
@@ -90,7 +92,7 @@ export async function registerChatRoutes (app: FastifyInstance): Promise<void> {
       client.ready = true
 
       for (const raw of pendingMessages) {
-        await processMessage(raw, client, streamId, room!, connection)
+        await processMessage(raw, client, streamId, room, connection, req.log)
       }
       pendingMessages.length = 0
     })()
@@ -100,7 +102,7 @@ export async function registerChatRoutes (app: FastifyInstance): Promise<void> {
         pendingMessages.push(raw)
         return
       }
-      void processMessage(raw, client, streamId, room!, connection)
+      void processMessage(raw, client, streamId, room, connection, req.log)
     })
 
     connection.socket.on('close', () => {
@@ -119,13 +121,14 @@ async function processMessage (
   client: Client,
   streamId: string,
   room: Set<Client>,
-  connection: SocketStream
+  connection: SocketStream,
+  log: FastifyInstance['log']
 ): Promise<void> {
   const { userId, userName } = client
   if (userId == null) return
 
   try {
-    const slowMode = await getStreamSlowMode(streamId)
+    const slowMode = await getStreamSlowMode(streamId, log)
     if (slowMode > 0) {
       const elapsed = Date.now() - client.lastMessageAt
       if (elapsed < slowMode * 1000) return
@@ -136,7 +139,8 @@ async function processMessage (
       connection.socket.close(4003, 'Banned from chat')
       return
     }
-  } catch {
+  } catch (err) {
+    log.error({ err, userId, streamId }, 'Failed to process chat message')
     return
   }
 
@@ -147,6 +151,10 @@ async function processMessage (
   const msg = { userId, userName, message: payload, ts: Date.now() }
   const json = JSON.stringify(msg)
   room.forEach((c) => {
-    try { c.socket.socket.send(json) } catch { /* disconnected */ }
+    try {
+      c.socket.socket.send(json)
+    } catch (err) {
+      log.debug({ err, targetUserId: c.userId }, 'Failed to send message to disconnected client')
+    }
   })
 }
