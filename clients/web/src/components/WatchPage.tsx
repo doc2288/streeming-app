@@ -27,7 +27,7 @@ export function WatchPage ({ stream, user, onBack, onRefresh, onDelete }: Props)
   const cat = stream.category as Category | undefined
   const defaultObsServer = 'rtmp://localhost/live'
   const obsServer = (
-    stream.ingest_url != null && stream.ingest_url.endsWith(`/${stream.id}`)
+    stream.ingest_url?.endsWith(`/${stream.id}`) === true
       ? stream.ingest_url.slice(0, -(`/${stream.id}`).length)
       : defaultObsServer
   )
@@ -80,7 +80,7 @@ export function WatchPage ({ stream, user, onBack, onRefresh, onDelete }: Props)
               </div>
               {delaySeconds > 0 && <span className="watch-delay-badge">⏱ {delaySeconds}s {t('delay')}</span>}
               {stream.settings?.mature_content === true && <span className="watch-mature-badge">18+</span>}
-              {stream.description != null && stream.description.length > 0 && <p className="watch-desc">{stream.description}</p>}
+              {stream.description != null && stream.description.length > 0 ? <p className="watch-desc">{stream.description}</p> : null}
             </div>
           </div>
           <div className="watch-actions">

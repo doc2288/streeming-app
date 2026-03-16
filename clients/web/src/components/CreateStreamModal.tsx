@@ -80,7 +80,7 @@ export function CreateStreamModal ({ onClose, onSuccess, flash }: Props): JSX.El
             </div>
             <div className="form-group form-half">
               <label>{t('streamLanguage')}</label>
-              <select value={newLang} onChange={(e) => { setNewLang(e.target.value as any) }}>
+              <select value={newLang} onChange={(e) => { setNewLang(e.target.value as 'ua' | 'en' | 'no') }}>
                 {STREAM_LANGUAGES.map(l => <option key={l} value={l}>{l === 'ua' ? '🇺🇦 Українська' : l === 'en' ? '🇬🇧 English' : '🇳🇴 Norsk'}</option>)}
               </select>
             </div>

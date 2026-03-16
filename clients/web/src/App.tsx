@@ -61,14 +61,14 @@ export default function App (): JSX.Element {
   }, [])
 
   const fetchStreams = useCallback(async () => {
-    try { const r = await api.get('/streams'); setStreams(Array.isArray(r.data.streams) ? r.data.streams : []) } catch {}
+    try { const r = await api.get('/streams'); setStreams(Array.isArray(r.data?.streams) ? (r.data.streams as Stream[]) : []) } catch {}
   }, [])
 
   const restoreSession = useCallback(async () => {
     if (getStoredToken() == null) return
     try {
       const res = await api.get('/auth/me')
-      setUser(res.data.user)
+      setUser(res.data?.user as UserInfo)
     } catch (error) {
       const status = (error as AxiosError).response?.status
       if (status === 401) clearAuth()

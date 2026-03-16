@@ -41,7 +41,7 @@ export function StreamCard ({ stream, onWatch }: Props): JSX.Element {
           <div className="card-tags">
             <span className={`tag ${isLive ? 'tag-live' : 'tag-offline'}`}>{isLive ? t('live') : t('offline')}</span>
             {cat != null && cat !== 'other' && <span className="tag tag-cat">{t(getCategoryKey(cat))}</span>}
-            {stream.tags != null && stream.tags.slice(0, 2).map((tag, i) => <span key={i} className="tag tag-hash">#{tag}</span>)}
+            {stream.tags?.slice(0, 2).map((tag, i) => <span key={i} className="tag tag-hash">#{tag}</span>)}
           </div>
         </div>
       </div>
