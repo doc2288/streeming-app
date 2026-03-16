@@ -28,7 +28,7 @@ async function createAndStoreRefreshToken (userId: string): Promise<string> {
 
 function parseDuration (value: string): number {
   const match = /^([0-9]+)([smhd])$/.exec(value)
-  if (!match) return 30 * 24 * 60 * 60 * 1000 // fallback: 30 days
+  if (match == null) return 30 * 24 * 60 * 60 * 1000 // fallback: 30 days
   const amount = Number(match[1])
   const unit = match[2]
   switch (unit) {
@@ -46,6 +46,15 @@ function cryptoRandom (): string {
 
 function sanitizeUser (row: Record<string, unknown>): { id: string, email: string, role: string } {
   return { id: row.id as string, email: row.email as string, role: row.role as string }
+}
+
+async function generateTokens (app: FastifyInstance, user: { id: string, email: string, role: string }): Promise<{ accessToken: string, refreshToken: string }> {
+  const accessToken = app.jwt.sign(
+    { sub: user.id, email: user.email, role: user.role },
+    { expiresIn: env.JWT_EXPIRES_IN }
+  )
+  const refreshToken = await createAndStoreRefreshToken(user.id)
+  return { accessToken, refreshToken }
 }
 
 export async function registerAuthRoutes (app: FastifyInstance): Promise<void> {
@@ -67,12 +76,8 @@ export async function registerAuthRoutes (app: FastifyInstance): Promise<void> {
       'INSERT INTO users (email, password_hash) VALUES ($1, $2) RETURNING id, email, role',
       [normalizedEmail, passwordHash]
     )
-    const user = sanitizeUser(insert.rows[0])
-    const accessToken = app.jwt.sign(
-      { sub: user.id, email: user.email, role: user.role },
-      { expiresIn: env.JWT_EXPIRES_IN }
-    )
-    const refreshToken = await createAndStoreRefreshToken(user.id)
+    const user = sanitizeUser(insert.rows[0] as Record<string, unknown>)
+    const { accessToken, refreshToken } = await generateTokens(app, user)
     return await reply.send({ accessToken, refreshToken, user })
   })
 
@@ -91,16 +96,12 @@ export async function registerAuthRoutes (app: FastifyInstance): Promise<void> {
       return await reply.code(401).send({ error: 'Invalid credentials' })
     }
     const row = result.rows[0]
-    const ok = await verifyPassword(password, row.password_hash)
+    const ok = await verifyPassword(password, row.password_hash as string)
     if (!ok) {
       return await reply.code(401).send({ error: 'Invalid credentials' })
     }
-    const user = sanitizeUser(row)
-    const accessToken = app.jwt.sign(
-      { sub: user.id, email: user.email, role: user.role },
-      { expiresIn: env.JWT_EXPIRES_IN }
-    )
-    const refreshToken = await createAndStoreRefreshToken(user.id)
+    const user = sanitizeUser(row as Record<string, unknown>)
+    const { accessToken, refreshToken } = await generateTokens(app, user)
     return await reply.send({ accessToken, refreshToken, user })
   })
 
@@ -121,7 +122,7 @@ export async function registerAuthRoutes (app: FastifyInstance): Promise<void> {
       return await reply.code(401).send({ error: 'Invalid refresh token' })
     }
     const row = res.rows[0]
-    if (new Date(row.expires_at) < new Date()) {
+    if (new Date(row.expires_at as string | number | Date) < new Date()) {
       return await reply.code(401).send({ error: 'Refresh token expired' })
     }
 
@@ -129,18 +130,14 @@ export async function registerAuthRoutes (app: FastifyInstance): Promise<void> {
     if (userRes.rowCount === null || userRes.rowCount === 0) {
       return await reply.code(401).send({ error: 'User not found' })
     }
-    const user = sanitizeUser(userRes.rows[0])
-    const accessToken = app.jwt.sign(
-      { sub: user.id, email: user.email, role: user.role },
-      { expiresIn: env.JWT_EXPIRES_IN }
-    )
-    const newRefreshToken = await createAndStoreRefreshToken(user.id)
+    const user = sanitizeUser(userRes.rows[0] as Record<string, unknown>)
+    const { accessToken, refreshToken: newRefreshToken } = await generateTokens(app, user)
     return await reply.send({ accessToken, refreshToken: newRefreshToken, user })
   })
 
   app.post('/auth/logout', { preHandler: [app.authenticate] }, async (request, reply) => {
     const body = request.body as { refreshToken?: string } | undefined
-    if (body?.refreshToken) {
+    if (body?.refreshToken != null && body.refreshToken !== '') {
       await pool.query(
         'DELETE FROM refresh_tokens WHERE token=$1 AND user_id=$2',
         [body.refreshToken, request.user.sub]
