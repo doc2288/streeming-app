@@ -1,0 +1,149 @@
+--- backend/src/app.ts
++++ backend/src/app.ts
+@@ -87,5 +87,5 @@
+   app.register(registerStreamRoutes)
+   app.register(registerChatRoutes)
+
+-  return app
++  return await Promise.resolve(app)
+ }
+--- backend/src/index.ts
++++ backend/src/index.ts
+@@ -16,10 +16,12 @@
+
+   const signals: NodeJS.Signals[] = ['SIGINT', 'SIGTERM']
+   for (const sig of signals) {
+-    process.on(sig, async () => {
+-      await app.close()
+-      await pool.end()
+-      process.exit(0)
++    process.on(sig, () => {
++      void (async () => {
++        await app.close()
++        await pool.end()
++        process.exit(0)
++      })()
+     })
+   }
+ }
+--- backend/src/routes/chat.ts
++++ backend/src/routes/chat.ts
+@@ -33,7 +33,8 @@
+   const res = await pool.query('SELECT settings FROM streams WHERE id=$1', [streamId])
+   if (res.rowCount === null || res.rowCount === 0) return 0
+   try {
+-    const parsed = typeof res.rows[0].settings === 'string' ? JSON.parse(res.rows[0].settings) : {}
++    const settings = res.rows[0].settings as unknown
++    const parsed = typeof settings === 'string' ? JSON.parse(settings) : {}
+     return typeof parsed.chat_slow_mode === 'number' ? parsed.chat_slow_mode : 0
+   } catch {
+     return 0
+@@ -54,7 +55,7 @@
+         userName = decoded.email.split('@')[0]
+       }
+     } catch {
+-      // anonymous connection — read-only
++      // anonymous connection — read-only, ignore
+     }
+
+     let room = rooms.get(streamId)
+@@ -90,7 +91,7 @@
+         return
+       }
+       void processMessage(raw, client, streamId, room, connection)
+     })
+
+     connection.socket.on('close', () => {
+@@ -100,7 +101,7 @@
+
+     connection.socket.on('error', () => {
+       room?.delete(client)
+     })
+   })
+ }
+--- backend/src/routes/streams.ts
++++ backend/src/routes/streams.ts
+@@ -44,11 +44,11 @@
+
+ function sanitizeStream (row: Record<string, unknown>, requestUserId: string | null): Record<string, unknown> {
+   const isOwner = row.user_id === requestUserId
+-  const { stream_key, ingest_url, ...safe } = row
++  const { stream_key: streamKey, ingest_url: ingestUrl, ...safe } = row
+   return {
+     ...safe,
+-    stream_key: isOwner ? stream_key : null,
+-    ingest_url: isOwner ? ingest_url : null
++    stream_key: isOwner ? streamKey : null,
++    ingest_url: isOwner ? ingestUrl : null
+   }
+ }
+
+@@ -62,8 +62,10 @@
+       // anonymous — no token or invalid token
+     }
+     const query = request.query as Record<string, string | undefined>
+-    const limit = Math.min(Math.max(parseInt(query.limit ?? '50', 10) || 50, 1), 100)
+-    const offset = Math.max(parseInt(query.offset ?? '0', 10) || 0, 0)
++    const pLimit = parseInt(query.limit ?? '50', 10)
++    const limit = Math.min(Math.max(Number.isNaN(pLimit) ? 50 : pLimit === 0 ? 50 : pLimit, 1), 100)
++    const pOffset = parseInt(query.offset ?? '0', 10)
++    const offset = Math.max(Number.isNaN(pOffset) ? 0 : pOffset, 0)
+     const res = await pool.query(
+       'SELECT id, title, description, category, language, tags, settings, status, ingest_url, stream_key, thumbnail_url, user_id, created_at FROM streams ORDER BY created_at DESC LIMIT $1 OFFSET $2',
+       [limit, offset]
+@@ -95,9 +97,9 @@
+     if (!parsed.success) {
+       return await reply.code(400).send({ error: parsed.error.flatten() })
+     }
+-    const { title, description, category, language, tags, max_quality, delay_seconds, mature_content, chat_followers_only, chat_slow_mode } = parsed.data
++    const { title, description, category, language, tags, max_quality: maxQuality, delay_seconds: delaySeconds, mature_content: matureContent, chat_followers_only: chatFollowersOnly, chat_slow_mode: chatSlowMode } = parsed.data
+     const tagsStr = tags.join(',')
+-    const settings = JSON.stringify({ max_quality, delay_seconds, mature_content, chat_followers_only, chat_slow_mode })
++    const settings = JSON.stringify({ max_quality: maxQuality, delay_seconds: delaySeconds, mature_content: matureContent, chat_followers_only: chatFollowersOnly, chat_slow_mode: chatSlowMode })
+     const created = await pool.query(
+       'INSERT INTO streams (user_id, title, description, category, language, tags, settings, status) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
+       [request.user.sub, title, description, category, language, tagsStr, settings, 'offline']
+@@ -109,7 +111,7 @@
+       'UPDATE streams SET ingest_url=$1, stream_key=$2, updated_at=now() WHERE id=$3 RETURNING *',
+       [ingestUrl, streamKey, streamId]
+     )
+-    return { stream: sanitizeStream(updated.rows[0], request.user.sub) }
++    return { stream: sanitizeStream(updated.rows[0] as Record<string, unknown>, request.user.sub) }
+   })
+
+   app.post('/streams/:id/start', { preHandler: [app.authenticate] }, async (request, reply) => {
+@@ -127,7 +129,7 @@
+       'UPDATE streams SET status=$1, updated_at=now() WHERE id=$2 RETURNING *',
+       ['live', params.data.id]
+     )
+-    return { stream: sanitizeStream(updated.rows[0], request.user.sub) }
++    return { stream: sanitizeStream(updated.rows[0] as Record<string, unknown>, request.user.sub) }
+   })
+
+   app.post('/streams/:id/stop', { preHandler: [app.authenticate] }, async (request, reply) => {
+@@ -145,7 +147,7 @@
+       'UPDATE streams SET status=$1, updated_at=now() WHERE id=$2 RETURNING *',
+       ['offline', params.data.id]
+     )
+-    return { stream: sanitizeStream(updated.rows[0], request.user.sub) }
++    return { stream: sanitizeStream(updated.rows[0] as Record<string, unknown>, request.user.sub) }
+   })
+
+   app.patch('/streams/:id/settings', { preHandler: [app.authenticate] }, async (request, reply) => {
+--- backend/src/utils/password.ts
++++ backend/src/utils/password.ts
+@@ -2,10 +2,10 @@
+
+ const SALT_ROUNDS = 10
+
+-export async function hashPassword(password: string): Promise<string> {
+-  return bcrypt.hash(password, SALT_ROUNDS)
++export async function hashPassword (password: string): Promise<string> {
++  return await bcrypt.hash(password, SALT_ROUNDS)
+ }
+
+-export async function verifyPassword(password: string, hash: string): Promise<boolean> {
+-  return bcrypt.compare(password, hash)
++export async function verifyPassword (password: string, hash: string): Promise<boolean> {
++  return await bcrypt.compare(password, hash)
+ }

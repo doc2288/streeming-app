@@ -1,0 +1,18 @@
+--- backend/src/routes/chat.ts
++++ backend/src/routes/chat.ts
+@@ -93,13 +93,13 @@
+     })
+
+     connection.socket.on('close', () => {
+-      room?.delete(client)
+-      if (room != null && room.size === 0) rooms.delete(streamId)
++      if (room != null) room.delete(client)
++      if (room != null && room.size === 0) { rooms.delete(streamId) }
+     })
+
+     connection.socket.on('error', () => {
+-      room?.delete(client)
++      if (room != null) room.delete(client)
+     })
+   })
+ }
