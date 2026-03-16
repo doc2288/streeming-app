@@ -48,6 +48,15 @@ function sanitizeUser (row: Record<string, unknown>): { id: string, email: strin
   return { id: row.id as string, email: row.email as string, role: row.role as string }
 }
 
+async function generateTokens (app: FastifyInstance, user: { id: string, email: string, role: string }): Promise<{ accessToken: string, refreshToken: string }> {
+  const accessToken = app.jwt.sign(
+    { sub: user.id, email: user.email, role: user.role },
+    { expiresIn: env.JWT_EXPIRES_IN }
+  )
+  const refreshToken = await createAndStoreRefreshToken(user.id)
+  return { accessToken, refreshToken }
+}
+
 export async function registerAuthRoutes (app: FastifyInstance): Promise<void> {
   app.post('/auth/register', async (request, reply) => {
     const parsed = registerSchema.safeParse(request.body)
@@ -68,11 +77,7 @@ export async function registerAuthRoutes (app: FastifyInstance): Promise<void> {
       [normalizedEmail, passwordHash]
     )
     const user = sanitizeUser(insert.rows[0])
-    const accessToken = app.jwt.sign(
-      { sub: user.id, email: user.email, role: user.role },
-      { expiresIn: env.JWT_EXPIRES_IN }
-    )
-    const refreshToken = await createAndStoreRefreshToken(user.id)
+    const { accessToken, refreshToken } = await generateTokens(app, user)
     return await reply.send({ accessToken, refreshToken, user })
   })
 
@@ -96,11 +101,7 @@ export async function registerAuthRoutes (app: FastifyInstance): Promise<void> {
       return await reply.code(401).send({ error: 'Invalid credentials' })
     }
     const user = sanitizeUser(row)
-    const accessToken = app.jwt.sign(
-      { sub: user.id, email: user.email, role: user.role },
-      { expiresIn: env.JWT_EXPIRES_IN }
-    )
-    const refreshToken = await createAndStoreRefreshToken(user.id)
+    const { accessToken, refreshToken } = await generateTokens(app, user)
     return await reply.send({ accessToken, refreshToken, user })
   })
 
@@ -130,11 +131,7 @@ export async function registerAuthRoutes (app: FastifyInstance): Promise<void> {
       return await reply.code(401).send({ error: 'User not found' })
     }
     const user = sanitizeUser(userRes.rows[0])
-    const accessToken = app.jwt.sign(
-      { sub: user.id, email: user.email, role: user.role },
-      { expiresIn: env.JWT_EXPIRES_IN }
-    )
-    const newRefreshToken = await createAndStoreRefreshToken(user.id)
+    const { accessToken, refreshToken: newRefreshToken } = await generateTokens(app, user)
     return await reply.send({ accessToken, refreshToken: newRefreshToken, user })
   })
 
