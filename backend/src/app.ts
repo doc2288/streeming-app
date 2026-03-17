@@ -67,14 +67,14 @@ export async function createApp (): Promise<FastifyInstance> {
     try {
       await request.jwtVerify()
     } catch {
-      return await reply.code(401).send({ error: 'Unauthorized' })
+      await reply.code(401).send({ error: 'Unauthorized' })
     }
   })
 
   app.setErrorHandler(async (error, request, reply) => {
     request.log.error(error)
     const statusCode = error.statusCode ?? 500
-    return await reply.code(statusCode).send({
+    await reply.code(statusCode).send({
       error: statusCode >= 500 ? 'Internal Server Error' : error.message
     })
   })
@@ -87,5 +87,5 @@ export async function createApp (): Promise<FastifyInstance> {
   await registerChatRoutes(app)
   await registerWebhookRoutes(app)
 
-  return app
+  return await Promise.resolve(app)
 }

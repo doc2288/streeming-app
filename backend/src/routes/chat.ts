@@ -33,7 +33,8 @@ async function getStreamSlowMode (streamId: string): Promise<number> {
   const res = await pool.query('SELECT settings FROM streams WHERE id=$1', [streamId])
   if (res.rowCount === null || res.rowCount === 0) return 0
   try {
-    const parsed = typeof res.rows[0].settings === 'string' ? JSON.parse(res.rows[0].settings) : {}
+    const settings = (res.rows[0] as Record<string, unknown>).settings
+    const parsed = typeof settings === 'string' ? JSON.parse(settings) : {}
     return typeof parsed.chat_slow_mode === 'number' ? parsed.chat_slow_mode : 0
   } catch {
     return 0
@@ -46,7 +47,8 @@ export async function registerChatRoutes (app: FastifyInstance): Promise<void> {
   }
 
   app.get('/chat/:streamId', { websocket: true }, (connection, req) => {
-    const streamId = (req.params as any).streamId as string
+    const params = req.params as Record<string, unknown>
+    const streamId = typeof params.streamId === 'string' ? params.streamId : ''
 
     let userId: string | null = null
     let userName: string | null = null
@@ -54,7 +56,7 @@ export async function registerChatRoutes (app: FastifyInstance): Promise<void> {
       const url = new URL(req.url, 'http://localhost')
       const token = url.searchParams.get('token')
       if (token != null) {
-        const decoded = app.jwt.verify<{ sub: string; email: string }>(token)
+        const decoded = app.jwt.verify<{ sub: string, email: string }>(token)
         userId = decoded.sub
         userName = decoded.email.split('@')[0]
       }
@@ -90,7 +92,7 @@ export async function registerChatRoutes (app: FastifyInstance): Promise<void> {
       client.ready = true
 
       for (const raw of pendingMessages) {
-        await processMessage(raw, client, streamId, room!, connection)
+        if (room != null) await processMessage(raw, client, streamId, room, connection)
       }
       pendingMessages.length = 0
     })()
@@ -100,7 +102,7 @@ export async function registerChatRoutes (app: FastifyInstance): Promise<void> {
         pendingMessages.push(raw)
         return
       }
-      void processMessage(raw, client, streamId, room!, connection)
+      if (room != null) void processMessage(raw, client, streamId, room, connection)
     })
 
     connection.socket.on('close', () => {
