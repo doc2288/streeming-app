@@ -14,8 +14,6 @@ interface Props {
 }
 
 const FLAGS: Record<Lang, string> = { ua: '🇺🇦', en: '🇬🇧', no: '🇳🇴' }
-const LANG_NAMES: Record<Lang, string> = { ua: 'Українська', en: 'English', no: 'Norsk' }
-
 export function TopBar ({ user, onLogin, onLogout, onSearch, onNavigateHome, onNavigateDashboard, sidebarOpen, onToggleSidebar, searchValue }: Props): JSX.Element {
   const { t, lang, setLang } = useI18n()
   const [query, setQuery] = useState(searchValue)

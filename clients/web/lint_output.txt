@@ -1,0 +1,65 @@
+
+> @streeming/web@0.1.0 lint /app/clients/web
+> eslint "src/**/*.{ts,tsx}"
+
+
+/app/clients/web/src/App.tsx
+    3:15  error  'setAuthToken' is defined but never used                                                            @typescript-eslint/no-unused-vars
+    3:29  error  'setRefreshToken' is defined but never used                                                         @typescript-eslint/no-unused-vars
+   14:23  error  Unexpected separator (;)                                                                            @typescript-eslint/member-delimiter-style
+   14:46  error  Unexpected separator (;)                                                                            @typescript-eslint/member-delimiter-style
+   15:32  error  Unexpected separator (;)                                                                            @typescript-eslint/member-delimiter-style
+   18:14  error  Unexpected separator (;)                                                                            @typescript-eslint/member-delimiter-style
+   18:29  error  Unexpected separator (;)                                                                            @typescript-eslint/member-delimiter-style
+   18:50  error  Unexpected separator (;)                                                                            @typescript-eslint/member-delimiter-style
+   18:68  error  Unexpected separator (;)                                                                            @typescript-eslint/member-delimiter-style
+   18:86  error  Unexpected separator (;)                                                                            @typescript-eslint/member-delimiter-style
+   20:18  error  Unexpected separator (;)                                                                            @typescript-eslint/member-delimiter-style
+   20:45  error  Unexpected separator (;)                                                                            @typescript-eslint/member-delimiter-style
+   20:72  error  Unexpected separator (;)                                                                            @typescript-eslint/member-delimiter-style
+   21:19  error  Unexpected separator (;)                                                                            @typescript-eslint/member-delimiter-style
+   63:59  error  Unsafe argument of type `any` assigned to a parameter of type `SetStateAction<Stream[]>`            @typescript-eslint/no-unsafe-argument
+   70:15  error  Unsafe argument of type `any` assigned to a parameter of type `SetStateAction<UserInfo | null>`     @typescript-eslint/no-unsafe-argument
+  178:73  error  Unsafe argument of type `any` assigned to a parameter of type `SetStateAction<"ua" | "en" | "no">`  @typescript-eslint/no-unsafe-argument
+
+/app/clients/web/src/api.ts
+    4:23  error  Unexpected any value in conditional. An explicit comparison or type cast is required         @typescript-eslint/strict-boolean-expressions
+   18:40  error  Unsafe argument of type `any` assigned to a parameter of type `string`                       @typescript-eslint/no-unsafe-argument
+  114:8   error  Unexpected nullable boolean value in conditional. Please handle the nullish case explicitly  @typescript-eslint/strict-boolean-expressions
+
+/app/clients/web/src/components/AuthModal.tsx
+  24:20  error  Unsafe argument of type `any` assigned to a parameter of type `string | null`  @typescript-eslint/no-unsafe-argument
+  24:59  error  Unsafe argument of type `any` assigned to a parameter of type `string | null`  @typescript-eslint/no-unsafe-argument
+
+/app/clients/web/src/components/BrowsePage.tsx
+  1:52  error  'Category' is defined but never used  @typescript-eslint/no-unused-vars
+
+/app/clients/web/src/components/Chat.tsx
+    7:25  error  Unexpected separator (;)      @typescript-eslint/member-delimiter-style
+    7:50  error  Unexpected separator (;)      @typescript-eslint/member-delimiter-style
+    7:67  error  Unexpected separator (;)      @typescript-eslint/member-delimiter-style
+  197:20  error  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+
+/app/clients/web/src/components/Dashboard.tsx
+  6:23  error  Unexpected separator (;)  @typescript-eslint/member-delimiter-style
+  6:46  error  Unexpected separator (;)  @typescript-eslint/member-delimiter-style
+  7:32  error  Unexpected separator (;)  @typescript-eslint/member-delimiter-style
+
+/app/clients/web/src/components/StreamCard.tsx
+  44:14  error  Prefer using an optional chain expression instead, as it's more concise and easier to read  @typescript-eslint/prefer-optional-chain
+
+/app/clients/web/src/components/TopBar.tsx
+  17:7  error  'LANG_NAMES' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/app/clients/web/src/components/WatchPage.tsx
+  30:5  error  Prefer using an optional chain expression instead, as it's more concise and easier to read  @typescript-eslint/prefer-optional-chain
+
+/app/clients/web/src/config/env.ts
+  14:27  error  Unsafe argument of type `any` assigned to a parameter of type `string`  @typescript-eslint/no-unsafe-argument
+
+/app/clients/web/src/main.tsx
+  8:21  error  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+
+✖ 35 problems (35 errors, 0 warnings)
+
+ ELIFECYCLE  Command failed with exit code 1.
