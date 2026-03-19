@@ -10,6 +10,7 @@ function normalizeBaseUrl (value: string): string {
 }
 
 export function getMediaServerUrl (): string {
-  const configured = import.meta.env.VITE_MEDIA_SERVER_URL
+  const envVal = import.meta.env.VITE_MEDIA_SERVER_URL
+  const configured = typeof envVal === 'string' ? envVal : null
   return normalizeBaseUrl(configured ?? defaultMediaServerUrl)
 }
