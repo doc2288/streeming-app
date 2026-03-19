@@ -212,9 +212,13 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); line
 .stream-card {
   border-radius: var(--rl); overflow: hidden; cursor: pointer;
   background: transparent;
-  transition: transform .12s ease, opacity .12s;
+  transition: transform .12s ease, opacity .12s, box-shadow .12s;
 }
 .stream-card:hover { transform: translateY(-3px); }
+.stream-card:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--brand);
+}
 
 .card-thumbnail {
   position: relative; width: 100%; aspect-ratio: 16/9;
