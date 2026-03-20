@@ -20,7 +20,7 @@ interface Stream {
   status: string; ingest_url: string | null; stream_key: string | null; thumbnail_url: string | null
   user_id: string; created_at?: string
 }
-interface UserInfo { id: string; email: string; role: string }
+interface UserInfo { id: string, email: string, role: string }
 
 export default function App (): JSX.Element {
   const { t, lang } = useI18n()
@@ -33,7 +33,7 @@ export default function App (): JSX.Element {
   const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth > 1200)
   const [searchQuery, setSearchQuery] = useState('')
   const [view, setView] = useState('home')
-  const [toast, setToast] = useState<{ text: string; type: 'ok' | 'err' } | null>(null)
+  const [toast, setToast] = useState<{ text: string, type: 'ok' | 'err' } | null>(null)
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const [newTitle, setNewTitle] = useState('')
@@ -102,9 +102,16 @@ export default function App (): JSX.Element {
     try {
       const parsedTags = newTags.split(/[,\s]+/).map(t => t.replace(/^#/, '').trim()).filter(t => t.length > 0).slice(0, 5)
       const res = await api.post('/streams', {
-        title: newTitle.trim(), description: newDesc.trim(), category: newCat, language: newLang, tags: parsedTags,
-        max_quality: newMaxQuality, delay_seconds: newDelay, mature_content: newMature,
-        chat_followers_only: newChatFollowers, chat_slow_mode: newChatSlow
+        title: newTitle.trim(),
+        description: newDesc.trim(),
+        category: newCat,
+        language: newLang,
+        tags: parsedTags,
+        max_quality: newMaxQuality,
+        delay_seconds: newDelay,
+        mature_content: newMature,
+        chat_followers_only: newChatFollowers,
+        chat_slow_mode: newChatSlow
       })
       const streamId = res.data.stream.id
       if (newThumb != null) {
@@ -125,15 +132,21 @@ export default function App (): JSX.Element {
         <Sidebar streams={streams} open={sidebarOpen} currentView={view} onNavigate={(v) => { setView(v); setSelectedId(null); setSearchQuery('') }} onSelectStream={handleSelectStream} onFilterCategory={setActiveCategory} activeCategory={activeCategory} />
 
         <main className={`main-content ${sidebarOpen ? '' : 'expanded'}`}>
-          {view === 'watch' && selected != null ? (
+          {view === 'watch' && selected != null
+            ? (
             <WatchPage stream={selected} user={user} onBack={navigateHome} onRefresh={() => { void fetchStreams() }} onDelete={handleDelete} />
-          ) : view === 'dashboard' && user != null ? (
+              )
+            : view === 'dashboard' && user != null
+              ? (
             <Dashboard streams={streams} userId={user.id} onRefresh={() => { void fetchStreams() }} onDelete={handleDelete} flash={flash} onShowCreate={() => { setShowCreate(true) }} />
-          ) : view === 'browse' ? (
+                )
+              : view === 'browse'
+                ? (
             <BrowsePage streams={streams} onWatch={handleWatch} />
-          ) : (
+                  )
+                : (
             <StreamGrid streams={streams} onWatch={handleWatch} searchQuery={searchQuery} categoryFilter={activeCategory} />
-          )}
+                  )}
         </main>
       </div>
 
@@ -210,19 +223,21 @@ export default function App (): JSX.Element {
               <div className="form-group">
                 <label>{t('thumbnail')}</label>
                 <div className="thumb-upload-area">
-                  {thumbPreview != null ? (
+                  {thumbPreview != null
+                    ? (
                     <div className="thumb-preview">
                       <img src={thumbPreview} alt="preview" />
                       <button type="button" className="thumb-remove" onClick={() => { setNewThumb(null); setThumbPreview(null) }}>×</button>
                     </div>
-                  ) : (
+                      )
+                    : (
                     <label className="thumb-dropzone">
                       <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><path d="M21 15l-5-5L5 21" /></svg>
                       <span>{t('uploadThumbnail')}</span>
                       <span className="thumb-hint">{t('thumbnailHint')}</span>
                       <input type="file" accept="image/jpeg,image/png,image/webp,image/gif" onChange={handleThumbChange} hidden />
                     </label>
-                  )}
+                      )}
                 </div>
               </div>
               <button type="submit" className="btn-primary btn-full">{t('create')}</button>
