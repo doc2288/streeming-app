@@ -2,13 +2,16 @@ import { useEffect, useRef, useState, useCallback } from 'react'
 import { getWsBaseUrl, getStoredToken } from '../api'
 import { useI18n } from '../i18n'
 
-interface Reaction { emoji: string; count: number; mine: boolean }
+interface Reaction { emoji: string, count: number, mine: boolean }
 interface Message {
-  userId: string | null; userName: string | null; message: string; ts: number
+  userId: string | null
+  userName: string | null
+  message: string
+  ts: number
   type?: 'msg' | 'system' | 'action' | 'highlight'
   reactions?: Reaction[]
 }
-interface Props { streamId: string; ownerUserId?: string }
+interface Props { streamId: string, ownerUserId?: string }
 
 const NAME_COLORS = ['#ff4500', '#b22222', '#ff69b4', '#1e90ff', '#9acd32', '#ff7f50', '#2e8b57', '#daa520', '#d2691e', '#5f9ea0', '#00ff7f', '#8a2be2', '#ff0000', '#0000ff', '#008000']
 function nameColor (id: string | null): string {
@@ -51,7 +54,7 @@ export function Chat ({ streamId, ownerUserId }: Props): JSX.Element {
   const [showRules, setShowRules] = useState(false)
   const [hoveredMsg, setHoveredMsg] = useState<number | null>(null)
   const [raining, setRaining] = useState(false)
-  const [rainParticles, setRainParticles] = useState<Array<{ id: number; emoji: string; x: number; delay: number }>>([])
+  const [rainParticles, setRainParticles] = useState<Array<{ id: number, emoji: string, x: number, delay: number }>>([])
   const socketRef = useRef<WebSocket | null>(null)
   const endRef = useRef<HTMLDivElement | null>(null)
   const inputRef = useRef<HTMLInputElement | null>(null)
@@ -117,8 +120,7 @@ export function Chat ({ streamId, ownerUserId }: Props): JSX.Element {
       const reactions = [...(m.reactions ?? [])]
       const existing = reactions.find(r => r.emoji === emoji)
       if (existing != null) {
-        if (existing.mine) { existing.count--; existing.mine = false; if (existing.count <= 0) return { ...m, reactions: reactions.filter(r => r.count > 0) } }
-        else { existing.count++; existing.mine = true }
+        if (existing.mine) { existing.count--; existing.mine = false; if (existing.count <= 0) return { ...m, reactions: reactions.filter(r => r.count > 0) } } else { existing.count++; existing.mine = true }
       } else {
         reactions.push({ emoji, count: 1, mine: true })
       }
@@ -182,18 +184,20 @@ export function Chat ({ streamId, ownerUserId }: Props): JSX.Element {
               )}
               <span className="chat-ts">{fmtTime(m.ts)}</span>
               {owner && <span className="chat-owner-badge" title="Streamer">🎬</span>}
-              {m.type === 'action' ? (
+              {m.type === 'action'
+                ? (
                 <span className="chat-action-text" style={{ color }}>★ {name} {renderBody(m.message)}</span>
-              ) : (
+                  )
+                : (
                 <>
                   <span className="chat-badge-name" style={{ color }} onClick={() => { replyTo(name) }}>{name}</span>
                   <span className="chat-colon">: </span>
                   <span className="chat-body">{renderBody(m.message)}</span>
                 </>
-              )}
-              {(m.reactions ?? []).length > 0 && (
+                  )}
+              {(m.reactions ?? []).length > 0 && m.reactions != null && (
                 <div className="chat-reactions">
-                  {m.reactions!.map((r, ri) => (
+                  {m.reactions.map((r, ri) => (
                     <button key={ri} className={`chat-reaction ${r.mine ? 'mine' : ''}`} onClick={() => { addReaction(i, r.emoji) }}>
                       {r.emoji} {r.count}
                     </button>
