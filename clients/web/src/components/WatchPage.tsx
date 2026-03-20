@@ -5,9 +5,31 @@ import { api } from '../api'
 import { useI18n, getCategoryKey, type Category } from '../i18n'
 import { getMediaServerUrl } from '../config/env'
 
-interface StreamSettings { max_quality: string; delay_seconds: number; mature_content: boolean; chat_followers_only: boolean; chat_slow_mode: number }
-interface Stream { id: string; title: string; description?: string; category?: string; settings?: StreamSettings; status: string; ingest_url: string | null; stream_key: string | null; user_id: string }
-interface Props { stream: Stream; user: { id: string; email: string; role: string } | null; onBack: () => void; onRefresh: () => void; onDelete: (id: string) => void }
+interface StreamSettings {
+  max_quality: string
+  delay_seconds: number
+  mature_content: boolean
+  chat_followers_only: boolean
+  chat_slow_mode: number
+}
+interface Stream {
+  id: string
+  title: string
+  description?: string
+  category?: string
+  settings?: StreamSettings
+  status: string
+  ingest_url: string | null
+  stream_key: string | null
+  user_id: string
+}
+interface Props {
+  stream: Stream
+  user: { id: string, email: string, role: string } | null
+  onBack: () => void
+  onRefresh: () => void
+  onDelete: (id: string) => void
+}
 
 const mediaServerUrl = getMediaServerUrl()
 const FOLLOWED_CHANNELS_KEY = 'streeming_followed_channels'
@@ -26,11 +48,9 @@ export function WatchPage ({ stream, user, onBack, onRefresh, onDelete }: Props)
   const delaySeconds = stream.settings?.delay_seconds ?? 0
   const cat = stream.category as Category | undefined
   const defaultObsServer = 'rtmp://localhost/live'
-  const obsServer = (
-    stream.ingest_url != null && stream.ingest_url.endsWith(`/${stream.id}`)
-      ? stream.ingest_url.slice(0, -(`/${stream.id}`).length)
-      : defaultObsServer
-  )
+  const obsServer = (stream.ingest_url?.endsWith(`/${stream.id}`) === true)
+    ? stream.ingest_url.slice(0, -(`/${stream.id}`).length)
+    : defaultObsServer
 
   const handleStart = async (): Promise<void> => { try { await api.post(`/streams/${stream.id}/start`); onRefresh() } catch {} }
   const handleStop = async (): Promise<void> => { try { await api.post(`/streams/${stream.id}/stop`); onRefresh() } catch {} }

@@ -1,18 +1,19 @@
 import axios from 'axios'
 import type { AxiosError, InternalAxiosRequestConfig } from 'axios'
 
-const defaultApiUrl = import.meta.env.DEV
+const defaultApiUrl = (import.meta.env.DEV === true)
   ? 'http://localhost:4000'
   : typeof window !== 'undefined'
     ? `${window.location.origin}/api`
     : 'http://localhost:4000'
-const API_URL = import.meta.env.VITE_API_URL ?? defaultApiUrl
+const API_URL = (import.meta.env.VITE_API_URL != null && import.meta.env.VITE_API_URL !== '') ? import.meta.env.VITE_API_URL : defaultApiUrl
 
-function normalizeApiUrl (value: string): URL {
+function normalizeApiUrl (value: unknown): URL {
+  const str = String(value)
   if (typeof window !== 'undefined') {
-    return new URL(value, window.location.origin)
+    return new URL(str, window.location.origin)
   }
-  return new URL(value)
+  return new URL(str)
 }
 
 const resolvedApiUrl = normalizeApiUrl(API_URL)
@@ -108,17 +109,18 @@ api.interceptors.response.use(
     const original = axiosError.config as RetryRequestConfig | undefined
     const skipRefreshUrls = ['/auth/login', '/auth/register', '/auth/refresh']
     const shouldSkipRefresh = skipRefreshUrls.some(url => original?.url?.includes(url))
+    const hasRetryFlag = original?._retry === true
     if (
       axiosError.response?.status === 401 &&
       original != null &&
-      !original._retry &&
+      !hasRetryFlag &&
       !shouldSkipRefresh
     ) {
       original._retry = true
       const accessToken = await refreshAccessToken()
       if (accessToken != null) {
-          original.headers.Authorization = `Bearer ${accessToken}`
-          return await api(original)
+        original.headers.Authorization = `Bearer ${accessToken}`
+        return await api(original)
       }
     }
     return await Promise.reject(error)
