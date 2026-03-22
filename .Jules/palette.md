@@ -1,0 +1,1 @@
+## 2024-03-22 - Added ARIA labels to icon-only TopBar buttons\n**Learning:** The TopBar in the web client uses icon-only buttons for menus, clearing search, and language selection. Screen readers would struggle without proper `aria-label` attributes.\n**Action:** Always ensure icon-only interactive elements in reusable components get `aria-label` props for accessibility.
