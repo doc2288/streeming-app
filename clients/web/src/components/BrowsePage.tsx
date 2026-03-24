@@ -1,4 +1,4 @@
-import { useI18n, CATEGORIES, getCategoryKey, type Category } from '../i18n'
+import { useI18n, CATEGORIES, getCategoryKey } from '../i18n'
 import { StreamCard } from './StreamCard'
 
 interface Stream { id: string, title: string, status: string, ingest_url: string | null, stream_key: string | null, user_id: string, category?: string, thumbnail_url?: string | null }

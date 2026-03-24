@@ -1,12 +1,12 @@
 import axios from 'axios'
 import type { AxiosError, InternalAxiosRequestConfig } from 'axios'
 
-const defaultApiUrl = import.meta.env.DEV
+const defaultApiUrl = import.meta.env.DEV === true
   ? 'http://localhost:4000'
   : typeof window !== 'undefined'
     ? `${window.location.origin}/api`
     : 'http://localhost:4000'
-const API_URL = import.meta.env.VITE_API_URL ?? defaultApiUrl
+const API_URL = (import.meta.env.VITE_API_URL as string | undefined) ?? defaultApiUrl
 
 function normalizeApiUrl (value: string): URL {
   if (typeof window !== 'undefined') {
@@ -107,11 +107,11 @@ api.interceptors.response.use(
     const axiosError = error as AxiosError
     const original = axiosError.config as RetryRequestConfig | undefined
     const skipRefreshUrls = ['/auth/login', '/auth/register', '/auth/refresh']
-    const shouldSkipRefresh = skipRefreshUrls.some(url => original?.url?.includes(url))
+    const shouldSkipRefresh = skipRefreshUrls.some(url => original?.url?.includes(url) === true)
     if (
       axiosError.response?.status === 401 &&
       original != null &&
-      !original._retry &&
+      original._retry !== true &&
       !shouldSkipRefresh
     ) {
       original._retry = true

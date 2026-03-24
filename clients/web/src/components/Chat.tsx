@@ -197,7 +197,7 @@ export function Chat ({ streamId, ownerUserId }: Props): JSX.Element {
                   )}
               {(m.reactions ?? []).length > 0 && (
                 <div className="chat-reactions">
-                  {m.reactions!.map((r, ri) => (
+                  {(m.reactions ?? []).map((r, ri) => (
                     <button key={ri} className={`chat-reaction ${r.mine ? 'mine' : ''}`} onClick={() => { addReaction(i, r.emoji) }}>
                       {r.emoji} {r.count}
                     </button>

@@ -20,11 +20,11 @@ export function AuthModal ({ onClose, onSuccess }: Props): JSX.Element {
     if (email.trim().length === 0 || password.length < 8) { setError(t('authRequired')); return }
     setLoading(true); setError(null)
     try {
-      const res = await api.post(`/auth/${mode}`, { email: email.trim(), password })
+      const res = await api.post<{ accessToken: string | null, refreshToken: string | null, user: { id: string, email: string, role: string } }>(`/auth/${mode}`, { email: email.trim(), password })
       setAuthToken(res.data.accessToken); setRefreshToken(res.data.refreshToken)
       onSuccess({ id: res.data.user.id, email: res.data.user.email, role: res.data.user.role })
-    } catch (err: any) {
-      const msg = err.response?.data?.error
+    } catch (err: unknown) {
+      const msg = (err as any)?.response?.data?.error
       setError(typeof msg === 'string' ? msg : t('authError'))
     } finally { setLoading(false) }
   }
