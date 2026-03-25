@@ -1,8 +1,8 @@
 import { StreamCard } from './StreamCard'
 import { useI18n } from '../i18n'
 
-interface Stream { id: string; title: string; status: string; ingest_url: string | null; stream_key: string | null; user_id: string; category?: string; tags?: string[] }
-interface Props { streams: Stream[]; onWatch: (stream: Stream) => void; searchQuery: string; categoryFilter?: string | null }
+interface Stream { id: string, title: string, status: string, ingest_url: string | null, stream_key: string | null, user_id: string, category?: string, tags?: string[] }
+interface Props { streams: Stream[], onWatch: (stream: Stream) => void, searchQuery: string, categoryFilter?: string | null }
 
 export function StreamGrid ({ streams, onWatch, searchQuery, categoryFilter }: Props): JSX.Element {
   const { t } = useI18n()
@@ -22,11 +22,13 @@ export function StreamGrid ({ streams, onWatch, searchQuery, categoryFilter }: P
       )}
       <section className="grid-section">
         <div className="section-header"><h2>{searchQuery.length > 0 ? t('allStreams') : t('recommendedChannels')}</h2>{offline.length > 0 && <span className="section-count">{offline.length} {t('channels_count')}</span>}</div>
-        {[...live, ...offline].length === 0 ? (
+        {[...live, ...offline].length === 0
+          ? (
           <div className="empty-state"><svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" opacity="0.3"><rect x="2" y="3" width="20" height="14" rx="2" /><path d="M8 21h8M12 17v4" /></svg><h3>{t('noStreams')}</h3><p>{t('createFirst')}</p></div>
-        ) : (
+            )
+          : (
           <div className="stream-grid">{offline.map(s => <StreamCard key={s.id} stream={s} onWatch={onWatch} />)}</div>
-        )}
+            )}
       </section>
     </div>
   )
