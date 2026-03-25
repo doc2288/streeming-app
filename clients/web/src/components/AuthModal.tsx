@@ -21,10 +21,12 @@ export function AuthModal ({ onClose, onSuccess }: Props): JSX.Element {
     setLoading(true); setError(null)
     try {
       const res = await api.post(`/auth/${mode}`, { email: email.trim(), password })
-      setAuthToken(res.data.accessToken); setRefreshToken(res.data.refreshToken)
-      onSuccess({ id: res.data.user.id, email: res.data.user.email, role: res.data.user.role })
-    } catch (err: any) {
-      const msg = err.response?.data?.error
+      setAuthToken(res.data.accessToken as string); setRefreshToken(res.data.refreshToken as string)
+      const u = res.data.user as { id: string, email: string, role: string }
+      onSuccess({ id: u.id, email: u.email, role: u.role })
+    } catch (err: unknown) {
+      const e = err as { response?: { data?: { error?: unknown } } }
+      const msg = e.response?.data?.error
       setError(typeof msg === 'string' ? msg : t('authError'))
     } finally { setLoading(false) }
   }

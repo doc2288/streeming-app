@@ -11,5 +11,5 @@ function normalizeBaseUrl (value: string): string {
 
 export function getMediaServerUrl (): string {
   const configured = import.meta.env.VITE_MEDIA_SERVER_URL
-  return normalizeBaseUrl(configured ?? defaultMediaServerUrl)
+  return normalizeBaseUrl(typeof configured === 'string' && configured !== '' ? configured : defaultMediaServerUrl)
 }
