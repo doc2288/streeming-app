@@ -16,13 +16,10 @@ async function bootstrap (): Promise<void> {
 
   const signals: NodeJS.Signals[] = ['SIGINT', 'SIGTERM']
   for (const sig of signals) {
-    process.on(sig, () => {
-      Promise.all([app.close(), pool.end()])
-        .then(() => process.exit(0))
-        .catch((err) => {
-          app.log.error(err)
-          process.exit(1)
-        })
+    process.on(sig, async () => {
+      await app.close()
+      await pool.end()
+      process.exit(0)
     })
   }
 }
