@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { api, setAuthToken, setRefreshToken } from '../api'
 import { useI18n } from '../i18n'
 
@@ -14,6 +14,14 @@ export function AuthModal ({ onClose, onSuccess }: Props): JSX.Element {
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent): void => {
+      if (e.key === 'Escape') onClose()
+    }
+    document.addEventListener('keydown', handleKeyDown)
+    return () => { document.removeEventListener('keydown', handleKeyDown) }
+  }, [onClose])
 
   const handleSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault()
@@ -32,7 +40,7 @@ export function AuthModal ({ onClose, onSuccess }: Props): JSX.Element {
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal" onClick={(e) => { e.stopPropagation() }}>
-        <button className="modal-close" onClick={onClose}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6L6 18M6 6l12 12" /></svg></button>
+        <button className="modal-close" onClick={onClose} aria-label={t('cancel')}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6L6 18M6 6l12 12" /></svg></button>
         <div className="modal-header">
           <svg className="modal-logo" width="40" height="40" viewBox="0 0 24 24" fill="none"><rect width="24" height="24" rx="6" fill="url(#mg)" /><path d="M7 8l5 4-5 4V8z" fill="#fff" /><path d="M12 8l5 4-5 4V8z" fill="#fff" opacity="0.6" /><defs><linearGradient id="mg" x1="0" y1="0" x2="24" y2="24"><stop stopColor="#7c3aed" /><stop offset="1" stopColor="#2563eb" /></linearGradient></defs></svg>
           <h2>{mode === 'login' ? t('loginTitle') : t('registerTitle')}</h2>

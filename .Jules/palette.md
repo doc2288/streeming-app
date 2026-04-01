@@ -1,0 +1,3 @@
+## 2024-04-10 - Keyboard Navigation in Modals
+**Learning:** Modals often overlook keyboard-only users who expect to be able to close a modal overlay by pressing the Escape key, which is standard behavior. Additionally, dynamically-generated interface elements (like language pickers from an array) frequently omit ARIA labels, creating silent barriers for screen readers.
+**Action:** Always verify that custom modal components have an Escape keydown event listener. When mapping over arrays to generate icon buttons (like language flags), explicitly include a screen-reader-friendly text representation in the `aria-label` attribute.

@@ -51,7 +51,7 @@ export function TopBar ({ user, onLogin, onLogout, onSearch, onNavigateHome, onN
       <form className="topbar-search" onSubmit={(e) => { e.preventDefault(); onSearch(query.trim()) }}>
         <input type="text" placeholder={t('search')} value={query} onChange={(e) => { setQuery(e.target.value) }} />
         {query.length > 0 && (
-          <button type="button" className="search-clear" onClick={() => { setQuery(''); onSearch('') }}>×</button>
+          <button type="button" className="search-clear" aria-label="Clear search" onClick={() => { setQuery(''); onSearch('') }}>×</button>
         )}
         <button type="submit" className="search-btn" aria-label="Search">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="11" cy="11" r="7" /><line x1="16.5" y1="16.5" x2="22" y2="22" /></svg>
@@ -81,7 +81,7 @@ export function TopBar ({ user, onLogin, onLogout, onSearch, onNavigateHome, onN
                   <span className="menu-label">{t('interfaceLang')}</span>
                   <div className="menu-lang-row">
                     {(['ua', 'en', 'no'] as Lang[]).map(l => (
-                      <button key={l} className={`menu-lang-btn ${l === lang ? 'active' : ''}`} onClick={() => { setLang(l) }}>
+                      <button key={l} className={`menu-lang-btn ${l === lang ? 'active' : ''}`} onClick={() => { setLang(l) }} aria-label={LANG_NAMES[l]}>
                         {FLAGS[l]}
                       </button>
                     ))}
@@ -99,7 +99,7 @@ export function TopBar ({ user, onLogin, onLogout, onSearch, onNavigateHome, onN
           <div className="topbar-auth">
             <div className="topbar-lang-mini">
               {(['ua', 'en', 'no'] as Lang[]).map(l => (
-                <button key={l} className={`lang-mini ${l === lang ? 'active' : ''}`} onClick={() => { setLang(l) }}>{FLAGS[l]}</button>
+                <button key={l} className={`lang-mini ${l === lang ? 'active' : ''}`} onClick={() => { setLang(l) }} aria-label={LANG_NAMES[l]}>{FLAGS[l]}</button>
               ))}
             </div>
             <button className="btn-signup" onClick={onLogin}>{t('login')}</button>
