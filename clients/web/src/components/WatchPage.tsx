@@ -5,9 +5,9 @@ import { api } from '../api'
 import { useI18n, getCategoryKey, type Category } from '../i18n'
 import { getMediaServerUrl } from '../config/env'
 
-interface StreamSettings { max_quality: string, delay_seconds: number, mature_content: boolean, chat_followers_only: boolean, chat_slow_mode: number }
-interface Stream { id: string, title: string, description?: string, category?: string, settings?: StreamSettings, status: string, ingest_url: string | null, stream_key: string | null, user_id: string }
-interface Props { stream: Stream, user: { id: string, email: string, role: string } | null, onBack: () => void, onRefresh: () => void, onDelete: (id: string) => void }
+interface StreamSettings { max_quality: string; delay_seconds: number; mature_content: boolean; chat_followers_only: boolean; chat_slow_mode: number }
+interface Stream { id: string; title: string; description?: string; category?: string; settings?: StreamSettings; status: string; ingest_url: string | null; stream_key: string | null; user_id: string }
+interface Props { stream: Stream; user: { id: string; email: string; role: string } | null; onBack: () => void; onRefresh: () => void; onDelete: (id: string) => void }
 
 const mediaServerUrl = getMediaServerUrl()
 const FOLLOWED_CHANNELS_KEY = 'streeming_followed_channels'
