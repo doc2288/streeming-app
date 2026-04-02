@@ -1,16 +1,10 @@
 import { useI18n, CATEGORIES, getCategoryKey, type Category } from '../i18n'
 
-interface Stream { id: string, title: string, status: string, user_id: string, category?: string }
+interface Stream { id: string; title: string; status: string; user_id: string; category?: string }
 
 const CAT_ICONS: Record<string, string> = {
-  gaming: '🎮',
-  irl: '📷',
-  music: '🎵',
-  esports: '🏆',
-  creative: '🎨',
-  education: '📚',
-  talkshow: '🎙️',
-  other: '📺'
+  gaming: '🎮', irl: '📷', music: '🎵', esports: '🏆',
+  creative: '🎨', education: '📚', talkshow: '🎙️', other: '📺'
 }
 
 interface Props {
