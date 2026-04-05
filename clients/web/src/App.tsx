@@ -142,7 +142,7 @@ export default function App (): JSX.Element {
       {showCreate && (
         <div className="modal-overlay" onClick={() => { setShowCreate(false) }}>
           <div className="modal modal-lg" onClick={(e) => { e.stopPropagation() }}>
-            <button className="modal-close" onClick={() => { setShowCreate(false) }}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6L6 18M6 6l12 12" /></svg></button>
+            <button className="modal-close" onClick={() => { setShowCreate(false) }} aria-label={t('close')}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6L6 18M6 6l12 12" /></svg></button>
             <div className="modal-header"><h2>{t('createStream')}</h2></div>
             <form className="modal-form" onSubmit={(e) => { e.preventDefault(); void handleCreate() }}>
               <div className="form-group">
