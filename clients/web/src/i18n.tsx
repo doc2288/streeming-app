@@ -57,7 +57,6 @@ const translations = {
   streamLanguage: { ua: 'Мова стріму', en: 'Stream Language', no: 'Strømmens språk' },
   create: { ua: 'Створити', en: 'Create', no: 'Opprett' },
   cancel: { ua: 'Скасувати', en: 'Cancel', no: 'Avbryt' },
-  close: { ua: 'Закрити', en: 'Close', no: 'Lukk' },
   streamCreated: { ua: 'Стрім створено!', en: 'Stream created!', no: 'Strøm opprettet!' },
   streamCreatedDesc: { ua: 'Ваші ключі для стріму готові. Перейдіть у Панель керування щоб їх побачити.', en: 'Your stream keys are ready. Go to Dashboard to see them.', no: 'Strømnøklene dine er klare. Gå til Kontrollpanel for å se dem.' },
   goToDashboard: { ua: 'Перейти до панелі', en: 'Go to Dashboard', no: 'Gå til kontrollpanel' },
@@ -140,7 +139,7 @@ const translations = {
   // ---- Language names ----
   lang_ua: { ua: 'Українська', en: 'Ukrainian', no: 'Ukrainsk' },
   lang_en: { ua: 'English', en: 'English', no: 'English' },
-  lang_no: { ua: 'Norsk', en: 'Norwegian', no: 'Norsk' }
+  lang_no: { ua: 'Norsk', en: 'Norwegian', no: 'Norsk' },
 } as const
 
 export type TKey = keyof typeof translations
