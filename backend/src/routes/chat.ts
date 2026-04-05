@@ -33,8 +33,7 @@ async function getStreamSlowMode (streamId: string): Promise<number> {
   const res = await pool.query('SELECT settings FROM streams WHERE id=$1', [streamId])
   if (res.rowCount === null || res.rowCount === 0) return 0
   try {
-    const row = res.rows[0] as Record<string, unknown>
-    const parsed = typeof row.settings === 'string' ? JSON.parse(row.settings) : {}
+    const parsed = typeof res.rows[0].settings === 'string' ? JSON.parse(res.rows[0].settings) : {}
     return typeof parsed.chat_slow_mode === 'number' ? parsed.chat_slow_mode : 0
   } catch {
     return 0
@@ -55,7 +54,7 @@ export async function registerChatRoutes (app: FastifyInstance): Promise<void> {
       const url = new URL(req.url, 'http://localhost')
       const token = url.searchParams.get('token')
       if (token != null) {
-        const decoded = app.jwt.verify<{ sub: string, email: string }>(token)
+        const decoded = app.jwt.verify<{ sub: string; email: string }>(token)
         userId = decoded.sub
         userName = decoded.email.split('@')[0]
       }
@@ -91,7 +90,7 @@ export async function registerChatRoutes (app: FastifyInstance): Promise<void> {
       client.ready = true
 
       for (const raw of pendingMessages) {
-        await processMessage(raw, client, streamId, room, connection)
+        await processMessage(raw, client, streamId, room!, connection)
       }
       pendingMessages.length = 0
     })()
@@ -101,7 +100,7 @@ export async function registerChatRoutes (app: FastifyInstance): Promise<void> {
         pendingMessages.push(raw)
         return
       }
-      void processMessage(raw, client, streamId, room, connection)
+      void processMessage(raw, client, streamId, room!, connection)
     })
 
     connection.socket.on('close', () => {
