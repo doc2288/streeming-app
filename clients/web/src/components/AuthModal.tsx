@@ -4,7 +4,7 @@ import { useI18n } from '../i18n'
 
 interface Props {
   onClose: () => void
-  onSuccess: (user: { id: string; email: string; role: string }) => void
+  onSuccess: (user: { id: string, email: string, role: string }) => void
 }
 
 export function AuthModal ({ onClose, onSuccess }: Props): JSX.Element {
@@ -21,25 +21,34 @@ export function AuthModal ({ onClose, onSuccess }: Props): JSX.Element {
     setLoading(true); setError(null)
     try {
       const res = await api.post(`/auth/${mode}`, { email: email.trim(), password })
-      setAuthToken(res.data.accessToken); setRefreshToken(res.data.refreshToken)
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
+      setAuthToken(res.data.accessToken)
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
+      setRefreshToken(res.data.refreshToken)
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
       onSuccess({ id: res.data.user.id, email: res.data.user.email, role: res.data.user.role })
     } catch (err: any) {
-      const msg = err.response?.data?.error
-      setError(typeof msg === 'string' ? msg : t('authError'))
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
+      const msg = err?.response?.data?.error
+      if (typeof msg === 'string') {
+        setError(msg)
+      } else {
+        setError(t('authError'))
+      }
     } finally { setLoading(false) }
   }
 
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal" onClick={(e) => { e.stopPropagation() }}>
-        <button className="modal-close" onClick={onClose}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6L6 18M6 6l12 12" /></svg></button>
+        <button className="modal-close" onClick={onClose} aria-label={t('cancel')}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6L6 18M6 6l12 12" /></svg></button>
         <div className="modal-header">
           <svg className="modal-logo" width="40" height="40" viewBox="0 0 24 24" fill="none"><rect width="24" height="24" rx="6" fill="url(#mg)" /><path d="M7 8l5 4-5 4V8z" fill="#fff" /><path d="M12 8l5 4-5 4V8z" fill="#fff" opacity="0.6" /><defs><linearGradient id="mg" x1="0" y1="0" x2="24" y2="24"><stop stopColor="#7c3aed" /><stop offset="1" stopColor="#2563eb" /></linearGradient></defs></svg>
           <h2>{mode === 'login' ? t('loginTitle') : t('registerTitle')}</h2>
         </div>
         <form className="modal-form" onSubmit={(e) => { void handleSubmit(e) }}>
-          <div className="form-group"><label>{t('email')}</label><input type="email" placeholder="your@email.com" value={email} onChange={(e) => { setEmail(e.target.value) }} autoFocus /></div>
-          <div className="form-group"><label>{t('password')}</label><input type="password" placeholder={t('passwordMin')} value={password} onChange={(e) => { setPassword(e.target.value) }} /></div>
+          <div className="form-group"><label htmlFor="auth-email">{t('email')}</label><input id="auth-email" type="email" placeholder="your@email.com" value={email} onChange={(e) => { setEmail(e.target.value) }} autoFocus required disabled={loading} /></div>
+          <div className="form-group"><label htmlFor="auth-password">{t('password')}</label><input id="auth-password" type="password" placeholder={t('passwordMin')} value={password} onChange={(e) => { setPassword(e.target.value) }} required disabled={loading} /></div>
           {error != null && <div className="form-error">{error}</div>}
           <button type="submit" className="btn-primary btn-full" disabled={loading}>{loading ? t('wait') : mode === 'login' ? t('login') : t('register')}</button>
         </form>
