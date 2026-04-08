@@ -4,7 +4,7 @@ import { useI18n } from '../i18n'
 
 interface Props {
   onClose: () => void
-  onSuccess: (user: { id: string; email: string; role: string }) => void
+  onSuccess: (user: { id: string, email: string, role: string }) => void
 }
 
 export function AuthModal ({ onClose, onSuccess }: Props): JSX.Element {
@@ -21,8 +21,8 @@ export function AuthModal ({ onClose, onSuccess }: Props): JSX.Element {
     setLoading(true); setError(null)
     try {
       const res = await api.post(`/auth/${mode}`, { email: email.trim(), password })
-      setAuthToken(res.data.accessToken); setRefreshToken(res.data.refreshToken)
-      onSuccess({ id: res.data.user.id, email: res.data.user.email, role: res.data.user.role })
+      setAuthToken(res.data.accessToken as string); setRefreshToken(res.data.refreshToken as string)
+      onSuccess({ id: res.data.user.id as string, email: res.data.user.email as string, role: res.data.user.role as string })
     } catch (err: any) {
       const msg = err.response?.data?.error
       setError(typeof msg === 'string' ? msg : t('authError'))
@@ -32,16 +32,16 @@ export function AuthModal ({ onClose, onSuccess }: Props): JSX.Element {
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal" onClick={(e) => { e.stopPropagation() }}>
-        <button className="modal-close" onClick={onClose}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6L6 18M6 6l12 12" /></svg></button>
+        <button className="modal-close" onClick={onClose} aria-label="Close"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6L6 18M6 6l12 12" /></svg></button>
         <div className="modal-header">
           <svg className="modal-logo" width="40" height="40" viewBox="0 0 24 24" fill="none"><rect width="24" height="24" rx="6" fill="url(#mg)" /><path d="M7 8l5 4-5 4V8z" fill="#fff" /><path d="M12 8l5 4-5 4V8z" fill="#fff" opacity="0.6" /><defs><linearGradient id="mg" x1="0" y1="0" x2="24" y2="24"><stop stopColor="#7c3aed" /><stop offset="1" stopColor="#2563eb" /></linearGradient></defs></svg>
           <h2>{mode === 'login' ? t('loginTitle') : t('registerTitle')}</h2>
         </div>
         <form className="modal-form" onSubmit={(e) => { void handleSubmit(e) }}>
-          <div className="form-group"><label>{t('email')}</label><input type="email" placeholder="your@email.com" value={email} onChange={(e) => { setEmail(e.target.value) }} autoFocus /></div>
-          <div className="form-group"><label>{t('password')}</label><input type="password" placeholder={t('passwordMin')} value={password} onChange={(e) => { setPassword(e.target.value) }} /></div>
-          {error != null && <div className="form-error">{error}</div>}
-          <button type="submit" className="btn-primary btn-full" disabled={loading}>{loading ? t('wait') : mode === 'login' ? t('login') : t('register')}</button>
+          <div className="form-group"><label htmlFor="email">{t('email')}</label><input id="email" type="email" required placeholder="your@email.com" value={email} onChange={(e) => { setEmail(e.target.value) }} autoFocus /></div>
+          <div className="form-group"><label htmlFor="password">{t('password')}</label><input id="password" type="password" required minLength={8} placeholder={t('passwordMin')} value={password} onChange={(e) => { setPassword(e.target.value) }} /></div>
+          {error != null && <div className="form-error" role="alert">{error}</div>}
+          <button type="submit" className="btn-primary btn-full" disabled={loading} aria-busy={loading}>{loading ? t('wait') : mode === 'login' ? t('login') : t('register')}</button>
         </form>
         <div className="modal-footer">
           {mode === 'login'
