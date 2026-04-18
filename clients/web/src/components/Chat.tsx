@@ -2,13 +2,13 @@ import { useEffect, useRef, useState, useCallback } from 'react'
 import { getWsBaseUrl, getStoredToken } from '../api'
 import { useI18n } from '../i18n'
 
-interface Reaction { emoji: string; count: number; mine: boolean }
+interface Reaction { emoji: string, count: number, mine: boolean }
 interface Message {
   userId: string | null; userName: string | null; message: string; ts: number
   type?: 'msg' | 'system' | 'action' | 'highlight'
   reactions?: Reaction[]
 }
-interface Props { streamId: string; ownerUserId?: string }
+interface Props { streamId: string, ownerUserId?: string }
 
 const NAME_COLORS = ['#ff4500', '#b22222', '#ff69b4', '#1e90ff', '#9acd32', '#ff7f50', '#2e8b57', '#daa520', '#d2691e', '#5f9ea0', '#00ff7f', '#8a2be2', '#ff0000', '#0000ff', '#008000']
 function nameColor (id: string | null): string {
@@ -51,7 +51,7 @@ export function Chat ({ streamId, ownerUserId }: Props): JSX.Element {
   const [showRules, setShowRules] = useState(false)
   const [hoveredMsg, setHoveredMsg] = useState<number | null>(null)
   const [raining, setRaining] = useState(false)
-  const [rainParticles, setRainParticles] = useState<Array<{ id: number; emoji: string; x: number; delay: number }>>([])
+  const [rainParticles, setRainParticles] = useState<Array<{ id: number, emoji: string, x: number, delay: number }>>([])
   const socketRef = useRef<WebSocket | null>(null)
   const endRef = useRef<HTMLDivElement | null>(null)
   const inputRef = useRef<HTMLInputElement | null>(null)
@@ -117,8 +117,7 @@ export function Chat ({ streamId, ownerUserId }: Props): JSX.Element {
       const reactions = [...(m.reactions ?? [])]
       const existing = reactions.find(r => r.emoji === emoji)
       if (existing != null) {
-        if (existing.mine) { existing.count--; existing.mine = false; if (existing.count <= 0) return { ...m, reactions: reactions.filter(r => r.count > 0) } }
-        else { existing.count++; existing.mine = true }
+        if (existing.mine) { existing.count--; existing.mine = false; if (existing.count <= 0) return { ...m, reactions: reactions.filter(r => r.count > 0) } } else { existing.count++; existing.mine = true }
       } else {
         reactions.push({ emoji, count: 1, mine: true })
       }
@@ -143,7 +142,7 @@ export function Chat ({ streamId, ownerUserId }: Props): JSX.Element {
       <div className="chat-header">
         <span>{t('chatTitle')}</span>
         <div className="chat-header-actions">
-          <button className="chat-header-btn" onClick={() => { setShowRules(!showRules) }} title={t('chatRules')}>
+          <button className="chat-header-btn" onClick={() => { setShowRules(!showRules) }} title={t('chatRules')} aria-label={t('chatRules')}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4M12 8h.01" /></svg>
           </button>
           <span className={`chat-conn ${connected ? 'on' : 'off'}`} />
@@ -182,15 +181,17 @@ export function Chat ({ streamId, ownerUserId }: Props): JSX.Element {
               )}
               <span className="chat-ts">{fmtTime(m.ts)}</span>
               {owner && <span className="chat-owner-badge" title="Streamer">🎬</span>}
-              {m.type === 'action' ? (
+              {m.type === 'action'
+                ? (
                 <span className="chat-action-text" style={{ color }}>★ {name} {renderBody(m.message)}</span>
-              ) : (
+                  )
+                : (
                 <>
                   <span className="chat-badge-name" style={{ color }} onClick={() => { replyTo(name) }}>{name}</span>
                   <span className="chat-colon">: </span>
                   <span className="chat-body">{renderBody(m.message)}</span>
                 </>
-              )}
+                  )}
               {(m.reactions ?? []).length > 0 && (
                 <div className="chat-reactions">
                   {m.reactions!.map((r, ri) => (
@@ -213,11 +214,11 @@ export function Chat ({ streamId, ownerUserId }: Props): JSX.Element {
       )}
 
       <div className="chat-input-area">
-        <button className="chat-emoji-toggle" onClick={() => { setShowEmoji(!showEmoji) }} title="Emoji">
+        <button className="chat-emoji-toggle" onClick={() => { setShowEmoji(!showEmoji) }} title="Emoji" aria-label="Emoji">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><path d="M8 14s1.5 2 4 2 4-2 4-2" /><line x1="9" y1="9" x2="9.01" y2="9" /><line x1="15" y1="9" x2="15.01" y2="9" /></svg>
         </button>
         <input ref={inputRef} value={text} onChange={(e) => { setText(e.target.value) }} onKeyDown={(e) => { if (e.key === 'Enter') send() }} placeholder={connected ? t('chatPlaceholder') : t('connecting')} maxLength={500} disabled={!connected} />
-        <button onClick={send} disabled={!connected || text.trim().length === 0} className="chat-send">
+        <button onClick={send} disabled={!connected || text.trim().length === 0} className="chat-send" title={t('chatPlaceholder')} aria-label={t('chatPlaceholder')}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M2 21l21-9L2 3v7l15 2-15 2v7z" /></svg>
         </button>
       </div>
