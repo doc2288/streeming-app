@@ -1,0 +1,3 @@
+## 2026-04-23 - Form Accessibility Pattern
+**Learning:** Forms lack explicit `htmlFor`/`id` linking between labels and inputs, and inputs lack native HTML5 validation like `required` and `minLength`. This pattern was observed in `AuthModal.tsx`.
+**Action:** Pair custom component-level validation with native HTML5 validation attributes and explicit `htmlFor`/`id` linking between labels and inputs to ensure proper accessibility and screen reader support.
