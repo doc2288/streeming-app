@@ -38,8 +38,8 @@ export function AuthModal ({ onClose, onSuccess }: Props): JSX.Element {
           <h2>{mode === 'login' ? t('loginTitle') : t('registerTitle')}</h2>
         </div>
         <form className="modal-form" onSubmit={(e) => { void handleSubmit(e) }}>
-          <div className="form-group"><label>{t('email')}</label><input type="email" placeholder="your@email.com" value={email} onChange={(e) => { setEmail(e.target.value) }} autoFocus /></div>
-          <div className="form-group"><label>{t('password')}</label><input type="password" placeholder={t('passwordMin')} value={password} onChange={(e) => { setPassword(e.target.value) }} /></div>
+          <div className="form-group"><label htmlFor="auth-email">{t('email')}</label><input id="auth-email" type="email" placeholder="your@email.com" value={email} onChange={(e) => { setEmail(e.target.value) }} required autoFocus /></div>
+          <div className="form-group"><label htmlFor="auth-password">{t('password')}</label><input id="auth-password" type="password" placeholder={t('passwordMin')} value={password} onChange={(e) => { setPassword(e.target.value) }} required minLength={8} /></div>
           {error != null && <div className="form-error">{error}</div>}
           <button type="submit" className="btn-primary btn-full" disabled={loading}>{loading ? t('wait') : mode === 'login' ? t('login') : t('register')}</button>
         </form>
