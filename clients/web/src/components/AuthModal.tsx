@@ -4,7 +4,7 @@ import { useI18n } from '../i18n'
 
 interface Props {
   onClose: () => void
-  onSuccess: (user: { id: string; email: string; role: string }) => void
+  onSuccess: (user: { id: string, email: string, role: string }) => void
 }
 
 export function AuthModal ({ onClose, onSuccess }: Props): JSX.Element {
@@ -21,11 +21,12 @@ export function AuthModal ({ onClose, onSuccess }: Props): JSX.Element {
     setLoading(true); setError(null)
     try {
       const res = await api.post(`/auth/${mode}`, { email: email.trim(), password })
-      setAuthToken(res.data.accessToken); setRefreshToken(res.data.refreshToken)
-      onSuccess({ id: res.data.user.id, email: res.data.user.email, role: res.data.user.role })
+      setAuthToken(String(res.data.accessToken)); setRefreshToken(String(res.data.refreshToken))
+      onSuccess({ id: String(res.data.user.id), email: String(res.data.user.email), role: String(res.data.user.role) })
     } catch (err: any) {
-      const msg = err.response?.data?.error
-      setError(typeof msg === 'string' ? msg : t('authError'))
+      const msg: unknown = err.response?.data?.error
+      const errorMsg = typeof msg === 'string' ? msg : 'authError'
+      setError(errorMsg === 'authError' ? t('authError') : errorMsg)
     } finally { setLoading(false) }
   }
 
