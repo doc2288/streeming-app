@@ -1,0 +1,4 @@
+## 2024-04-28 - AuthModal Form Validation and Accessibility
+**Learning:** Forms in this application's components (like AuthModal) were missing explicit linkings (`htmlFor` and `id`) between labels and their input fields, affecting screen reader accessibility. Additionally, they relied entirely on component-level validation upon submission, neglecting native HTML5 form validation attributes (`required`, `minLength`, `type="email"`), which provide immediate, built-in browser feedback and improve overall UX without requiring extra JavaScript logic.
+
+**Action:** When working on form components, always explicitly link `<label>` elements to `<input>` elements using `htmlFor` and `id`. Additionally, pair custom component validation with native HTML5 validation attributes to leverage the browser's built-in validation feedback and accessibility features.

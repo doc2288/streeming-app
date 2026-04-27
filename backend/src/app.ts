@@ -87,5 +87,5 @@ export async function createApp (): Promise<FastifyInstance> {
   await registerChatRoutes(app)
   await registerWebhookRoutes(app)
 
-  return app
+  return await app
 }
