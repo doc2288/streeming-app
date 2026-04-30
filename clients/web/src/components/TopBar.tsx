@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { useI18n, type Lang } from '../i18n'
 
 interface Props {
-  user: { id: string, email: string, role: string } | null
+  user: { id: string; email: string; role: string } | null
   onLogin: () => void
   onLogout: () => void
   onSearch: (q: string) => void
@@ -59,8 +59,7 @@ export function TopBar ({ user, onLogin, onLogout, onSearch, onNavigateHome, onN
       </form>
 
       <div className="topbar-right">
-        {user != null
-          ? (
+        {user != null ? (
           <div className="topbar-user" ref={menuRef}>
             <button className="avatar" onClick={() => { setMenuOpen(!menuOpen) }}>{user.email[0].toUpperCase()}</button>
             {menuOpen && (
@@ -96,8 +95,7 @@ export function TopBar ({ user, onLogin, onLogout, onSearch, onNavigateHome, onN
               </div>
             )}
           </div>
-            )
-          : (
+        ) : (
           <div className="topbar-auth">
             <div className="topbar-lang-mini">
               {(['ua', 'en', 'no'] as Lang[]).map(l => (
@@ -106,7 +104,7 @@ export function TopBar ({ user, onLogin, onLogout, onSearch, onNavigateHome, onN
             </div>
             <button className="btn-signup" onClick={onLogin}>{t('login')}</button>
           </div>
-            )}
+        )}
       </div>
     </nav>
   )
