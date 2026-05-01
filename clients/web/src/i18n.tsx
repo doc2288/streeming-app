@@ -97,6 +97,10 @@ const translations = {
   loggedOut: { ua: 'Ви вийшли з акаунту', en: 'You have logged out', no: 'Du har logget ut' },
   streamDeleted: { ua: 'Стрім видалено', en: 'Stream deleted', no: 'Strøm slettet' },
 
+  // ---- Shared ----
+  close: { ua: 'Закрити', en: 'Close', no: 'Lukk' },
+  clearSearch: { ua: 'Очистити пошук', en: 'Clear search', no: 'Tøm søk' },
+
   // ---- Categories ----
   cat_gaming: { ua: 'Ігри', en: 'Gaming', no: 'Spill' },
   cat_irl: { ua: 'IRL', en: 'IRL', no: 'IRL' },
@@ -139,7 +143,7 @@ const translations = {
   // ---- Language names ----
   lang_ua: { ua: 'Українська', en: 'Ukrainian', no: 'Ukrainsk' },
   lang_en: { ua: 'English', en: 'English', no: 'English' },
-  lang_no: { ua: 'Norsk', en: 'Norwegian', no: 'Norsk' },
+  lang_no: { ua: 'Norsk', en: 'Norwegian', no: 'Norsk' }
 } as const
 
 export type TKey = keyof typeof translations
