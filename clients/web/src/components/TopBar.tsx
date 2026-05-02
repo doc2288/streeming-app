@@ -51,7 +51,7 @@ export function TopBar ({ user, onLogin, onLogout, onSearch, onNavigateHome, onN
       <form className="topbar-search" onSubmit={(e) => { e.preventDefault(); onSearch(query.trim()) }}>
         <input type="text" placeholder={t('search')} value={query} onChange={(e) => { setQuery(e.target.value) }} />
         {query.length > 0 && (
-          <button type="button" className="search-clear" onClick={() => { setQuery(''); onSearch('') }}>×</button>
+          <button type="button" className="search-clear" aria-label="Clear search" onClick={() => { setQuery(''); onSearch('') }}>×</button>
         )}
         <button type="submit" className="search-btn" aria-label="Search">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="11" cy="11" r="7" /><line x1="16.5" y1="16.5" x2="22" y2="22" /></svg>
