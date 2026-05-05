@@ -1,0 +1,3 @@
+## 2024-05-24 - Form Accessibility & Native Validation
+**Learning:** Adding explicit native validation (like `required`, `minLength`) and screen-reader specific tags (`role="alert"`) ensures a much more complete and accessible form handling experience. Relying on JS only logic can sometimes leave blindspots. Explicit association of `label` and `input` via `id` and `htmlFor` significantly improves screen reader comprehension.
+**Action:** Always map labels directly to their inputs with `htmlFor` and ensure validation messaging contains `role="alert"` so screen readers immediately voice the error to the user.
