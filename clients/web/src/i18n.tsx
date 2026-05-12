@@ -69,6 +69,7 @@ const translations = {
   streamSettings: { ua: 'Налаштування стріму', en: 'Stream Settings', no: 'Strøminnstillinger' },
   rtmpUrl: { ua: 'URL сервера', en: 'Server URL', no: 'Server-URL' },
   streamKey: { ua: 'Ключ стріму', en: 'Stream Key', no: 'Strømnøkkel' },
+  copy: { ua: 'Копіювати', en: 'Copy', no: 'Kopier' },
   copied: { ua: 'Скопійовано!', en: 'Copied!', no: 'Kopiert!' },
   goLive: { ua: 'Розпочати стрім', en: 'Go Live', no: 'Start strøm' },
   stopStream: { ua: 'Зупинити', en: 'Stop', no: 'Stopp' },
