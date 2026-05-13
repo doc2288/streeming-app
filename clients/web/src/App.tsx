@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback, useRef } from 'react'
 import type { AxiosError } from 'axios'
-import { api, setAuthToken, setRefreshToken, clearAuth, getStoredToken } from './api'
+import { api, clearAuth, getStoredToken } from './api'
 import { useI18n, CATEGORIES, getCategoryKey, STREAM_LANGUAGES, type Category } from './i18n'
 import { TopBar } from './components/TopBar'
 import { Sidebar } from './components/Sidebar'
@@ -11,14 +11,26 @@ import { Dashboard } from './components/Dashboard'
 import { BrowsePage } from './components/BrowsePage'
 
 interface StreamSettings {
-  max_quality: string; delay_seconds: number; mature_content: boolean
-  chat_followers_only: boolean; chat_slow_mode: number
+  max_quality: string
+  delay_seconds: number
+  mature_content: boolean
+  chat_followers_only: boolean
+  chat_slow_mode: number
 }
 interface Stream {
-  id: string; title: string; description: string; category: string; language: string; tags: string[]
+  id: string
+  title: string
+  description: string
+  category: string
+  language: string
+  tags: string[]
   settings: StreamSettings
-  status: string; ingest_url: string | null; stream_key: string | null; thumbnail_url: string | null
-  user_id: string; created_at?: string
+  status: string
+  ingest_url: string | null
+  stream_key: string | null
+  thumbnail_url: string | null
+  user_id: string
+  created_at?: string
 }
 interface UserInfo { id: string, email: string, role: string }
 
@@ -60,13 +72,13 @@ export default function App (): JSX.Element {
   }, [])
 
   const fetchStreams = useCallback(async () => {
-    try { const r = await api.get('/streams'); setStreams(Array.isArray(r.data.streams) ? r.data.streams : []) } catch {}
+    try { const r = await api.get<{ streams: Stream[] }>('/streams'); setStreams(Array.isArray(r.data.streams) ? r.data.streams : []) } catch {}
   }, [])
 
   const restoreSession = useCallback(async () => {
     if (getStoredToken() == null) return
     try {
-      const res = await api.get('/auth/me')
+      const res = await api.get<{ user: UserInfo }>('/auth/me')
       setUser(res.data.user)
     } catch (error) {
       const status = (error as AxiosError).response?.status
@@ -175,7 +187,7 @@ export default function App (): JSX.Element {
                 </div>
                 <div className="form-group form-half">
                   <label>{t('streamLanguage')}</label>
-                  <select value={newLang} onChange={(e) => { setNewLang(e.target.value as any) }}>
+                  <select value={newLang} onChange={(e) => { setNewLang(e.target.value as 'ua' | 'en' | 'no') }}>
                     {STREAM_LANGUAGES.map(l => <option key={l} value={l}>{l === 'ua' ? '🇺🇦 Українська' : l === 'en' ? '🇬🇧 English' : '🇳🇴 Norsk'}</option>)}
                   </select>
                 </div>
