@@ -4,7 +4,7 @@ import { useI18n } from '../i18n'
 
 interface Props {
   onClose: () => void
-  onSuccess: (user: { id: string; email: string; role: string }) => void
+  onSuccess: (user: { id: string, email: string, role: string }) => void
 }
 
 export function AuthModal ({ onClose, onSuccess }: Props): JSX.Element {
@@ -20,9 +20,9 @@ export function AuthModal ({ onClose, onSuccess }: Props): JSX.Element {
     if (email.trim().length === 0 || password.length < 8) { setError(t('authRequired')); return }
     setLoading(true); setError(null)
     try {
-      const res = await api.post(`/auth/${mode}`, { email: email.trim(), password })
-      setAuthToken(res.data.accessToken); setRefreshToken(res.data.refreshToken)
-      onSuccess({ id: res.data.user.id, email: res.data.user.email, role: res.data.user.role })
+      const res = await api.post<any>(`/auth/${mode}`, { email: email.trim(), password })
+      setAuthToken(res.data.accessToken as string); setRefreshToken(res.data.refreshToken as string)
+      onSuccess({ id: res.data.user.id as string, email: res.data.user.email as string, role: res.data.user.role as string })
     } catch (err: any) {
       const msg = err.response?.data?.error
       setError(typeof msg === 'string' ? msg : t('authError'))
