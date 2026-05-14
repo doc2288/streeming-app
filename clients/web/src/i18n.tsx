@@ -69,6 +69,7 @@ const translations = {
   streamSettings: { ua: 'Налаштування стріму', en: 'Stream Settings', no: 'Strøminnstillinger' },
   rtmpUrl: { ua: 'URL сервера', en: 'Server URL', no: 'Server-URL' },
   streamKey: { ua: 'Ключ стріму', en: 'Stream Key', no: 'Strømnøkkel' },
+  copyTitle: { ua: 'Скопіювати', en: 'Copy', no: 'Kopier' },
   copied: { ua: 'Скопійовано!', en: 'Copied!', no: 'Kopiert!' },
   goLive: { ua: 'Розпочати стрім', en: 'Go Live', no: 'Start strøm' },
   stopStream: { ua: 'Зупинити', en: 'Stop', no: 'Stopp' },
@@ -91,6 +92,9 @@ const translations = {
   chatPlaceholder: { ua: 'Надіслати повідомлення', en: 'Send a message', no: 'Send en melding' },
   connecting: { ua: 'З\'єднання…', en: 'Connecting…', no: 'Kobler til…' },
   guest: { ua: 'Гість', en: 'Guest', no: 'Gjest' },
+  emojiToggle: { ua: 'Емодзі', en: 'Emoji', no: 'Emoji' },
+  replyTo: { ua: 'Відповісти', en: 'Reply', no: 'Svar' },
+  sendTitle: { ua: 'Надіслати', en: 'Send', no: 'Send' },
 
   // ---- Toasts ----
   welcome: { ua: 'Ласкаво просимо!', en: 'Welcome!', no: 'Velkommen!' },
