@@ -69,6 +69,7 @@ const translations = {
   streamSettings: { ua: 'Налаштування стріму', en: 'Stream Settings', no: 'Strøminnstillinger' },
   rtmpUrl: { ua: 'URL сервера', en: 'Server URL', no: 'Server-URL' },
   streamKey: { ua: 'Ключ стріму', en: 'Stream Key', no: 'Strømnøkkel' },
+  copy: { ua: 'Копіювати', en: 'Copy', no: 'Kopier' },
   copied: { ua: 'Скопійовано!', en: 'Copied!', no: 'Kopiert!' },
   goLive: { ua: 'Розпочати стрім', en: 'Go Live', no: 'Start strøm' },
   stopStream: { ua: 'Зупинити', en: 'Stop', no: 'Stopp' },
@@ -89,6 +90,9 @@ const translations = {
   chatWelcome: { ua: 'Вітаємо у чаті!', en: 'Welcome to the chat!', no: 'Velkommen til chatten!' },
   chatFirst: { ua: 'Напишіть перше повідомлення', en: 'Send the first message', no: 'Send den første meldingen' },
   chatPlaceholder: { ua: 'Надіслати повідомлення', en: 'Send a message', no: 'Send en melding' },
+  chatSend: { ua: 'Надіслати', en: 'Send', no: 'Send' },
+  chatEmoji: { ua: 'Емодзі', en: 'Emoji', no: 'Emoji' },
+  chatReply: { ua: 'Відповісти', en: 'Reply', no: 'Svar' },
   connecting: { ua: 'З\'єднання…', en: 'Connecting…', no: 'Kobler til…' },
   guest: { ua: 'Гість', en: 'Guest', no: 'Gjest' },
 
@@ -139,7 +143,7 @@ const translations = {
   // ---- Language names ----
   lang_ua: { ua: 'Українська', en: 'Ukrainian', no: 'Ukrainsk' },
   lang_en: { ua: 'English', en: 'English', no: 'English' },
-  lang_no: { ua: 'Norsk', en: 'Norwegian', no: 'Norsk' },
+  lang_no: { ua: 'Norsk', en: 'Norwegian', no: 'Norsk' }
 } as const
 
 export type TKey = keyof typeof translations
