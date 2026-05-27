@@ -1,0 +1,3 @@
+## 2024-05-24 - Accessibility on Icon-Only Buttons
+**Learning:** Found a recurring pattern in `WatchPage` and `Dashboard` where icon-only action buttons (`btn-copy`, `btn-danger-icon`, `btn-icon`) missed `aria-label`s, rendering them inaccessible to screen readers. Some also had hardcoded `title` tooltips instead of utilizing the `i18n.tsx` translations (like `Копіювати`).
+**Action:** Always ensure icon-only buttons receive both a localized `title` for visual users and a corresponding `aria-label` for screen reader accessibility to maintain internationalization consistency and standard a11y practices.
