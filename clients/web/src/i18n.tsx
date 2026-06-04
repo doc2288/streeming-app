@@ -91,8 +91,6 @@ const translations = {
   chatPlaceholder: { ua: 'Надіслати повідомлення', en: 'Send a message', no: 'Send en melding' },
   connecting: { ua: 'З\'єднання…', en: 'Connecting…', no: 'Kobler til…' },
   guest: { ua: 'Гість', en: 'Guest', no: 'Gjest' },
-  send: { ua: 'Надіслати', en: 'Send', no: 'Send' },
-  emoji: { ua: 'Емодзі', en: 'Emoji', no: 'Emoji' },
 
   // ---- Toasts ----
   welcome: { ua: 'Ласкаво просимо!', en: 'Welcome!', no: 'Velkommen!' },
