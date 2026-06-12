@@ -146,7 +146,7 @@ export function Dashboard ({ streams, userId, onRefresh, onDelete, flash, onShow
                 <div className="dash-key-row">
                   <span className="dash-key-label">{t('rtmpUrl')}</span>
                   <code className="dash-key-value">{s.ingest_url ?? '—'}</code>
-                  <button className="btn-copy" onClick={() => { copy(s.ingest_url) }} title="Copy">
+                  <button className="btn-copy" onClick={() => { copy(s.ingest_url) }} title={t('copyAction')} aria-label={t('copyAction')}>
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="9" y="9" width="13" height="13" rx="2" /><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" /></svg>
                   </button>
                 </div>
@@ -162,7 +162,7 @@ export function Dashboard ({ streams, userId, onRefresh, onDelete, flash, onShow
                     </svg>
                   </button>
                   {visibleKeys.has(s.id) && (
-                    <button className="btn-copy" onClick={() => { copy(s.stream_key) }} title="Copy">
+                    <button className="btn-copy" onClick={() => { copy(s.stream_key) }} title={t('copyAction')} aria-label={t('copyAction')}>
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="9" y="9" width="13" height="13" rx="2" /><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" /></svg>
                     </button>
                   )}
