@@ -92,6 +92,12 @@ const translations = {
   connecting: { ua: 'З\'єднання…', en: 'Connecting…', no: 'Kobler til…' },
   guest: { ua: 'Гість', en: 'Guest', no: 'Gjest' },
 
+  // ---- Action buttons ----
+  copy: { ua: 'Копіювати', en: 'Copy', no: 'Kopier' },
+  reply: { ua: 'Відповісти', en: 'Reply', no: 'Svar' },
+  send: { ua: 'Надіслати', en: 'Send', no: 'Send' },
+  emoji: { ua: 'Емодзі', en: 'Emoji', no: 'Emoji' },
+
   // ---- Toasts ----
   welcome: { ua: 'Ласкаво просимо!', en: 'Welcome!', no: 'Velkommen!' },
   loggedOut: { ua: 'Ви вийшли з акаунту', en: 'You have logged out', no: 'Du har logget ut' },
