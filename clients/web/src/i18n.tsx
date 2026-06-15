@@ -136,10 +136,15 @@ const translations = {
   viewers_quality: { ua: 'Якість відео', en: 'Video Quality', no: 'Videokvalitet' },
   auto: { ua: 'Авто', en: 'Auto', no: 'Auto' },
 
+  // ---- Actions ----
+  copyBtn: { ua: 'Копіювати', en: 'Copy', no: 'Kopier' },
+  replyBtn: { ua: 'Відповісти', en: 'Reply', no: 'Svar' },
+  emojiBtn: { ua: 'Емодзі', en: 'Emoji', no: 'Emoji' },
+
   // ---- Language names ----
   lang_ua: { ua: 'Українська', en: 'Ukrainian', no: 'Ukrainsk' },
   lang_en: { ua: 'English', en: 'English', no: 'English' },
-  lang_no: { ua: 'Norsk', en: 'Norwegian', no: 'Norsk' },
+  lang_no: { ua: 'Norsk', en: 'Norwegian', no: 'Norsk' }
 } as const
 
 export type TKey = keyof typeof translations
