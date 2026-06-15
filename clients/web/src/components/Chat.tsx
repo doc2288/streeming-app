@@ -176,7 +176,7 @@ export function Chat ({ streamId, ownerUserId }: Props): JSX.Element {
             <div key={i} className={`chat-line ${m.type === 'action' ? 'chat-action' : ''}`} onMouseEnter={() => { setHoveredMsg(i) }} onMouseLeave={() => { setHoveredMsg(null) }}>
               {hoveredMsg === i && (
                 <div className="chat-line-actions">
-                  <button className="chat-react-btn" onClick={() => { replyTo(name) }} title="Reply">↩</button>
+                  <button className="chat-react-btn" onClick={() => { replyTo(name) }} title={t('replyBtn')} aria-label={t('replyBtn')}>↩</button>
                   {QUICK_REACTIONS.map(e => <button key={e} className="chat-react-btn" onClick={() => { addReaction(i, e) }}>{e}</button>)}
                 </div>
               )}
@@ -213,7 +213,7 @@ export function Chat ({ streamId, ownerUserId }: Props): JSX.Element {
       )}
 
       <div className="chat-input-area">
-        <button className="chat-emoji-toggle" onClick={() => { setShowEmoji(!showEmoji) }} title="Emoji">
+        <button className="chat-emoji-toggle" onClick={() => { setShowEmoji(!showEmoji) }} title={t('emojiBtn')} aria-label={t('emojiBtn')}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><path d="M8 14s1.5 2 4 2 4-2 4-2" /><line x1="9" y1="9" x2="9.01" y2="9" /><line x1="15" y1="9" x2="15.01" y2="9" /></svg>
         </button>
         <input ref={inputRef} value={text} onChange={(e) => { setText(e.target.value) }} onKeyDown={(e) => { if (e.key === 'Enter') send() }} placeholder={connected ? t('chatPlaceholder') : t('connecting')} maxLength={500} disabled={!connected} />
