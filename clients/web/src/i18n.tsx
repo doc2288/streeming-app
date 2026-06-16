@@ -5,6 +5,13 @@ export type Lang = 'ua' | 'en' | 'no'
 const LANG_KEY = 'streeming_lang'
 
 const translations = {
+  // ---- Common Actions ----
+  copy: { ua: 'Копіювати', en: 'Copy', no: 'Kopier' },
+  reply: { ua: 'Відповісти', en: 'Reply', no: 'Svar' },
+  emoji: { ua: 'Емодзі', en: 'Emoji', no: 'Emoji' },
+  send: { ua: 'Надіслати', en: 'Send', no: 'Send' },
+  close: { ua: 'Закрити', en: 'Close', no: 'Lukk' },
+
   // ---- TopBar ----
   search: { ua: 'Пошук стрімів…', en: 'Search streams…', no: 'Søk etter strømmer…' },
   login: { ua: 'Увійти', en: 'Log In', no: 'Logg inn' },
@@ -139,7 +146,7 @@ const translations = {
   // ---- Language names ----
   lang_ua: { ua: 'Українська', en: 'Ukrainian', no: 'Ukrainsk' },
   lang_en: { ua: 'English', en: 'English', no: 'English' },
-  lang_no: { ua: 'Norsk', en: 'Norwegian', no: 'Norsk' },
+  lang_no: { ua: 'Norsk', en: 'Norwegian', no: 'Norsk' }
 } as const
 
 export type TKey = keyof typeof translations
