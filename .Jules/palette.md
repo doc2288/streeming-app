@@ -1,0 +1,3 @@
+## 2024-10-27 - Icon-Only Button Accessibility Pattern
+**Learning:** Found multiple instances across different components (`WatchPage`, `Dashboard`, `Chat`, `AuthModal`) where icon-only buttons lacked proper `aria-label` and localized `title` attributes. This pattern is common in React applications where icons are visually descriptive but invisible to screen readers.
+**Action:** When creating or reviewing UI components, always ensure that any button containing only an SVG or icon has an explicit, localized `aria-label` (and often a `title` for sighted users on hover) using the `i18n` translation layer to maintain accessibility across all supported languages.
