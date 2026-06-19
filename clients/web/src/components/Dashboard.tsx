@@ -3,8 +3,11 @@ import { useI18n } from '../i18n'
 import { api, getApiBaseUrl } from '../api'
 
 interface StreamSettings {
-  max_quality: string; delay_seconds: number; mature_content: boolean
-  chat_followers_only: boolean; chat_slow_mode: number
+  max_quality: string
+  delay_seconds: number
+  mature_content: boolean
+  chat_followers_only: boolean
+  chat_slow_mode: number
 }
 interface Stream {
   id: string
