@@ -33,7 +33,7 @@ async function getStreamSlowMode (streamId: string): Promise<number> {
   const res = await pool.query('SELECT settings FROM streams WHERE id=$1', [streamId])
   if (res.rowCount === null || res.rowCount === 0) return 0
   try {
-    const parsed = typeof res.rows[0].settings === 'string' ? JSON.parse(res.rows[0].settings) : {}
+    const parsed = typeof res.rows[0].settings === 'string' ? JSON.parse(res.rows[0].settings as string) : {}
     return typeof parsed.chat_slow_mode === 'number' ? parsed.chat_slow_mode : 0
   } catch {
     return 0

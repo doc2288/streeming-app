@@ -44,7 +44,7 @@ function parseSettings (raw: unknown): typeof DEFAULT_SETTINGS {
 
 function sanitizeStream (row: Record<string, unknown>, requestUserId: string | null): Record<string, unknown> {
   const isOwner = row.user_id === requestUserId
-  const { stream_key, ingest_url, ...safe } = row
+  const { stream_key, ingest_url, ...safe } = row // eslint-disable-line @typescript-eslint/naming-convention
   return {
     ...safe,
     stream_key: isOwner ? stream_key : null,
@@ -62,8 +62,8 @@ export async function registerStreamRoutes (app: FastifyInstance): Promise<void>
       // anonymous — no token or invalid token
     }
     const query = request.query as Record<string, string | undefined>
-    const limit = Math.min(Math.max(parseInt(query.limit ?? '50', 10) || 50, 1), 100)
-    const offset = Math.max(parseInt(query.offset ?? '0', 10) || 0, 0)
+    const parsedLimit = parseInt(query.limit ?? '50', 10); const limit = Math.min(Math.max(Number.isNaN(parsedLimit) ? 50 : parsedLimit, 1), 100)
+    const parsedOffset = parseInt(query.offset ?? '0', 10); const offset = Math.max(Number.isNaN(parsedOffset) ? 0 : parsedOffset, 0)
     const res = await pool.query(
       'SELECT id, title, description, category, language, tags, settings, status, ingest_url, stream_key, thumbnail_url, user_id, created_at FROM streams ORDER BY created_at DESC LIMIT $1 OFFSET $2',
       [limit, offset]
@@ -94,7 +94,7 @@ export async function registerStreamRoutes (app: FastifyInstance): Promise<void>
     if (!parsed.success) {
       return await reply.code(400).send({ error: parsed.error.flatten() })
     }
-    const { title, description, category, language, tags, max_quality, delay_seconds, mature_content, chat_followers_only, chat_slow_mode } = parsed.data
+    const { title, description, category, language, tags, max_quality, delay_seconds, mature_content, chat_followers_only, chat_slow_mode } = parsed.data // eslint-disable-line @typescript-eslint/naming-convention
     const tagsStr = tags.join(',')
     const settings = JSON.stringify({ max_quality, delay_seconds, mature_content, chat_followers_only, chat_slow_mode })
     const created = await pool.query(
@@ -108,7 +108,7 @@ export async function registerStreamRoutes (app: FastifyInstance): Promise<void>
       'UPDATE streams SET ingest_url=$1, stream_key=$2, updated_at=now() WHERE id=$3 RETURNING *',
       [ingestUrl, streamKey, streamId]
     )
-    return { stream: sanitizeStream(updated.rows[0], request.user.sub) }
+    return { stream: sanitizeStream(updated.rows[0] as Record<string, unknown>, request.user.sub) }
   })
 
   app.post('/streams/:id/start', { preHandler: [app.authenticate] }, async (request, reply) => {
@@ -126,7 +126,7 @@ export async function registerStreamRoutes (app: FastifyInstance): Promise<void>
       'UPDATE streams SET status=$1, updated_at=now() WHERE id=$2 RETURNING *',
       ['live', params.data.id]
     )
-    return { stream: sanitizeStream(updated.rows[0], request.user.sub) }
+    return { stream: sanitizeStream(updated.rows[0] as Record<string, unknown>, request.user.sub) }
   })
 
   app.post('/streams/:id/stop', { preHandler: [app.authenticate] }, async (request, reply) => {
@@ -144,7 +144,7 @@ export async function registerStreamRoutes (app: FastifyInstance): Promise<void>
       'UPDATE streams SET status=$1, updated_at=now() WHERE id=$2 RETURNING *',
       ['offline', params.data.id]
     )
-    return { stream: sanitizeStream(updated.rows[0], request.user.sub) }
+    return { stream: sanitizeStream(updated.rows[0] as Record<string, unknown>, request.user.sub) }
   })
 
   app.patch('/streams/:id/settings', { preHandler: [app.authenticate] }, async (request, reply) => {
