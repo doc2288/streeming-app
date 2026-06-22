@@ -1,3 +1,0 @@
-## 2024-10-24 - Add ARIA Labels to Icon-Only Buttons
-**Learning:** Found several buttons in TopBar, Chat, Dashboard, and WatchPage that use icons exclusively (hamburger menu, search buttons, close buttons, copy/reply/emoji buttons) but lacked proper accessibility context, relying purely on visual cues or basic title attributes.
-**Action:** Consistently mapped the existing tooltips and added new explicit translations (`menu`, `close`, `copy`, `reply`, `emoji`, `send`, `searchBtn`) to ensure `aria-label` attributes provide semantic meaning for screen readers across the application without breaking design.
