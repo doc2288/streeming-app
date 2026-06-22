@@ -5,7 +5,16 @@ import { I18nProvider } from './i18n'
 import { ErrorBoundary } from './components/ErrorBoundary'
 import './style.css'
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
+ReactDOM.const rootEl = document.getElementById('root');
+if (rootEl != null) {
+  createRoot(rootEl).render(
+    <StrictMode>
+      <I18nProvider>
+        <App />
+      </I18nProvider>
+    </StrictMode>
+  )
+}
   <React.StrictMode>
     <ErrorBoundary>
       <I18nProvider>
