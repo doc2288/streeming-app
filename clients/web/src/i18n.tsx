@@ -6,6 +6,7 @@ const LANG_KEY = 'streeming_lang'
 
 const translations = {
   // ---- TopBar ----
+  menu: { ua: 'Меню', en: 'Menu', no: 'Meny' },
   search: { ua: 'Пошук стрімів…', en: 'Search streams…', no: 'Søk etter strømmer…' },
   login: { ua: 'Увійти', en: 'Log In', no: 'Logg inn' },
   register: { ua: 'Реєстрація', en: 'Sign Up', no: 'Registrer' },
@@ -69,6 +70,7 @@ const translations = {
   streamSettings: { ua: 'Налаштування стріму', en: 'Stream Settings', no: 'Strøminnstillinger' },
   rtmpUrl: { ua: 'URL сервера', en: 'Server URL', no: 'Server-URL' },
   streamKey: { ua: 'Ключ стріму', en: 'Stream Key', no: 'Strømnøkkel' },
+  copy: { ua: 'Копіювати', en: 'Copy', no: 'Kopier' },
   copied: { ua: 'Скопійовано!', en: 'Copied!', no: 'Kopiert!' },
   goLive: { ua: 'Розпочати стрім', en: 'Go Live', no: 'Start strøm' },
   stopStream: { ua: 'Зупинити', en: 'Stop', no: 'Stopp' },
@@ -119,6 +121,9 @@ const translations = {
   chatRules: { ua: 'Правила чату', en: 'Chat Rules', no: 'Chat-regler' },
   chatRulesText: { ua: 'Будьте ввічливі. Без спаму та реклами.', en: 'Be respectful. No spam or ads.', no: 'Vær respektfull. Ingen spam eller reklame.' },
   chatJoined: { ua: 'приєднався до чату', en: 'joined the chat', no: 'ble med i chatten' },
+  reply: { ua: 'Відповісти', en: 'Reply', no: 'Svar' },
+  streamer: { ua: 'Стрімер', en: 'Streamer', no: 'Strømmer' },
+  emoji: { ua: 'Емодзі', en: 'Emoji', no: 'Emoji' },
 
   // ---- Stream settings ----
   maxQuality: { ua: 'Макс. якість', en: 'Max Quality', no: 'Maks kvalitet' },
@@ -139,7 +144,7 @@ const translations = {
   // ---- Language names ----
   lang_ua: { ua: 'Українська', en: 'Ukrainian', no: 'Ukrainsk' },
   lang_en: { ua: 'English', en: 'English', no: 'English' },
-  lang_no: { ua: 'Norsk', en: 'Norwegian', no: 'Norsk' },
+  lang_no: { ua: 'Norsk', en: 'Norwegian', no: 'Norsk' }
 } as const
 
 export type TKey = keyof typeof translations
