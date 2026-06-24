@@ -7,6 +7,9 @@ const LANG_KEY = 'streeming_lang'
 const translations = {
   // ---- TopBar ----
   search: { ua: 'Пошук стрімів…', en: 'Search streams…', no: 'Søk etter strømmer…' },
+  searchButton: { ua: 'Пошук', en: 'Search', no: 'Søk' },
+  clearSearch: { ua: 'Очистити', en: 'Clear search', no: 'Tøm søk' },
+  menu: { ua: 'Меню', en: 'Menu', no: 'Meny' },
   login: { ua: 'Увійти', en: 'Log In', no: 'Logg inn' },
   register: { ua: 'Реєстрація', en: 'Sign Up', no: 'Registrer' },
   logout: { ua: 'Вийти', en: 'Log Out', no: 'Logg ut' },
@@ -119,6 +122,11 @@ const translations = {
   chatRules: { ua: 'Правила чату', en: 'Chat Rules', no: 'Chat-regler' },
   chatRulesText: { ua: 'Будьте ввічливі. Без спаму та реклами.', en: 'Be respectful. No spam or ads.', no: 'Vær respektfull. Ingen spam eller reklame.' },
   chatJoined: { ua: 'приєднався до чату', en: 'joined the chat', no: 'ble med i chatten' },
+  chatSend: { ua: 'Надіслати', en: 'Send', no: 'Send' },
+  copyText: { ua: 'Копіювати', en: 'Copy', no: 'Kopier' },
+  chatEmoji: { ua: 'Емодзі', en: 'Emoji', no: 'Emoji' },
+  chatReply: { ua: 'Відповісти', en: 'Reply', no: 'Svar' },
+  chatStreamer: { ua: 'Стример', en: 'Streamer', no: 'Strømmer' },
 
   // ---- Stream settings ----
   maxQuality: { ua: 'Макс. якість', en: 'Max Quality', no: 'Maks kvalitet' },
@@ -139,7 +147,7 @@ const translations = {
   // ---- Language names ----
   lang_ua: { ua: 'Українська', en: 'Ukrainian', no: 'Ukrainsk' },
   lang_en: { ua: 'English', en: 'English', no: 'English' },
-  lang_no: { ua: 'Norsk', en: 'Norwegian', no: 'Norsk' },
+  lang_no: { ua: 'Norsk', en: 'Norwegian', no: 'Norsk' }
 } as const
 
 export type TKey = keyof typeof translations

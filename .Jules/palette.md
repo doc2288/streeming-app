@@ -1,0 +1,3 @@
+## 2024-06-25 - Icon-only buttons lack accessible names
+**Learning:** Several custom icon-only buttons across components (`Chat.tsx`, `Dashboard.tsx`, `TopBar.tsx`) lacked `aria-label`s, rendering them inaccessible to screen reader users who rely on explicitly defined names to understand the element's purpose. `title` attributes alone are sometimes insufficient depending on screen reader configuration.
+**Action:** Always verify that buttons or interactive elements consisting entirely of icons (SVGs) include both `title` (for visual tooltips) and `aria-label` properties, populated using localization keys (e.g., `t('copyText')`).
