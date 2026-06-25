@@ -9,7 +9,7 @@ const defaultApiUrl = import.meta.env.DEV
 const API_URL = import.meta.env.VITE_API_URL ?? defaultApiUrl
 
 function normalizeApiUrl (value: string): URL {
-  if (typeof window !== 'undefined') {
+  if (typeof window !== 'undefined' && window.location !== undefined) {
     return new URL(value, window.location.origin)
   }
   return new URL(value)
@@ -117,8 +117,8 @@ api.interceptors.response.use(
       original._retry = true
       const accessToken = await refreshAccessToken()
       if (accessToken != null) {
-          original.headers.Authorization = `Bearer ${accessToken}`
-          return await api(original)
+        original.headers.Authorization = `Bearer ${accessToken}`
+        return await api(original)
       }
     }
     return await Promise.reject(error)
