@@ -52,6 +52,7 @@ function sanitizeStream (row: Record<string, unknown>, requestUserId: string | n
   }
 }
 
+
 export async function registerStreamRoutes (app: FastifyInstance): Promise<void> {
   app.get('/streams', async (request: FastifyRequest) => {
     let userId: string | null = null
@@ -76,7 +77,7 @@ export async function registerStreamRoutes (app: FastifyInstance): Promise<void>
         description: s.description ?? '',
         category: s.category ?? 'other',
         language: s.language ?? 'ua',
-        tags: typeof s.tags === 'string' && s.tags !== '' ? (s.tags).split(',') : [],
+        tags: typeof s.tags === 'string' && s.tags !== '' ? (s.tags as string).split(',') : [],
         settings,
         status: s.status,
         thumbnail_url: s.thumbnail_url ?? null,
