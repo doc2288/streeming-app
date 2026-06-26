@@ -78,6 +78,7 @@ const translations = {
   obsHint: { ua: 'Використовуйте ці дані у OBS Studio або іншому ПЗ для трансляцій', en: 'Use these in OBS Studio or other broadcasting software', no: 'Bruk disse i OBS Studio eller annen kringkastingsprogramvare' },
   show: { ua: 'Показати', en: 'Show', no: 'Vis' },
   hide: { ua: 'Сховати', en: 'Hide', no: 'Skjul' },
+  copy: { ua: 'Копіювати', en: 'Copy', no: 'Kopier' },
 
   // ---- Watch ----
   follow: { ua: 'Підписатись', en: 'Follow', no: 'Følg' },
@@ -139,7 +140,7 @@ const translations = {
   // ---- Language names ----
   lang_ua: { ua: 'Українська', en: 'Ukrainian', no: 'Ukrainsk' },
   lang_en: { ua: 'English', en: 'English', no: 'English' },
-  lang_no: { ua: 'Norsk', en: 'Norwegian', no: 'Norsk' },
+  lang_no: { ua: 'Norsk', en: 'Norwegian', no: 'Norsk' }
 } as const
 
 export type TKey = keyof typeof translations
