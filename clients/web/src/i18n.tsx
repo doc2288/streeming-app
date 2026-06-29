@@ -74,6 +74,7 @@ const translations = {
   stopStream: { ua: 'Зупинити', en: 'Stop', no: 'Stopp' },
   deleteStream: { ua: 'Видалити', en: 'Delete', no: 'Slett' },
   deleteConfirm: { ua: 'Видалити цей стрім?', en: 'Delete this stream?', no: 'Slette denne strømmen?' },
+  copy: { ua: 'Копіювати', en: 'Copy', no: 'Kopier' },
   noOwnStreams: { ua: 'У вас ще немає стрімів', en: 'You have no streams yet', no: 'Du har ingen strømmer ennå' },
   obsHint: { ua: 'Використовуйте ці дані у OBS Studio або іншому ПЗ для трансляцій', en: 'Use these in OBS Studio or other broadcasting software', no: 'Bruk disse i OBS Studio eller annen kringkastingsprogramvare' },
   show: { ua: 'Показати', en: 'Show', no: 'Vis' },
@@ -139,7 +140,7 @@ const translations = {
   // ---- Language names ----
   lang_ua: { ua: 'Українська', en: 'Ukrainian', no: 'Ukrainsk' },
   lang_en: { ua: 'English', en: 'English', no: 'English' },
-  lang_no: { ua: 'Norsk', en: 'Norwegian', no: 'Norsk' },
+  lang_no: { ua: 'Norsk', en: 'Norwegian', no: 'Norsk' }
 } as const
 
 export type TKey = keyof typeof translations
