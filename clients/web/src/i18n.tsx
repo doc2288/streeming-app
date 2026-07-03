@@ -70,6 +70,10 @@ const translations = {
   rtmpUrl: { ua: 'URL сервера', en: 'Server URL', no: 'Server-URL' },
   streamKey: { ua: 'Ключ стріму', en: 'Stream Key', no: 'Strømnøkkel' },
   copied: { ua: 'Скопійовано!', en: 'Copied!', no: 'Kopiert!' },
+  copy: { ua: 'Копіювати', en: 'Copy', no: 'Kopier' },
+  reply: { ua: 'Відповісти', en: 'Reply', no: 'Svar' },
+  emoji: { ua: 'Емодзі', en: 'Emoji', no: 'Emoji' },
+  send: { ua: 'Надіслати', en: 'Send', no: 'Send' },
   goLive: { ua: 'Розпочати стрім', en: 'Go Live', no: 'Start strøm' },
   stopStream: { ua: 'Зупинити', en: 'Stop', no: 'Stopp' },
   deleteStream: { ua: 'Видалити', en: 'Delete', no: 'Slett' },
@@ -139,7 +143,7 @@ const translations = {
   // ---- Language names ----
   lang_ua: { ua: 'Українська', en: 'Ukrainian', no: 'Ukrainsk' },
   lang_en: { ua: 'English', en: 'English', no: 'English' },
-  lang_no: { ua: 'Norsk', en: 'Norwegian', no: 'Norsk' },
+  lang_no: { ua: 'Norsk', en: 'Norwegian', no: 'Norsk' }
 } as const
 
 export type TKey = keyof typeof translations
