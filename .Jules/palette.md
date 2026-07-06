@@ -1,0 +1,3 @@
+## 2024-07-06 - A11y improvements to Chat Buttons
+**Learning:** Icon-only buttons lacking `aria-label` or `title` attributes are completely inaccessible to screen reader users and confusing for mouse users. Always ensure these attributes are present and properly localized using the application's i18n system. Also, avoid using non-null assertions (`!`) in TypeScript components; use optional chaining and nullish coalescing instead.
+**Action:** Consistently add localized `title` and `aria-label` attributes to all icon-only buttons across the application. When modifying arrays that might be undefined, prefer `(array ?? []).map(...)` over `array!.map(...)`.
