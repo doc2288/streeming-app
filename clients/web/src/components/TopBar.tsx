@@ -35,10 +35,10 @@ export function TopBar ({ user, onLogin, onLogout, onSearch, onNavigateHome, onN
   return (
     <nav className="topbar">
       <div className="topbar-left">
-        <button className="topbar-hamburger" onClick={onToggleSidebar} aria-label="Menu">
+        <button className="topbar-hamburger" onClick={onToggleSidebar} title={t('menu')} aria-label={t('menu')}>
           <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><path d="M2 4h16v1.5H2zm0 5h16v1.5H2zm0 5h16v1.5H2z" /></svg>
         </button>
-        <button className="topbar-logo" onClick={onNavigateHome}>
+        <button className="topbar-logo" onClick={onNavigateHome} title={t('home')} aria-label={t('home')}>
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
             <rect width="24" height="24" rx="6" fill="url(#tg)" />
             <path d="M7 8l5 4-5 4V8z" fill="#fff" /><path d="M12 8l5 4-5 4V8z" fill="#fff" opacity="0.6" />
@@ -51,9 +51,9 @@ export function TopBar ({ user, onLogin, onLogout, onSearch, onNavigateHome, onN
       <form className="topbar-search" onSubmit={(e) => { e.preventDefault(); onSearch(query.trim()) }}>
         <input type="text" placeholder={t('search')} value={query} onChange={(e) => { setQuery(e.target.value) }} />
         {query.length > 0 && (
-          <button type="button" className="search-clear" onClick={() => { setQuery(''); onSearch('') }}>×</button>
+          <button type="button" className="search-clear" onClick={() => { setQuery(''); onSearch('') }} title={t('clearSearch')} aria-label={t('clearSearch')}>×</button>
         )}
-        <button type="submit" className="search-btn" aria-label="Search">
+        <button type="submit" className="search-btn" title={t('search')} aria-label={t('search')}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="11" cy="11" r="7" /><line x1="16.5" y1="16.5" x2="22" y2="22" /></svg>
         </button>
       </form>
@@ -61,7 +61,7 @@ export function TopBar ({ user, onLogin, onLogout, onSearch, onNavigateHome, onN
       <div className="topbar-right">
         {user != null ? (
           <div className="topbar-user" ref={menuRef}>
-            <button className="avatar" onClick={() => { setMenuOpen(!menuOpen) }}>{user.email[0].toUpperCase()}</button>
+            <button className="avatar" onClick={() => { setMenuOpen(!menuOpen) }} title={t('userMenu')} aria-label={t('userMenu')}>{user.email[0].toUpperCase()}</button>
             {menuOpen && (
               <div className="user-menu">
                 <div className="menu-user-info">

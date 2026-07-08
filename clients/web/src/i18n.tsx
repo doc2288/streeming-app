@@ -128,6 +128,14 @@ const translations = {
   chatFollowersOnly: { ua: 'Чат лише для підписників', en: 'Followers-only Chat', no: 'Kun følgere i chat' },
   chatSlowMode: { ua: 'Повільний режим (сек)', en: 'Slow Mode (sec)', no: 'Sakte modus (sek)' },
   chatSlowHint: { ua: '0 = вимкнено', en: '0 = off', no: '0 = av' },
+  close: { ua: 'Закрити', en: 'Close', no: 'Lukk' },
+  copy: { ua: 'Копіювати', en: 'Copy', no: 'Kopier' },
+  reply: { ua: 'Відповісти', en: 'Reply', no: 'Svar' },
+  emoji: { ua: 'Емодзі', en: 'Emoji', no: 'Emoji' },
+  send: { ua: 'Надіслати', en: 'Send', no: 'Send' },
+  menu: { ua: 'Меню', en: 'Menu', no: 'Meny' },
+  clearSearch: { ua: 'Очистити пошук', en: 'Clear search', no: 'Tøm søk' },
+  userMenu: { ua: 'Меню користувача', en: 'User menu', no: 'Brukermeny' },
   source: { ua: 'Оригінал', en: 'Source', no: 'Kilde' },
   quality: { ua: 'Якість', en: 'Quality', no: 'Kvalitet' },
   streamSettingsSaved: { ua: 'Налаштування збережено!', en: 'Settings saved!', no: 'Innstillinger lagret!' },
@@ -139,7 +147,7 @@ const translations = {
   // ---- Language names ----
   lang_ua: { ua: 'Українська', en: 'Ukrainian', no: 'Ukrainsk' },
   lang_en: { ua: 'English', en: 'English', no: 'English' },
-  lang_no: { ua: 'Norsk', en: 'Norwegian', no: 'Norsk' },
+  lang_no: { ua: 'Norsk', en: 'Norwegian', no: 'Norsk' }
 } as const
 
 export type TKey = keyof typeof translations

@@ -25,11 +25,11 @@ export function Sidebar ({ streams, open, currentView, onNavigate, onSelectStrea
   return (
     <aside className={`sidebar ${open ? 'open' : 'collapsed'}`}>
       <div className="sidebar-nav">
-        <button className={`sidebar-item ${currentView === 'home' && activeCategory == null ? 'active' : ''}`} onClick={() => { onNavigate('home'); onFilterCategory(null) }} title={t('home')}>
+        <button className={`sidebar-item ${currentView === 'home' && activeCategory == null ? 'active' : ''}`} onClick={() => { onNavigate('home'); onFilterCategory(null) }} title={t('home')} aria-label={t('home')}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h1v7c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-7h1a1 1 0 00.7-1.7l-9-9a1 1 0 00-1.4 0l-9 9A1 1 0 003 13z" /></svg>
           {open && <span>{t('home')}</span>}
         </button>
-        <button className={`sidebar-item ${currentView === 'browse' ? 'active' : ''}`} onClick={() => { onNavigate('browse'); onFilterCategory(null) }} title={t('browse')}>
+        <button className={`sidebar-item ${currentView === 'browse' ? 'active' : ''}`} onClick={() => { onNavigate('browse'); onFilterCategory(null) }} title={t('browse')} aria-label={t('browse')}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3.5 3v18l7-3 4 3 6-3V3l-6 3-4-3-7 3z" /></svg>
           {open && <span>{t('browse')}</span>}
         </button>
