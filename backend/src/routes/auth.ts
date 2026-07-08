@@ -69,7 +69,7 @@ export async function registerAuthRoutes (app: FastifyInstance): Promise<void> {
     )
     const user = sanitizeUser(insert.rows[0])
     const accessToken = app.jwt.sign(
-      { sub: user.id, email: user.email, role: user.role },
+      { sub: user.id, email: String(user.email), role: String(user.role) },
       { expiresIn: env.JWT_EXPIRES_IN }
     )
     const refreshToken = await createAndStoreRefreshToken(user.id)
@@ -97,7 +97,7 @@ export async function registerAuthRoutes (app: FastifyInstance): Promise<void> {
     }
     const user = sanitizeUser(row)
     const accessToken = app.jwt.sign(
-      { sub: user.id, email: user.email, role: user.role },
+      { sub: user.id, email: String(user.email), role: String(user.role) },
       { expiresIn: env.JWT_EXPIRES_IN }
     )
     const refreshToken = await createAndStoreRefreshToken(user.id)
@@ -131,7 +131,7 @@ export async function registerAuthRoutes (app: FastifyInstance): Promise<void> {
     }
     const user = sanitizeUser(userRes.rows[0])
     const accessToken = app.jwt.sign(
-      { sub: user.id, email: user.email, role: user.role },
+      { sub: user.id, email: String(user.email), role: String(user.role) },
       { expiresIn: env.JWT_EXPIRES_IN }
     )
     const newRefreshToken = await createAndStoreRefreshToken(user.id)
