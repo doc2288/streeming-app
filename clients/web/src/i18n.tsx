@@ -89,6 +89,9 @@ const translations = {
   chatWelcome: { ua: 'Вітаємо у чаті!', en: 'Welcome to the chat!', no: 'Velkommen til chatten!' },
   chatFirst: { ua: 'Напишіть перше повідомлення', en: 'Send the first message', no: 'Send den første meldingen' },
   chatPlaceholder: { ua: 'Надіслати повідомлення', en: 'Send a message', no: 'Send en melding' },
+  send: { ua: 'Надіслати', en: 'Send', no: 'Send' },
+  emoji: { ua: 'Емодзі', en: 'Emoji', no: 'Emoji' },
+  reply: { ua: 'Відповісти', en: 'Reply', no: 'Svar' },
   connecting: { ua: 'З\'єднання…', en: 'Connecting…', no: 'Kobler til…' },
   guest: { ua: 'Гість', en: 'Guest', no: 'Gjest' },
 
@@ -139,7 +142,7 @@ const translations = {
   // ---- Language names ----
   lang_ua: { ua: 'Українська', en: 'Ukrainian', no: 'Ukrainsk' },
   lang_en: { ua: 'English', en: 'English', no: 'English' },
-  lang_no: { ua: 'Norsk', en: 'Norwegian', no: 'Norsk' },
+  lang_no: { ua: 'Norsk', en: 'Norwegian', no: 'Norsk' }
 } as const
 
 export type TKey = keyof typeof translations
