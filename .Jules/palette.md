@@ -1,0 +1,3 @@
+## 2024-07-25 - Add ARIA Labels to Icon-Only Buttons
+**Learning:** Icon-only buttons (like menu, search, copy, delete, back) require explicit `aria-label` attributes and visually available `title` attributes. Without them, screen readers cannot interpret the button's action, compromising accessibility for visually impaired users. Relying on hardcoded strings for these labels breaks internationalization, so it is necessary to map these attributes to localized keys in the `i18n` dictionary (e.g., `t('copy')`).
+**Action:** When adding icon-only buttons, consistently apply both `aria-label` and `title` properties and always extract their text into translation keys (e.g., `i18n.tsx`) to support both accessibility and multiple languages.
