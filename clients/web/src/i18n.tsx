@@ -70,6 +70,7 @@ const translations = {
   rtmpUrl: { ua: 'URL сервера', en: 'Server URL', no: 'Server-URL' },
   streamKey: { ua: 'Ключ стріму', en: 'Stream Key', no: 'Strømnøkkel' },
   copied: { ua: 'Скопійовано!', en: 'Copied!', no: 'Kopiert!' },
+  copy: { ua: 'Копіювати', en: 'Copy', no: 'Kopier' },
   goLive: { ua: 'Розпочати стрім', en: 'Go Live', no: 'Start strøm' },
   stopStream: { ua: 'Зупинити', en: 'Stop', no: 'Stopp' },
   deleteStream: { ua: 'Видалити', en: 'Delete', no: 'Slett' },
