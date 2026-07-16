@@ -5,9 +5,9 @@ import { api } from '../api'
 import { useI18n, getCategoryKey, type Category } from '../i18n'
 import { getMediaServerUrl } from '../config/env'
 
-interface StreamSettings { max_quality: string; delay_seconds: number; mature_content: boolean; chat_followers_only: boolean; chat_slow_mode: number }
-interface Stream { id: string; title: string; description?: string; category?: string; settings?: StreamSettings; status: string; ingest_url: string | null; stream_key: string | null; user_id: string }
-interface Props { stream: Stream; user: { id: string; email: string; role: string } | null; onBack: () => void; onRefresh: () => void; onDelete: (id: string) => void }
+interface StreamSettings { max_quality: string, delay_seconds: number, mature_content: boolean, chat_followers_only: boolean, chat_slow_mode: number }
+interface Stream { id: string, title: string, description?: string, category?: string, settings?: StreamSettings, status: string, ingest_url: string | null, stream_key: string | null, user_id: string }
+interface Props { stream: Stream, user: { id: string, email: string, role: string } | null, onBack: () => void, onRefresh: () => void, onDelete: (id: string) => void }
 
 const mediaServerUrl = getMediaServerUrl()
 const FOLLOWED_CHANNELS_KEY = 'streeming_followed_channels'
@@ -18,6 +18,7 @@ export function WatchPage ({ stream, user, onBack, onRefresh, onDelete }: Props)
   const [followed, setFollowed] = useState(false)
   const [selectedQuality, setSelectedQuality] = useState('auto')
   const [showQuality, setShowQuality] = useState(false)
+  const [copiedField, setCopiedField] = useState<'server' | 'key' | null>(null)
   const playbackUrl = `${mediaServerUrl}/hls/${stream.id}/index.m3u8`
   const maxQ = stream.settings?.max_quality ?? '1080p'
   const allQualities = ['source', '1080p', '720p', '480p', '360p']
@@ -27,7 +28,7 @@ export function WatchPage ({ stream, user, onBack, onRefresh, onDelete }: Props)
   const cat = stream.category as Category | undefined
   const defaultObsServer = 'rtmp://localhost/live'
   const obsServer = (
-    stream.ingest_url != null && stream.ingest_url.endsWith(`/${stream.id}`)
+    stream.ingest_url?.endsWith(`/${stream.id}`) === true
       ? stream.ingest_url.slice(0, -(`/${stream.id}`).length)
       : defaultObsServer
   )
@@ -38,8 +39,12 @@ export function WatchPage ({ stream, user, onBack, onRefresh, onDelete }: Props)
     if (!confirm('Видалити цей стрім?')) return
     try { await api.delete(`/streams/${stream.id}`); onDelete(stream.id) } catch {}
   }
-  const copyToClipboard = (text: string | null): void => {
-    if (text != null) void navigator.clipboard.writeText(text)
+  const copyToClipboard = (text: string | null, field: 'server' | 'key'): void => {
+    if (text != null) {
+      void navigator.clipboard.writeText(text)
+      setCopiedField(field)
+      setTimeout(() => { setCopiedField(null) }, 2000)
+    }
   }
 
   useEffect(() => {
@@ -128,18 +133,22 @@ export function WatchPage ({ stream, user, onBack, onRefresh, onDelete }: Props)
             <div className="ingest-row">
               <span className="ingest-label">Server</span>
               <code>{obsServer}</code>
-              <button className="btn-copy" onClick={() => { copyToClipboard(obsServer) }} title="Копіювати">
+              <button className="btn-copy" onClick={() => { copyToClipboard(obsServer, 'server') }} title={t(copiedField === 'server' ? 'copied' : 'copy')}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <rect x="9" y="9" width="13" height="13" rx="2" /><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
+                  {copiedField === 'server'
+                    ? <path d="M20 6L9 17l-5-5" />
+                    : <><rect x="9" y="9" width="13" height="13" rx="2" /><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" /></>}
                 </svg>
               </button>
             </div>
             <div className="ingest-row">
               <span className="ingest-label">Stream Key</span>
               <code>{stream.stream_key ?? '—'}</code>
-              <button className="btn-copy" onClick={() => { copyToClipboard(stream.stream_key ?? null) }} title="Копіювати">
+              <button className="btn-copy" onClick={() => { copyToClipboard(stream.stream_key ?? null, 'key') }} title={t(copiedField === 'key' ? 'copied' : 'copy')}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <rect x="9" y="9" width="13" height="13" rx="2" /><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
+                  {copiedField === 'key'
+                    ? <path d="M20 6L9 17l-5-5" />
+                    : <><rect x="9" y="9" width="13" height="13" rx="2" /><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" /></>}
                 </svg>
               </button>
             </div>

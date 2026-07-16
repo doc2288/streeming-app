@@ -1,0 +1,3 @@
+## 2024-07-16 - Add Micro-Feedback to Clipboard Actions
+**Learning:** Users lack confidence when interacting with clipboard functionality (like copying stream keys) without immediate visual confirmation. Additionally, hardcoded generic strings in tooltips (like "Копіювати") reduce accessibility and fail in localized contexts.
+**Action:** Always provide inline, transient micro-feedback (e.g., swapping a copy icon to a checkmark for 2 seconds) upon user interaction. Ensure that interactive elements, especially icon-only buttons, rely on robust translation keys for `title` or `aria-label` properties, rather than hardcoded text.
