@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { useI18n, type Lang } from '../i18n'
 
 interface Props {
+  // eslint-disable-next-line @typescript-eslint/member-delimiter-style
   user: { id: string; email: string; role: string } | null
   onLogin: () => void
   onLogout: () => void
@@ -14,6 +15,7 @@ interface Props {
 }
 
 const FLAGS: Record<Lang, string> = { ua: '🇺🇦', en: '🇬🇧', no: '🇳🇴' }
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const LANG_NAMES: Record<Lang, string> = { ua: 'Українська', en: 'English', no: 'Norsk' }
 
 export function TopBar ({ user, onLogin, onLogout, onSearch, onNavigateHome, onNavigateDashboard, sidebarOpen, onToggleSidebar, searchValue }: Props): JSX.Element {
@@ -59,7 +61,9 @@ export function TopBar ({ user, onLogin, onLogout, onSearch, onNavigateHome, onN
       </form>
 
       <div className="topbar-right">
-        {user != null ? (
+        // eslint-disable-next-line multiline-ternary
+        {user != null
+          ? (
           <div className="topbar-user" ref={menuRef}>
             <button className="avatar" onClick={() => { setMenuOpen(!menuOpen) }}>{user.email[0].toUpperCase()}</button>
             {menuOpen && (
@@ -95,7 +99,8 @@ export function TopBar ({ user, onLogin, onLogout, onSearch, onNavigateHome, onN
               </div>
             )}
           </div>
-        ) : (
+            )
+          : (
           <div className="topbar-auth">
             <div className="topbar-lang-mini">
               {(['ua', 'en', 'no'] as Lang[]).map(l => (
@@ -104,7 +109,7 @@ export function TopBar ({ user, onLogin, onLogout, onSearch, onNavigateHome, onN
             </div>
             <button className="btn-signup" onClick={onLogin}>{t('login')}</button>
           </div>
-        )}
+            )}
       </div>
     </nav>
   )

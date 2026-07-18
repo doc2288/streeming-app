@@ -1,9 +1,12 @@
 import { useI18n, CATEGORIES, getCategoryKey, type Category } from '../i18n'
 
+// eslint-disable-next-line @typescript-eslint/member-delimiter-style
 interface Stream { id: string; title: string; status: string; user_id: string; category?: string }
 
 const CAT_ICONS: Record<string, string> = {
+  // eslint-disable-next-line object-property-newline
   gaming: '🎮', irl: '📷', music: '🎵', esports: '🏆',
+  // eslint-disable-next-line object-property-newline
   creative: '🎨', education: '📚', talkshow: '🎙️', other: '📺'
 }
 

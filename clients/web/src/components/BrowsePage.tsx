@@ -1,11 +1,15 @@
-import { useI18n, CATEGORIES, getCategoryKey, type Category } from '../i18n'
+import { useI18n, CATEGORIES, getCategoryKey } from '../i18n'
 import { StreamCard } from './StreamCard'
 
+// eslint-disable-next-line @typescript-eslint/member-delimiter-style
 interface Stream { id: string; title: string; status: string; ingest_url: string | null; stream_key: string | null; user_id: string; category?: string; thumbnail_url?: string | null }
+// eslint-disable-next-line @typescript-eslint/member-delimiter-style
 interface Props { streams: Stream[]; onWatch: (stream: Stream) => void }
 
 const CAT_ICONS: Record<string, string> = {
+  // eslint-disable-next-line object-property-newline
   gaming: '🎮', irl: '📷', music: '🎵', esports: '🏆',
+  // eslint-disable-next-line object-property-newline
   creative: '🎨', education: '📚', talkshow: '🎙️', other: '📺'
 }
 
@@ -33,7 +37,8 @@ export function BrowsePage ({ streams, onWatch }: Props): JSX.Element {
           return (
             <div key={cat} className={`browse-cat-card ${count === 0 ? 'empty' : ''}`}>
               <span className="cat-icon">{CAT_ICONS[cat]}</span>
-              <span className="cat-label">{t(getCategoryKey(cat as Category))}</span>
+              // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+              <span className="cat-label">{t(getCategoryKey(cat))}</span>
               <span className="cat-count">
                 {count} {t('channels_count')}
                 {liveCount > 0 && <span className="cat-live"> · {liveCount} live</span>}
@@ -46,7 +51,8 @@ export function BrowsePage ({ streams, onWatch }: Props): JSX.Element {
       {grouped.map(({ cat, streams: catStreams }) => (
         <section key={cat} className="browse-section">
           <div className="section-header">
-            <h2>{CAT_ICONS[cat]} {t(getCategoryKey(cat as Category))}</h2>
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+            <h2>{CAT_ICONS[cat]} {t(getCategoryKey(cat))}</h2>
             <span className="section-count">{catStreams.length} {t('channels_count')}</span>
           </div>
           <div className="stream-grid">

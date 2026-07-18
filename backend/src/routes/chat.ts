@@ -90,7 +90,7 @@ export async function registerChatRoutes (app: FastifyInstance): Promise<void> {
       client.ready = true
 
       for (const raw of pendingMessages) {
-        await processMessage(raw, client, streamId, room, connection)
+        if (room != null) { await processMessage(raw, client, streamId, room, connection) }
       }
       pendingMessages.length = 0
     })()
@@ -100,7 +100,7 @@ export async function registerChatRoutes (app: FastifyInstance): Promise<void> {
         pendingMessages.push(raw)
         return
       }
-      void processMessage(raw, client, streamId, room, connection)
+      if (room != null) { void processMessage(raw, client, streamId, room, connection) }
     })
 
     connection.socket.on('close', () => {

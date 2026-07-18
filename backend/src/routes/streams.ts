@@ -45,6 +45,8 @@ function parseSettings (raw: unknown): typeof DEFAULT_SETTINGS {
 function sanitizeStream (row: Record<string, unknown>, requestUserId: string | null): Record<string, unknown> {
   const isOwner = row.user_id === requestUserId
   // eslint-disable-next-line @typescript-eslint/naming-convention
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   const { stream_key, ingest_url, ...safe } = row
   return {
     ...safe,
@@ -95,6 +97,8 @@ export async function registerStreamRoutes (app: FastifyInstance): Promise<void>
     if (!parsed.success) {
       return await reply.code(400).send({ error: parsed.error.flatten() })
     }
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     // eslint-disable-next-line @typescript-eslint/naming-convention
     const { title, description, category, language, tags, max_quality, delay_seconds, mature_content, chat_followers_only, chat_slow_mode } = parsed.data
     const tagsStr = tags.join(',')

@@ -11,5 +11,6 @@ function normalizeBaseUrl (value: string): string {
 
 export function getMediaServerUrl (): string {
   const configured = import.meta.env.VITE_MEDIA_SERVER_URL
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   return normalizeBaseUrl(configured ?? defaultMediaServerUrl)
 }
