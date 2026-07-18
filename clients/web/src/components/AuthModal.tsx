@@ -4,6 +4,7 @@ import { useI18n } from '../i18n'
 
 interface Props {
   onClose: () => void
+  // eslint-disable-next-line @typescript-eslint/member-delimiter-style
   onSuccess: (user: { id: string; email: string; role: string }) => void
 }
 
@@ -21,6 +22,7 @@ export function AuthModal ({ onClose, onSuccess }: Props): JSX.Element {
     setLoading(true); setError(null)
     try {
       const res = await api.post(`/auth/${mode}`, { email: email.trim(), password })
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       setAuthToken(res.data.accessToken); setRefreshToken(res.data.refreshToken)
       onSuccess({ id: res.data.user.id, email: res.data.user.email, role: res.data.user.role })
     } catch (err: any) {

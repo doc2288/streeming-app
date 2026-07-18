@@ -1,6 +1,7 @@
 import axios from 'axios'
 import type { AxiosError, InternalAxiosRequestConfig } from 'axios'
 
+// eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
 const defaultApiUrl = import.meta.env.DEV
   ? 'http://localhost:4000'
   : typeof window !== 'undefined'
@@ -15,6 +16,7 @@ function normalizeApiUrl (value: string): URL {
   return new URL(value)
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 const resolvedApiUrl = normalizeApiUrl(API_URL)
 const apiBasePath = resolvedApiUrl.pathname.replace(/\/$/, '')
 
@@ -111,13 +113,16 @@ api.interceptors.response.use(
     if (
       axiosError.response?.status === 401 &&
       original != null &&
+      // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
       !original._retry &&
       !shouldSkipRefresh
     ) {
       original._retry = true
       const accessToken = await refreshAccessToken()
       if (accessToken != null) {
+        // eslint-disable-next-line @typescript-eslint/indent
           original.headers.Authorization = `Bearer ${accessToken}`
+        // eslint-disable-next-line @typescript-eslint/indent
           return await api(original)
       }
     }

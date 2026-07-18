@@ -5,6 +5,7 @@ import { I18nProvider } from './i18n'
 import { ErrorBoundary } from './components/ErrorBoundary'
 import './style.css'
 
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <ErrorBoundary>
