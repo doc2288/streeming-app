@@ -4,7 +4,7 @@ import { useI18n } from '../i18n'
 
 interface Props {
   onClose: () => void
-  onSuccess: (user: { id: string; email: string; role: string }) => void
+  onSuccess: (user: { id: string, email: string, role: string }) => void
 }
 
 export function AuthModal ({ onClose, onSuccess }: Props): JSX.Element {
@@ -25,7 +25,7 @@ export function AuthModal ({ onClose, onSuccess }: Props): JSX.Element {
       onSuccess({ id: res.data.user.id, email: res.data.user.email, role: res.data.user.role })
     } catch (err: any) {
       const msg = err.response?.data?.error
-      setError(typeof msg === 'string' ? msg : t('authError'))
+      setError(typeof msg === 'string' ? String(msg) : t('authError'))
     } finally { setLoading(false) }
   }
 
