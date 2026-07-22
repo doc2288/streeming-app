@@ -89,10 +89,6 @@ const translations = {
   chatWelcome: { ua: 'Вітаємо у чаті!', en: 'Welcome to the chat!', no: 'Velkommen til chatten!' },
   chatFirst: { ua: 'Напишіть перше повідомлення', en: 'Send the first message', no: 'Send den første meldingen' },
   chatPlaceholder: { ua: 'Надіслати повідомлення', en: 'Send a message', no: 'Send en melding' },
-  reply: { ua: 'Відповісти', en: 'Reply', no: 'Svar' },
-  emoji: { ua: 'Емодзі', en: 'Emoji', no: 'Emoji' },
-  send: { ua: 'Надіслати', en: 'Send', no: 'Send' },
-  copy: { ua: 'Копіювати', en: 'Copy', no: 'Kopier' },
   connecting: { ua: 'З\'єднання…', en: 'Connecting…', no: 'Kobler til…' },
   guest: { ua: 'Гість', en: 'Guest', no: 'Gjest' },
 
