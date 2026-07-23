@@ -1,0 +1,3 @@
+## 2024-05-18 - Localized ARIA labels for icon-only buttons
+**Learning:** Icon-only buttons (like delete, copy, or send) in this app often lack adequate accessibility and tooltip support. It is critical to ensure that both `aria-label` (for screen readers) and `title` (for visual tooltips) attributes are provided and consistently utilize localized text keys from `i18n.tsx`.
+**Action:** When implementing or refactoring icon-only buttons, always verify the presence of translated `aria-label` and `title` properties. Do not use hardcoded string literals; reuse or introduce specific translation keys to maintain internationalization and accessibility parity.
