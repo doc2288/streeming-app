@@ -1,0 +1,48 @@
+Scope: 3 of 4 workspace projects
+backend lint$ eslint "src/**/*.{ts,tsx}"
+clients/web lint$ eslint "src/**/*.{ts,tsx}"
+backend lint: /app/backend/src/app.ts
+backend lint:   90:10  error  Returning an awaited promise is required in this context  @typescript-eslint/return-await
+backend lint: /app/backend/src/index.ts
+backend lint:   19:21  error  Promise returned in function argument where a void return was expected  @typescript-eslint/no-misused-promises
+backend lint: /app/backend/src/routes/auth.ts
+backend lint:    31:8   error  Unexpected nullable object value in conditional. An explicit null check is required                @typescript-eslint/strict-boolean-expressions
+backend lint:    70:31  error  Unsafe argument of type `any` assigned to a parameter of type `Record<string, unknown>`            @typescript-eslint/no-unsafe-argument
+backend lint:    94:47  error  Unsafe argument of type `any` assigned to a parameter of type `string`                             @typescript-eslint/no-unsafe-argument
+backend lint:    98:31  error  Unsafe argument of type `any` assigned to a parameter of type `Record<string, unknown>`            @typescript-eslint/no-unsafe-argument
+backend lint:   124:18  error  Unsafe argument of type `any` assigned to a parameter of type `string | number | Date`             @typescript-eslint/no-unsafe-argument
+backend lint:   132:31  error  Unsafe argument of type `any` assigned to a parameter of type `Record<string, unknown>`            @typescript-eslint/no-unsafe-argument
+backend lint:   143:9   error  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly  @typescript-eslint/strict-boolean-expressions
+backend lint: /app/backend/src/routes/chat.ts
+backend lint:    36:74  error  Unsafe argument of type `any` assigned to a parameter of type `string`             @typescript-eslint/no-unsafe-argument
+backend lint:    57:54  error  Expected a comma                                                                   @typescript-eslint/member-delimiter-style
+backend lint:    93:53  error  Forbidden non-null assertion                                                       @typescript-eslint/no-non-null-assertion
+backend lint:    93:53  error  This assertion is unnecessary since it does not change the type of the expression  @typescript-eslint/no-unnecessary-type-assertion
+backend lint:   103:50  error  Forbidden non-null assertion                                                       @typescript-eslint/no-non-null-assertion
+backend lint:   103:50  error  This assertion is unnecessary since it does not change the type of the expression  @typescript-eslint/no-unnecessary-type-assertion
+backend lint: /app/backend/src/routes/streams.ts
+backend lint:    47:11   error  Variable name `stream_key` must match one of the following formats: camelCase, PascalCase, UPPER_CASE           @typescript-eslint/naming-convention
+backend lint:    47:23   error  Variable name `ingest_url` must match one of the following formats: camelCase, PascalCase, UPPER_CASE           @typescript-eslint/naming-convention
+backend lint:    55:1    error  More than 1 blank line not allowed                                                                              no-multiple-empty-lines
+backend lint:    66:37   error  Unexpected number value in conditional. An explicit zero/NaN check is required                                  @typescript-eslint/strict-boolean-expressions
+backend lint:    67:29   error  Unexpected number value in conditional. An explicit zero/NaN check is required                                  @typescript-eslint/strict-boolean-expressions
+backend lint:    80:62   error  This assertion is unnecessary since it does not change the type of the expression                               @typescript-eslint/no-unnecessary-type-assertion
+backend lint:    98:59   error  Variable name `max_quality` must match one of the following formats: camelCase, PascalCase, UPPER_CASE          @typescript-eslint/naming-convention
+backend lint:    98:72   error  Variable name `delay_seconds` must match one of the following formats: camelCase, PascalCase, UPPER_CASE        @typescript-eslint/naming-convention
+backend lint:    98:87   error  Variable name `mature_content` must match one of the following formats: camelCase, PascalCase, UPPER_CASE       @typescript-eslint/naming-convention
+backend lint:    98:103  error  Variable name `chat_followers_only` must match one of the following formats: camelCase, PascalCase, UPPER_CASE  @typescript-eslint/naming-convention
+backend lint:    98:124  error  Variable name `chat_slow_mode` must match one of the following formats: camelCase, PascalCase, UPPER_CASE       @typescript-eslint/naming-convention
+backend lint:   112:37   error  Unsafe argument of type `any` assigned to a parameter of type `Record<string, unknown>`                         @typescript-eslint/no-unsafe-argument
+backend lint:   130:37   error  Unsafe argument of type `any` assigned to a parameter of type `Record<string, unknown>`                         @typescript-eslint/no-unsafe-argument
+backend lint:   148:37   error  Unsafe argument of type `any` assigned to a parameter of type `Record<string, unknown>`                         @typescript-eslint/no-unsafe-argument
+backend lint: /app/backend/src/utils/password.ts
+backend lint:    5:35  error  Missing space before function parentheses                 @typescript-eslint/space-before-function-paren
+backend lint:    6:10  error  Returning an awaited promise is required in this context  @typescript-eslint/return-await
+backend lint:    9:37  error  Missing space before function parentheses                 @typescript-eslint/space-before-function-paren
+backend lint:   10:10  error  Returning an awaited promise is required in this context  @typescript-eslint/return-await
+backend lint: ✖ 33 problems (33 errors, 0 warnings)
+backend lint:   10 errors and 0 warnings potentially fixable with the `--fix` option.
+backend lint: Failed
+/app/backend:
+ ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  @streeming/backend@0.1.0 lint: `eslint "src/**/*.{ts,tsx}"`
+Exit status 1
