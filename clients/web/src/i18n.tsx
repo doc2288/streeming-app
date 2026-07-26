@@ -78,6 +78,10 @@ const translations = {
   obsHint: { ua: 'Використовуйте ці дані у OBS Studio або іншому ПЗ для трансляцій', en: 'Use these in OBS Studio or other broadcasting software', no: 'Bruk disse i OBS Studio eller annen kringkastingsprogramvare' },
   show: { ua: 'Показати', en: 'Show', no: 'Vis' },
   hide: { ua: 'Сховати', en: 'Hide', no: 'Skjul' },
+  copy: { ua: 'Копіювати', en: 'Copy', no: 'Kopier' },
+  reply: { ua: 'Відповісти', en: 'Reply', no: 'Svar' },
+  emoji: { ua: 'Емодзі', en: 'Emoji', no: 'Emoji' },
+  send: { ua: 'Надіслати', en: 'Send', no: 'Send' },
 
   // ---- Watch ----
   follow: { ua: 'Підписатись', en: 'Follow', no: 'Følg' },
