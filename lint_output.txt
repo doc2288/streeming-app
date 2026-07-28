@@ -1,0 +1,154 @@
+Scope: 3 of 4 workspace projects
+backend lint$ eslint "src/**/*.{ts,tsx}"
+clients/web lint$ eslint "src/**/*.{ts,tsx}"
+backend lint: Done
+clients/web lint: /app/clients/web/src/App.tsx
+clients/web lint:     3:15  error  'setAuthToken' is defined but never used                                                            @typescript-eslint/no-unused-vars
+clients/web lint:     3:29  error  'setRefreshToken' is defined but never used                                                         @typescript-eslint/no-unused-vars
+clients/web lint:    14:23  error  Unexpected separator (;)                                                                            @typescript-eslint/member-delimiter-style
+clients/web lint:    14:46  error  Unexpected separator (;)                                                                            @typescript-eslint/member-delimiter-style
+clients/web lint:    15:32  error  Unexpected separator (;)                                                                            @typescript-eslint/member-delimiter-style
+clients/web lint:    18:14  error  Unexpected separator (;)                                                                            @typescript-eslint/member-delimiter-style
+clients/web lint:    18:29  error  Unexpected separator (;)                                                                            @typescript-eslint/member-delimiter-style
+clients/web lint:    18:50  error  Unexpected separator (;)                                                                            @typescript-eslint/member-delimiter-style
+clients/web lint:    18:68  error  Unexpected separator (;)                                                                            @typescript-eslint/member-delimiter-style
+clients/web lint:    18:86  error  Unexpected separator (;)                                                                            @typescript-eslint/member-delimiter-style
+clients/web lint:    20:18  error  Unexpected separator (;)                                                                            @typescript-eslint/member-delimiter-style
+clients/web lint:    20:45  error  Unexpected separator (;)                                                                            @typescript-eslint/member-delimiter-style
+clients/web lint:    20:72  error  Unexpected separator (;)                                                                            @typescript-eslint/member-delimiter-style
+clients/web lint:    21:19  error  Unexpected separator (;)                                                                            @typescript-eslint/member-delimiter-style
+clients/web lint:    23:33  error  Expected a comma                                                                                    @typescript-eslint/member-delimiter-style
+clients/web lint:    23:48  error  Expected a comma                                                                                    @typescript-eslint/member-delimiter-style
+clients/web lint:    36:53  error  Expected a comma                                                                                    @typescript-eslint/member-delimiter-style
+clients/web lint:    63:59  error  Unsafe argument of type `any` assigned to a parameter of type `SetStateAction<Stream[]>`            @typescript-eslint/no-unsafe-argument
+clients/web lint:    70:15  error  Unsafe argument of type `any` assigned to a parameter of type `SetStateAction<UserInfo | null>`     @typescript-eslint/no-unsafe-argument
+clients/web lint:   105:33  error  Object properties must go on a new line if they aren't all on the same line                         object-property-newline
+clients/web lint:   105:62  error  Object properties must go on a new line if they aren't all on the same line                         object-property-newline
+clients/web lint:   105:80  error  Object properties must go on a new line if they aren't all on the same line                         object-property-newline
+clients/web lint:   105:99  error  Object properties must go on a new line if they aren't all on the same line                         object-property-newline
+clients/web lint:   106:37  error  Object properties must go on a new line if they aren't all on the same line                         object-property-newline
+clients/web lint:   106:62  error  Object properties must go on a new line if they aren't all on the same line                         object-property-newline
+clients/web lint:   107:48  error  Object properties must go on a new line if they aren't all on the same line                         object-property-newline
+clients/web lint:   128:12  error  Expected newline between test and consequent of ternary expression                                  multiline-ternary
+clients/web lint:   128:51  error  Expected newline between consequent and alternate of ternary expression                             multiline-ternary
+clients/web lint:   130:15  error  Expected newline between test and consequent of ternary expression                                  multiline-ternary
+clients/web lint:   130:54  error  Expected newline between consequent and alternate of ternary expression                             multiline-ternary
+clients/web lint:   132:15  error  Expected newline between test and consequent of ternary expression                                  multiline-ternary
+clients/web lint:   132:35  error  Expected newline between consequent and alternate of ternary expression                             multiline-ternary
+clients/web lint:   165:73  error  Unsafe argument of type `any` assigned to a parameter of type `SetStateAction<"ua" | "en" | "no">`  @typescript-eslint/no-unsafe-argument
+clients/web lint:   213:20  error  Expected newline between test and consequent of ternary expression                                  multiline-ternary
+clients/web lint:   213:43  error  Expected newline between consequent and alternate of ternary expression                             multiline-ternary
+clients/web lint: /app/clients/web/src/api.ts
+clients/web lint:     4:23  error  Unexpected any value in conditional. An explicit comparison or type cast is required         @typescript-eslint/strict-boolean-expressions
+clients/web lint:    18:40  error  Unsafe argument of type `any` assigned to a parameter of type `string`                       @typescript-eslint/no-unsafe-argument
+clients/web lint:   114:8   error  Unexpected nullable boolean value in conditional. Please handle the nullish case explicitly  @typescript-eslint/strict-boolean-expressions
+clients/web lint:   120:1   error  Expected indentation of 8 spaces but found 10                                                @typescript-eslint/indent
+clients/web lint:   121:1   error  Expected indentation of 8 spaces but found 10                                                @typescript-eslint/indent
+clients/web lint: /app/clients/web/src/components/AuthModal.tsx
+clients/web lint:    7:34  error  Expected a comma                                                               @typescript-eslint/member-delimiter-style
+clients/web lint:    7:49  error  Expected a comma                                                               @typescript-eslint/member-delimiter-style
+clients/web lint:   24:20  error  Unsafe argument of type `any` assigned to a parameter of type `string | null`  @typescript-eslint/no-unsafe-argument
+clients/web lint:   24:59  error  Unsafe argument of type `any` assigned to a parameter of type `string | null`  @typescript-eslint/no-unsafe-argument
+clients/web lint: /app/clients/web/src/components/BrowsePage.tsx
+clients/web lint:    4:31   error  Expected a comma                                                                   @typescript-eslint/member-delimiter-style
+clients/web lint:    4:46   error  Expected a comma                                                                   @typescript-eslint/member-delimiter-style
+clients/web lint:    4:62   error  Expected a comma                                                                   @typescript-eslint/member-delimiter-style
+clients/web lint:    4:89   error  Expected a comma                                                                   @typescript-eslint/member-delimiter-style
+clients/web lint:    4:116  error  Expected a comma                                                                   @typescript-eslint/member-delimiter-style
+clients/web lint:    4:133  error  Expected a comma                                                                   @typescript-eslint/member-delimiter-style
+clients/web lint:    4:152  error  Expected a comma                                                                   @typescript-eslint/member-delimiter-style
+clients/web lint:    5:37   error  Expected a comma                                                                   @typescript-eslint/member-delimiter-style
+clients/web lint:    8:17   error  Object properties must go on a new line if they aren't all on the same line        object-property-newline
+clients/web lint:    8:28   error  Object properties must go on a new line if they aren't all on the same line        object-property-newline
+clients/web lint:    8:41   error  Object properties must go on a new line if they aren't all on the same line        object-property-newline
+clients/web lint:    9:19   error  Object properties must go on a new line if they aren't all on the same line        object-property-newline
+clients/web lint:    9:36   error  Object properties must go on a new line if they aren't all on the same line        object-property-newline
+clients/web lint:    9:53   error  Object properties must go on a new line if they aren't all on the same line        object-property-newline
+clients/web lint:   36:61   error  This assertion is unnecessary since it does not change the type of the expression  @typescript-eslint/no-unnecessary-type-assertion
+clients/web lint:   49:52   error  This assertion is unnecessary since it does not change the type of the expression  @typescript-eslint/no-unnecessary-type-assertion
+clients/web lint: /app/clients/web/src/components/Chat.tsx
+clients/web lint:     7:25  error  Unexpected separator (;)      @typescript-eslint/member-delimiter-style
+clients/web lint:     7:50  error  Unexpected separator (;)      @typescript-eslint/member-delimiter-style
+clients/web lint:     7:67  error  Unexpected separator (;)      @typescript-eslint/member-delimiter-style
+clients/web lint:   197:20  error  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+clients/web lint: /app/clients/web/src/components/Dashboard.tsx
+clients/web lint:     6:23  error  Unexpected separator (;)                                                 @typescript-eslint/member-delimiter-style
+clients/web lint:     6:46  error  Unexpected separator (;)                                                 @typescript-eslint/member-delimiter-style
+clients/web lint:     7:32  error  Unexpected separator (;)                                                 @typescript-eslint/member-delimiter-style
+clients/web lint:    85:8   error  Expected newline between test and consequent of ternary expression       multiline-ternary
+clients/web lint:    85:33  error  Expected newline between consequent and alternate of ternary expression  multiline-ternary
+clients/web lint:   103:20  error  Expected newline between test and consequent of ternary expression       multiline-ternary
+clients/web lint:   103:42  error  Expected newline between consequent and alternate of ternary expression  multiline-ternary
+clients/web lint:   121:18  error  Expected newline between test and consequent of ternary expression       multiline-ternary
+clients/web lint:   121:44  error  Expected newline between consequent and alternate of ternary expression  multiline-ternary
+clients/web lint: /app/clients/web/src/components/Sidebar.tsx
+clients/web lint:   3:31  error  Expected a comma                                                             @typescript-eslint/member-delimiter-style
+clients/web lint:   3:46  error  Expected a comma                                                             @typescript-eslint/member-delimiter-style
+clients/web lint:   3:62  error  Expected a comma                                                             @typescript-eslint/member-delimiter-style
+clients/web lint:   3:79  error  Expected a comma                                                             @typescript-eslint/member-delimiter-style
+clients/web lint:   6:17  error  Object properties must go on a new line if they aren't all on the same line  object-property-newline
+clients/web lint:   6:28  error  Object properties must go on a new line if they aren't all on the same line  object-property-newline
+clients/web lint:   6:41  error  Object properties must go on a new line if they aren't all on the same line  object-property-newline
+clients/web lint:   7:19  error  Object properties must go on a new line if they aren't all on the same line  object-property-newline
+clients/web lint:   7:36  error  Object properties must go on a new line if they aren't all on the same line  object-property-newline
+clients/web lint:   7:53  error  Object properties must go on a new line if they aren't all on the same line  object-property-newline
+clients/web lint: /app/clients/web/src/components/StreamCard.tsx
+clients/web lint:    5:31   error  Expected a comma                                                                            @typescript-eslint/member-delimiter-style
+clients/web lint:    5:46   error  Expected a comma                                                                            @typescript-eslint/member-delimiter-style
+clients/web lint:    5:62   error  Expected a comma                                                                            @typescript-eslint/member-delimiter-style
+clients/web lint:    5:79   error  Expected a comma                                                                            @typescript-eslint/member-delimiter-style
+clients/web lint:    5:98   error  Expected a comma                                                                            @typescript-eslint/member-delimiter-style
+clients/web lint:    5:129  error  Expected a comma                                                                            @typescript-eslint/member-delimiter-style
+clients/web lint:    6:34   error  Expected a comma                                                                            @typescript-eslint/member-delimiter-style
+clients/web lint:   23:10   error  Expected newline between test and consequent of ternary expression                          multiline-ternary
+clients/web lint:   23:29   error  Expected newline between consequent and alternate of ternary expression                     multiline-ternary
+clients/web lint:   42:14   error  Prefer using an optional chain expression instead, as it's more concise and easier to read  @typescript-eslint/prefer-optional-chain
+clients/web lint: /app/clients/web/src/components/StreamGrid.tsx
+clients/web lint:    4:31   error  Expected a comma                                                         @typescript-eslint/member-delimiter-style
+clients/web lint:    4:46   error  Expected a comma                                                         @typescript-eslint/member-delimiter-style
+clients/web lint:    4:62   error  Expected a comma                                                         @typescript-eslint/member-delimiter-style
+clients/web lint:    4:89   error  Expected a comma                                                         @typescript-eslint/member-delimiter-style
+clients/web lint:    4:116  error  Expected a comma                                                         @typescript-eslint/member-delimiter-style
+clients/web lint:    4:133  error  Expected a comma                                                         @typescript-eslint/member-delimiter-style
+clients/web lint:    4:152  error  Expected a comma                                                         @typescript-eslint/member-delimiter-style
+clients/web lint:    5:37   error  Expected a comma                                                         @typescript-eslint/member-delimiter-style
+clients/web lint:    5:72   error  Expected a comma                                                         @typescript-eslint/member-delimiter-style
+clients/web lint:    5:93   error  Expected a comma                                                         @typescript-eslint/member-delimiter-style
+clients/web lint:   25:10   error  Expected newline between test and consequent of ternary expression       multiline-ternary
+clients/web lint:   25:47   error  Expected newline between consequent and alternate of ternary expression  multiline-ternary
+clients/web lint: /app/clients/web/src/components/TopBar.tsx
+clients/web lint:    5:22  error  Expected a comma                                                         @typescript-eslint/member-delimiter-style
+clients/web lint:    5:37  error  Expected a comma                                                         @typescript-eslint/member-delimiter-style
+clients/web lint:   17:7   error  'LANG_NAMES' is assigned a value but never used                          @typescript-eslint/no-unused-vars
+clients/web lint:   62:10  error  Expected newline between test and consequent of ternary expression       multiline-ternary
+clients/web lint:   62:25  error  Expected newline between consequent and alternate of ternary expression  multiline-ternary
+clients/web lint: /app/clients/web/src/components/WatchPage.tsx
+clients/web lint:    8:48   error  Expected a comma                                                                            @typescript-eslint/member-delimiter-style
+clients/web lint:    8:71   error  Expected a comma                                                                            @typescript-eslint/member-delimiter-style
+clients/web lint:    8:96   error  Expected a comma                                                                            @typescript-eslint/member-delimiter-style
+clients/web lint:    8:126  error  Expected a comma                                                                            @typescript-eslint/member-delimiter-style
+clients/web lint:    9:31   error  Expected a comma                                                                            @typescript-eslint/member-delimiter-style
+clients/web lint:    9:46   error  Expected a comma                                                                            @typescript-eslint/member-delimiter-style
+clients/web lint:    9:68   error  Expected a comma                                                                            @typescript-eslint/member-delimiter-style
+clients/web lint:    9:87   error  Expected a comma                                                                            @typescript-eslint/member-delimiter-style
+clients/web lint:    9:114  error  Expected a comma                                                                            @typescript-eslint/member-delimiter-style
+clients/web lint:    9:130  error  Expected a comma                                                                            @typescript-eslint/member-delimiter-style
+clients/web lint:    9:157  error  Expected a comma                                                                            @typescript-eslint/member-delimiter-style
+clients/web lint:    9:184  error  Expected a comma                                                                            @typescript-eslint/member-delimiter-style
+clients/web lint:   10:34   error  Expected a comma                                                                            @typescript-eslint/member-delimiter-style
+clients/web lint:   10:54   error  Expected a comma                                                                            @typescript-eslint/member-delimiter-style
+clients/web lint:   10:69   error  Expected a comma                                                                            @typescript-eslint/member-delimiter-style
+clients/web lint:   10:92   error  Expected a comma                                                                            @typescript-eslint/member-delimiter-style
+clients/web lint:   10:112  error  Expected a comma                                                                            @typescript-eslint/member-delimiter-style
+clients/web lint:   10:135  error  Expected a comma                                                                            @typescript-eslint/member-delimiter-style
+clients/web lint:   30:5    error  Prefer using an optional chain expression instead, as it's more concise and easier to read  @typescript-eslint/prefer-optional-chain
+clients/web lint: /app/clients/web/src/config/env.ts
+clients/web lint:   14:27  error  Unsafe argument of type `any` assigned to a parameter of type `string`  @typescript-eslint/no-unsafe-argument
+clients/web lint: /app/clients/web/src/main.tsx
+clients/web lint:   8:21  error  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+clients/web lint: ✖ 131 problems (131 errors, 0 warnings)
+clients/web lint:   97 errors and 0 warnings potentially fixable with the `--fix` option.
+clients/web lint: Failed
+/app/clients/web:
+ ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  @streeming/web@0.1.0 lint: `eslint "src/**/*.{ts,tsx}"`
+Exit status 1
