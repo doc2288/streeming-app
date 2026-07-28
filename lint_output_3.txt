@@ -1,0 +1,20 @@
+Scope: 3 of 4 workspace projects
+clients/web lint$ eslint "src/**/*.{ts,tsx}"
+backend lint$ eslint "src/**/*.{ts,tsx}"
+backend lint: Done
+clients/web lint: /app/clients/web/src/components/BrowsePage.tsx
+clients/web lint:   1:52  error  'Category' is defined but never used  @typescript-eslint/no-unused-vars
+clients/web lint: /app/clients/web/src/components/Chat.tsx
+clients/web lint:     7:25  error  Unexpected separator (;)      @typescript-eslint/member-delimiter-style
+clients/web lint:     7:50  error  Unexpected separator (;)      @typescript-eslint/member-delimiter-style
+clients/web lint:     7:67  error  Unexpected separator (;)      @typescript-eslint/member-delimiter-style
+clients/web lint:   197:20  error  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+clients/web lint: /app/clients/web/src/config/env.ts
+clients/web lint:   14:27  error  Unsafe argument of type `any` assigned to a parameter of type `string`  @typescript-eslint/no-unsafe-argument
+clients/web lint: /app/clients/web/src/main.tsx
+clients/web lint:   8:21  error  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+clients/web lint: ✖ 7 problems (7 errors, 0 warnings)
+clients/web lint: Failed
+/app/clients/web:
+ ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  @streeming/web@0.1.0 lint: `eslint "src/**/*.{ts,tsx}"`
+Exit status 1

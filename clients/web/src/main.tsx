@@ -5,12 +5,15 @@ import { I18nProvider } from './i18n'
 import { ErrorBoundary } from './components/ErrorBoundary'
 import './style.css'
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <ErrorBoundary>
-      <I18nProvider>
-        <App />
-      </I18nProvider>
-    </ErrorBoundary>
-  </React.StrictMode>
-)
+const root = document.getElementById('root')
+if (root != null) {
+  ReactDOM.createRoot(root).render(
+    <React.StrictMode>
+      <ErrorBoundary>
+        <I18nProvider>
+          <App />
+        </I18nProvider>
+      </ErrorBoundary>
+    </React.StrictMode>
+  )
+}

@@ -1,0 +1,5 @@
+Scope: 3 of 4 workspace projects
+backend lint$ eslint "src/**/*.{ts,tsx}"
+clients/web lint$ eslint "src/**/*.{ts,tsx}"
+backend lint: Done
+clients/web lint: Done
