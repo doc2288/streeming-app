@@ -140,6 +140,12 @@ const translations = {
   lang_ua: { ua: 'Українська', en: 'Ukrainian', no: 'Ukrainsk' },
   lang_en: { ua: 'English', en: 'English', no: 'English' },
   lang_no: { ua: 'Norsk', en: 'Norwegian', no: 'Norsk' },
+  // ---- Added missing keys ----
+  reply: { ua: 'Відповісти', en: 'Reply', no: 'Svar' },
+  streamer: { ua: 'Стрімер', en: 'Streamer', no: 'Strømmer' },
+  emoji: { ua: 'Емодзі', en: 'Emoji', no: 'Emoji' },
+  copy: { ua: 'Копіювати', en: 'Copy', no: 'Kopier' },
+  menu: { ua: 'Меню', en: 'Menu', no: 'Meny' }
 } as const
 
 export type TKey = keyof typeof translations
