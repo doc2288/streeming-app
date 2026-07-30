@@ -13,6 +13,13 @@ const translations = {
   interfaceLang: { ua: 'Мова інтерфейсу', en: 'Interface Language', no: 'Språk' },
   later: { ua: 'Пізніше', en: 'Later', no: 'Senere' },
 
+  // ---- General Actions ----
+  close: { ua: 'Закрити', en: 'Close', no: 'Lukk' },
+  clear: { ua: 'Очистити', en: 'Clear', no: 'Tøm' },
+  send: { ua: 'Надіслати', en: 'Send', no: 'Send' },
+  menu: { ua: 'Меню', en: 'Menu', no: 'Meny' },
+  searchAction: { ua: 'Шукати', en: 'Search', no: 'Søk' },
+
   // ---- Sidebar ----
   home: { ua: 'Головна', en: 'Home', no: 'Hjem' },
   browse: { ua: 'Огляд', en: 'Browse', no: 'Utforsk' },
@@ -139,7 +146,7 @@ const translations = {
   // ---- Language names ----
   lang_ua: { ua: 'Українська', en: 'Ukrainian', no: 'Ukrainsk' },
   lang_en: { ua: 'English', en: 'English', no: 'English' },
-  lang_no: { ua: 'Norsk', en: 'Norwegian', no: 'Norsk' },
+  lang_no: { ua: 'Norsk', en: 'Norwegian', no: 'Norsk' }
 } as const
 
 export type TKey = keyof typeof translations

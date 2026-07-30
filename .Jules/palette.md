@@ -1,0 +1,3 @@
+## 2024-07-30 - Localized ARIA labels for icon-only buttons
+**Learning:** Icon-only action buttons (like close, clear, send) throughout the web client components often lack accessible names for screen readers and tooltips for sighted users. Using generic non-localized strings (like "Menu") or reusing input placeholder strings (like "Send a message") leads to suboptimal announcements.
+**Action:** Always provide dedicated localization keys for UI actions (e.g., `t('send')`, `t('close')`) and consistently apply both `aria-label` and `title` attributes to all icon-only interactive elements to ensure cross-language accessibility.
