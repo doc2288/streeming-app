@@ -72,6 +72,8 @@ const translations = {
   copied: { ua: 'Скопійовано!', en: 'Copied!', no: 'Kopiert!' },
   goLive: { ua: 'Розпочати стрім', en: 'Go Live', no: 'Start strøm' },
   stopStream: { ua: 'Зупинити', en: 'Stop', no: 'Stopp' },
+  copy: { ua: 'Копіювати', en: 'Copy', no: 'Kopier' },
+  close: { ua: 'Закрити', en: 'Close', no: 'Lukk' },
   deleteStream: { ua: 'Видалити', en: 'Delete', no: 'Slett' },
   deleteConfirm: { ua: 'Видалити цей стрім?', en: 'Delete this stream?', no: 'Slette denne strømmen?' },
   noOwnStreams: { ua: 'У вас ще немає стрімів', en: 'You have no streams yet', no: 'Du har ingen strømmer ennå' },
@@ -139,7 +141,7 @@ const translations = {
   // ---- Language names ----
   lang_ua: { ua: 'Українська', en: 'Ukrainian', no: 'Ukrainsk' },
   lang_en: { ua: 'English', en: 'English', no: 'English' },
-  lang_no: { ua: 'Norsk', en: 'Norwegian', no: 'Norsk' },
+  lang_no: { ua: 'Norsk', en: 'Norwegian', no: 'Norsk' }
 } as const
 
 export type TKey = keyof typeof translations
