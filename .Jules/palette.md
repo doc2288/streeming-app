@@ -1,0 +1,3 @@
+## 2024-07-31 - Add ARIA Labels and Localization to Close and Copy Buttons
+**Learning:** Icon-only buttons for actions like closing modals/toasts and copying text are missing accessible `aria-label` attributes and translatable `title` attributes, which hurts accessibility and internationalization. Missing translation keys in `i18n.tsx` for these actions makes it impossible to localize them effectively.
+**Action:** Always verify if `i18n.tsx` contains generic action keys (like `copy`, `close`, `deleteStream`) and add them if missing. Then apply them to `aria-label` and `title` attributes on all corresponding icon-only buttons to guarantee screen reader and visual tooltip support.
