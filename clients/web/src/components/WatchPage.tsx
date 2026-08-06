@@ -5,9 +5,9 @@ import { api } from '../api'
 import { useI18n, getCategoryKey, type Category } from '../i18n'
 import { getMediaServerUrl } from '../config/env'
 
-interface StreamSettings { max_quality: string; delay_seconds: number; mature_content: boolean; chat_followers_only: boolean; chat_slow_mode: number }
-interface Stream { id: string; title: string; description?: string; category?: string; settings?: StreamSettings; status: string; ingest_url: string | null; stream_key: string | null; user_id: string }
-interface Props { stream: Stream; user: { id: string; email: string; role: string } | null; onBack: () => void; onRefresh: () => void; onDelete: (id: string) => void }
+interface StreamSettings { max_quality: string, delay_seconds: number, mature_content: boolean, chat_followers_only: boolean, chat_slow_mode: number }
+interface Stream { id: string, title: string, description?: string, category?: string, settings?: StreamSettings, status: string, ingest_url: string | null, stream_key: string | null, user_id: string }
+interface Props { stream: Stream, user: { id: string, email: string, role: string } | null, onBack: () => void, onRefresh: () => void, onDelete: (id: string) => void }
 
 const mediaServerUrl = getMediaServerUrl()
 const FOLLOWED_CHANNELS_KEY = 'streeming_followed_channels'
@@ -27,7 +27,7 @@ export function WatchPage ({ stream, user, onBack, onRefresh, onDelete }: Props)
   const cat = stream.category as Category | undefined
   const defaultObsServer = 'rtmp://localhost/live'
   const obsServer = (
-    stream.ingest_url != null && stream.ingest_url.endsWith(`/${stream.id}`)
+    stream.ingest_url?.endsWith(`/${stream.id}`) === true
       ? stream.ingest_url.slice(0, -(`/${stream.id}`).length)
       : defaultObsServer
   )
@@ -79,7 +79,7 @@ export function WatchPage ({ stream, user, onBack, onRefresh, onDelete }: Props)
                 {cat != null && cat !== 'other' && <span className="dash-tag">{t(getCategoryKey(cat))}</span>}
               </div>
               {delaySeconds > 0 && <span className="watch-delay-badge">⏱ {delaySeconds}s {t('delay')}</span>}
-              {stream.settings?.mature_content === true && <span className="watch-mature-badge">18+</span>}
+              {(stream.settings?.mature_content ?? false) && <span className="watch-mature-badge">18+</span>}
               {stream.description != null && stream.description.length > 0 && <p className="watch-desc">{stream.description}</p>}
             </div>
           </div>
@@ -112,7 +112,7 @@ export function WatchPage ({ stream, user, onBack, onRefresh, onDelete }: Props)
                   ? <button className="btn-go-live" onClick={() => { void handleStart() }}><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z" /></svg>{t('goLive')}</button>
                   : <button className="btn-stop" onClick={() => { void handleStop() }}><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="1" /></svg>{t('stopStream')}</button>
                 }
-                <button className="btn-icon btn-danger-icon" onClick={() => { void handleDelete() }} title="Видалити стрім">
+                <button className="btn-icon btn-danger-icon" onClick={() => { void handleDelete() }} title={t('deleteStream')} aria-label={t('deleteStream')}>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" /></svg>
                 </button>
               </>
@@ -128,7 +128,7 @@ export function WatchPage ({ stream, user, onBack, onRefresh, onDelete }: Props)
             <div className="ingest-row">
               <span className="ingest-label">Server</span>
               <code>{obsServer}</code>
-              <button className="btn-copy" onClick={() => { copyToClipboard(obsServer) }} title="Копіювати">
+              <button className="btn-copy" onClick={() => { copyToClipboard(obsServer) }} title={t('copy')} aria-label={t('copy')}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <rect x="9" y="9" width="13" height="13" rx="2" /><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
                 </svg>
@@ -137,7 +137,7 @@ export function WatchPage ({ stream, user, onBack, onRefresh, onDelete }: Props)
             <div className="ingest-row">
               <span className="ingest-label">Stream Key</span>
               <code>{stream.stream_key ?? '—'}</code>
-              <button className="btn-copy" onClick={() => { copyToClipboard(stream.stream_key ?? null) }} title="Копіювати">
+              <button className="btn-copy" onClick={() => { copyToClipboard(stream.stream_key ?? null) }} title={t('copy')} aria-label={t('copy')}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <rect x="9" y="9" width="13" height="13" rx="2" /><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
                 </svg>
