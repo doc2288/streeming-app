@@ -73,6 +73,7 @@ const translations = {
   goLive: { ua: 'Розпочати стрім', en: 'Go Live', no: 'Start strøm' },
   stopStream: { ua: 'Зупинити', en: 'Stop', no: 'Stopp' },
   deleteStream: { ua: 'Видалити', en: 'Delete', no: 'Slett' },
+  copy: { ua: 'Копіювати', en: 'Copy', no: 'Kopier' },
   deleteConfirm: { ua: 'Видалити цей стрім?', en: 'Delete this stream?', no: 'Slette denne strømmen?' },
   noOwnStreams: { ua: 'У вас ще немає стрімів', en: 'You have no streams yet', no: 'Du har ingen strømmer ennå' },
   obsHint: { ua: 'Використовуйте ці дані у OBS Studio або іншому ПЗ для трансляцій', en: 'Use these in OBS Studio or other broadcasting software', no: 'Bruk disse i OBS Studio eller annen kringkastingsprogramvare' },
