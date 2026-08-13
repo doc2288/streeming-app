@@ -2,8 +2,19 @@ import { useMemo } from 'react'
 import { useI18n, getCategoryKey, type Category } from '../i18n'
 import { getApiBaseUrl } from '../api'
 
-interface Stream { id: string, title: string, status: string, user_id: string, category?: string, thumbnail_url?: string | null, tags?: string[] }
-interface Props { stream: Stream, onWatch: (stream: Stream) => void }
+interface Stream {
+  id: string
+  title: string
+  status: string
+  user_id: string
+  category?: string
+  thumbnail_url?: string | null
+  tags?: string[]
+}
+interface Props {
+  stream: Stream
+  onWatch: (stream: Stream) => void
+}
 
 const COLORS = ['#9147ff', '#2563eb', '#e91916', '#00b894', '#e17055', '#6c5ce7', '#00cec9', '#fd79a8']
 function hashNum (s: string): number { let h = 0; for (let i = 0; i < s.length; i++) h = s.charCodeAt(i) + ((h << 5) - h); return Math.abs(h) }

@@ -1,8 +1,22 @@
 import { StreamCard } from './StreamCard'
 import { useI18n } from '../i18n'
 
-interface Stream { id: string, title: string, status: string, ingest_url: string | null, stream_key: string | null, user_id: string, category?: string, tags?: string[] }
-interface Props { streams: Stream[], onWatch: (stream: Stream) => void, searchQuery: string, categoryFilter?: string | null }
+interface Stream {
+  id: string
+  title: string
+  status: string
+  ingest_url: string | null
+  stream_key: string | null
+  user_id: string
+  category?: string
+  tags?: string[]
+}
+interface Props {
+  streams: Stream[]
+  onWatch: (stream: Stream) => void
+  searchQuery: string
+  categoryFilter?: string | null
+}
 
 export function StreamGrid ({ streams, onWatch, searchQuery, categoryFilter }: Props): JSX.Element {
   const { t } = useI18n()

@@ -2,7 +2,11 @@ import { useState, useRef, useEffect } from 'react'
 import { useI18n, type Lang } from '../i18n'
 
 interface Props {
-  user: { id: string, email: string, role: string } | null
+  user: {
+    id: string
+    email: string
+    role: string
+  } | null
   onLogin: () => void
   onLogout: () => void
   onSearch: (q: string) => void

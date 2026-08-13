@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback, useRef } from 'react'
 import type { AxiosError } from 'axios'
-import { api, setAuthToken, setRefreshToken, clearAuth, getStoredToken } from './api'
+import { api, clearAuth, getStoredToken } from './api'
 import { useI18n, CATEGORIES, getCategoryKey, STREAM_LANGUAGES, type Category } from './i18n'
 import { TopBar } from './components/TopBar'
 import { Sidebar } from './components/Sidebar'
