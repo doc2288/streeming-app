@@ -21,8 +21,8 @@ export function AuthModal ({ onClose, onSuccess }: Props): JSX.Element {
     setLoading(true); setError(null)
     try {
       const res = await api.post(`/auth/${mode}`, { email: email.trim(), password })
-      setAuthToken(res.data.accessToken); setRefreshToken(res.data.refreshToken)
-      onSuccess({ id: res.data.user.id, email: res.data.user.email, role: res.data.user.role })
+      setAuthToken(res.data.accessToken as string); setRefreshToken(res.data.refreshToken as string)
+      onSuccess({ id: (res.data.user as { id: string }).id, email: (res.data.user as { email: string }).email, role: (res.data.user as { role: string }).role })
     } catch (err: any) {
       const msg = err.response?.data?.error
       setError(typeof msg === 'string' ? msg : t('authError'))
