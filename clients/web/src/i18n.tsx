@@ -140,6 +140,10 @@ const translations = {
   lang_ua: { ua: 'Українська', en: 'Ukrainian', no: 'Ukrainsk' },
   lang_en: { ua: 'English', en: 'English', no: 'English' },
   lang_no: { ua: 'Norsk', en: 'Norwegian', no: 'Norsk' },
+  copy: { ua: 'Копіювати', en: 'Copy', no: 'Kopier' },
+  reply: { ua: 'Відповісти', en: 'Reply', no: 'Svar' },
+  emoji: { ua: 'Емодзі', en: 'Emoji', no: 'Emoji' },
+  send: { ua: 'Надіслати', en: 'Send', no: 'Send' }
 } as const
 
 export type TKey = keyof typeof translations
