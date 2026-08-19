@@ -27,7 +27,7 @@ export function WatchPage ({ stream, user, onBack, onRefresh, onDelete }: Props)
   const cat = stream.category as Category | undefined
   const defaultObsServer = 'rtmp://localhost/live'
   const obsServer = (
-    stream.ingest_url != null && stream.ingest_url.endsWith(`/${stream.id}`)
+    stream.ingest_url?.endsWith(`/${stream.id}`) === true
       ? stream.ingest_url.slice(0, -(`/${stream.id}`).length)
       : defaultObsServer
   )
