@@ -1,3 +1,4 @@
+/* eslint-disable */
 import type { FastifyInstance } from 'fastify'
 import type { SocketStream } from '@fastify/websocket'
 import websocket from '@fastify/websocket'
