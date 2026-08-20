@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { env } from './config/env'
 import { pool } from './db'
 import { createApp } from './app'

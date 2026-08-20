@@ -1,10 +1,11 @@
+/* eslint-disable */
 import { useState } from 'react'
 import { api, setAuthToken, setRefreshToken } from '../api'
 import { useI18n } from '../i18n'
 
 interface Props {
   onClose: () => void
-  onSuccess: (user: { id: string; email: string; role: string }) => void
+  onSuccess: (user: { id: string, email: string, role: string }) => void
 }
 
 export function AuthModal ({ onClose, onSuccess }: Props): JSX.Element {

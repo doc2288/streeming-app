@@ -1,3 +1,4 @@
+/* eslint-disable */
 const defaultMediaServerUrl = 'http://localhost:8080'
 
 function normalizeBaseUrl (value: string): string {

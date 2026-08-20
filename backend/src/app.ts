@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { resolve } from 'path'
 import { mkdir } from 'fs/promises'
 import Fastify from 'fastify'

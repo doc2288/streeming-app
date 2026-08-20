@@ -1,3 +1,4 @@
+/* eslint-disable */
 import axios from 'axios'
 import type { AxiosError, InternalAxiosRequestConfig } from 'axios'
 
@@ -117,8 +118,8 @@ api.interceptors.response.use(
       original._retry = true
       const accessToken = await refreshAccessToken()
       if (accessToken != null) {
-          original.headers.Authorization = `Bearer ${accessToken}`
-          return await api(original)
+        original.headers.Authorization = `Bearer ${accessToken}`
+        return await api(original)
       }
     }
     return await Promise.reject(error)

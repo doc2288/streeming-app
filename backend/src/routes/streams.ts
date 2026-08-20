@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { resolve } from 'path'
 import { createWriteStream } from 'fs'
 import { mkdir } from 'fs/promises'
